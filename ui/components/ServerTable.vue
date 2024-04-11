@@ -129,11 +129,22 @@ function confirmDeleteServer(event, server) {
       </template>
     </Column>
 
-    <Column field="id" header="Id">
+    <Column field="version" header="Version">
       <template #body="{ data }">
         <code>
-          {{ data.id }}
+          2024.3.1
         </code>
+      </template>
+    </Column>
+
+    <Column header="Sessions">
+      <template #body="{ data }">
+        <div class="flex gap-1">
+          <Tag value="Working: 5" severity="success"></Tag>
+          <Tag value="Stopped: 0" severity="secondary"></Tag>
+          <Tag value="QR Code: 0" severity="warning"></Tag>
+          <Tag value="Failed: 0" severity="danger"></Tag>
+        </div>
       </template>
     </Column>
 
