@@ -1,5 +1,5 @@
 <script setup>
-import ProductService from '@/service/ProductService';
+import {ProductService} from '@/service/ProductService';
 import { ref, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
@@ -17,7 +17,7 @@ const op = ref(null);
 const op2 = ref(null);
 const popup = ref(null);
 
-const productService = new ProductService();
+const productService = ProductService;
 const toast = useToast();
 const confirmPopup = useConfirm();
 

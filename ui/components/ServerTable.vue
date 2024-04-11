@@ -2,9 +2,11 @@
 import {ref, onMounted, onBeforeMount} from 'vue';
 import {useToast} from 'primevue/usetoast';
 import {ServerInfoService} from "../service/ServerInfoService";
-import {FilterMatchMode, FilterOperator} from "primevue/api";
+import {FilterMatchMode} from "primevue/api";
+import {useConfirm} from "primevue/useconfirm";
 
 const toast = useToast();
+const confirmPopup = useConfirm();
 
 const servers = ref(null);
 const dt = ref(null);
@@ -53,6 +55,24 @@ function openNew() {
 
 function rowClick(event) {
   toast.add({severity: 'info', summary: 'Server Selected', detail: event.data.name, life: 3000});
+}
+
+function editServer(server) {
+  toast.add({severity: 'info', summary: 'Server Edited', detail: server.name, life: 3000});
+}
+
+function confirmDeleteServer(event, server) {
+  confirmPopup.require({
+    target: event.target,
+    message: `Delete '${server.name}'?`,
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      toast.add({severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000});
+    },
+    reject: () => {
+      toast.add({severity: 'info', summary: 'Rejected', detail: 'You have rejected', life: 3000});
+    }
+  });
 }
 
 </script>
@@ -114,6 +134,15 @@ function rowClick(event) {
         <code>
           {{ data.id }}
         </code>
+      </template>
+    </Column>
+
+    <Column>
+      <template #body="{data}">
+        <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editServer(data)"/>
+        <ConfirmPopup></ConfirmPopup>
+        <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
+                @click="confirmDeleteServer($event, data)"/>
       </template>
     </Column>
   </DataTable>
