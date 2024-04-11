@@ -40,15 +40,20 @@ onBeforeMount(() => {
 onMounted(() => {
 });
 
+
 const initFilters = () => {
   filters.value = {
     global: {value: null, matchMode: FilterMatchMode.CONTAINS},
   };
 };
 
-const openNew = () => {
+function openNew() {
   toast.add({severity: 'success', summary: 'Success', detail: 'Server Created', life: 3000});
-};
+}
+
+function rowClick(event) {
+  toast.add({severity: 'info', summary: 'Server Selected', detail: event.data.name, life: 3000});
+}
 
 </script>
 
@@ -67,6 +72,8 @@ const openNew = () => {
       :filters="filters"
       :globalFilterFields="['name', 'id', 'connection.url']"
       showGridlines
+      @row-click="rowClick"
+      class="p-datatable--clickable"
   >
 
     <template #header>
@@ -112,6 +119,5 @@ const openNew = () => {
   </DataTable>
 </template>
 
-<style scoped lang="scss">
-
+<style lang="scss">
 </style>
