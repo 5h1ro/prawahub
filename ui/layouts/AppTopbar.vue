@@ -68,7 +68,7 @@ const isOutsideClicked = (event) => {
 
         <router-link to="/" class="layout-topbar-logo">
             <img class="mb-1" :src="logoUrl" alt="logo" />
-            <span>WAHA HUB</span>
+            <span>WAHA Hub</span>
         </router-link>
 
 
