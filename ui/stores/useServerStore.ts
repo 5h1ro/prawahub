@@ -10,6 +10,7 @@ export const useServerStore = defineStore('counter', () => {
 
     const servers = ref<ServerInfo[]>([])
     const sessions = reactive(new Map<string, Session[]>())
+    const toast = useToast();
 
     async function fetchServers() {
         console.log('fetchServers')
@@ -25,10 +26,17 @@ export const useServerStore = defineStore('counter', () => {
         if (!server) {
             return
         }
-        await Promise.all([
+        const requests = [
             fetchVersion(server),
             fetchSessions(server.id)
-        ])
+        ]
+        // Await all, set connected based on the result
+        try {
+            await Promise.all(requests)
+            server.connected = true
+        } catch (e) {
+            server.connected = false
+        }
     }
 
     async function fetchSessions(id: string) {
