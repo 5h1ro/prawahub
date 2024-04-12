@@ -19,12 +19,6 @@ const serversRequireUpdates = computed(() => store.servers.filter(s => s.version
             <span class="block text-900 font-medium mb-3">Servers</span>
             <span class="text-900 font-medium text-xl">
               <span> {{ store.servers.length }}</span>
-              <span> / </span>
-              <span class="text-green-500"> {{ store.connectedServers.length }} </span>
-              <template v-if="store.notConnectedServers.length > 0">
-                <span> / </span>
-                <span class="text-red-500"> {{ store.notConnectedServers.length }} </span>
-              </template>
             </span>
           </div>
           <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
@@ -32,14 +26,15 @@ const serversRequireUpdates = computed(() => store.servers.filter(s => s.version
             <i class="pi pi-server text-blue-500 text-xl"></i>
           </div>
         </div>
-        <template v-if="store.notConnectedServers.length > 0">
-          <span class="text-red-500 font-medium">{{ store.notConnectedServers.length }}</span>
-          <span class="text-500"> not connected</span>
-        </template>
-        <template v-else>
+        <div>
+          <template v-if="store.notConnectedServers.length > 0">
+            <span class="text-red-500 font-medium">{{ store.notConnectedServers.length }}</span>
+            <span class="text-900"> not connected</span>
+            <span> / </span>
+          </template>
           <span class="text-green-500 font-medium">{{ store.connectedServers.length }}</span>
           <span class="text-500"> connected</span>
-        </template>
+        </div>
       </div>
     </div>
 
