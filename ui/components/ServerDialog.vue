@@ -1,34 +1,38 @@
 <script setup>
 import {useServerStore} from "../stores/useServerStore";
+import {ref} from "vue";
 
 const props = defineProps({
   server: {
     type: Object,
     required: true
   },
-  submitted: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
-
 });
 const visible = defineModel("visible");
-const toast = useToast();
-const server = ref({...props.server});
 
+const toast = useToast();
 const serverStore = useServerStore()
 
+const server = ref({...props.server});
+const submitted = ref(false);
+
+
 async function saveServer() {
+  submitted.value = true;
+
   if (server.value.id) {
-    toast.add({severity: 'info', summary: 'Server Edited', detail: server.value.name, life: 3000});
+    await serverStore.editServer(server.value.id, server.value)
+    toast.add({severity: 'success', summary: 'Successful', detail: 'Updated', life: 3000});
   } else {
     await serverStore.addServer(server.value)
+    toast.add({severity: 'success', summary: 'Successful', detail: 'Created', life: 3000});
   }
+
   hide()
 }
 
 function hide() {
+  submitted.value = false;
   visible.value = false;
 }
 

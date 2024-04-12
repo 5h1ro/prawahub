@@ -44,7 +44,8 @@ function rowClick(event) {
 }
 
 function editServer(server) {
-  toast.add({severity: 'info', summary: 'Server Edited', detail: server.name, life: 3000});
+  server.value = {...server};
+  serverDialog.value = true;
 }
 
 function confirmDeleteServer(event, server) {
