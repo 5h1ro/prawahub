@@ -89,19 +89,25 @@ export class InMemoryServerService implements IServerService {
     fakeData() {
         this.servers = [
             {
-                id: 'waha_000000000000000000000000000',
+                id: 'waha_111111111111111111111111111',
                 name: 'Server 1',
                 connection: {
                     url: 'http://localhost:3000',
-                    key: '123',
                 },
             },
             {
-                id: 'waha_111111111111111111111111111',
+                id: 'waha_222222222222222222222222222',
                 name: 'Server 2',
                 connection: {
                     url: 'http://localhost:3001',
                     key: '123',
+                },
+            },
+            {
+                id: 'waha_000000000000000000000000000',
+                name: 'Server Failed',
+                connection: {
+                    url: 'http://localhost:3001',
                 },
             },
         ];
