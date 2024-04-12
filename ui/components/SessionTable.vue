@@ -84,13 +84,13 @@ function clearFilter() {
       :value="sessions.length > 0 ? sessions : []"
       :paginator="true"
       :rows="10"
-      dataKey="id"
+      :dataKey="(data) => `${data.name}-${data.server.id}`"
       :rowHover="true"
       v-model:filters="filters"
       filterDisplay="menu"
       :loading="loading"
       :filters="filters"
-      :globalFilterFields="['name', 'server']"
+      :globalFilterFields="['name', 'server.name', 'status']"
       showGridlines
       @row-click="rowClick"
       class="p-datatable--clickable"
@@ -112,7 +112,7 @@ function clearFilter() {
     <template #loading> Loading sessions...</template>
 
 
-    <Column field="name" header="Name">
+    <Column field="name" header="Name" sortable>
       <template #body="{ data }">
         {{ data.name }}
       </template>
@@ -128,7 +128,7 @@ function clearFilter() {
 
     <Column field="server" header="Server">
       <template #body="{ data }">
-        {{ store.getServer(data.server).name }}
+        {{ data.server.name }}
       </template>
     </Column>
 

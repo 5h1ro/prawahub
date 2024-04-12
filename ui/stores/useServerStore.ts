@@ -84,9 +84,10 @@ export const useServerStore = defineStore('serverStore', () => {
     const allSessions = computed(() => {
             const result = new Array<Session>()
             sessions.forEach((value, key) => {
+                const server = getServer(key)
                 const sessions = value.map(session => {
                     const data = lodash.cloneDeep(session)
-                    data.server = key
+                    data.server = server
                     return data
                 })
                 result.push(...sessions)
