@@ -6,7 +6,6 @@ import {computed} from "../.nuxt/imports";
 
 const store = useServerStore()
 const notConnectedServers = computed(() => {
-  console.log("store.servers", store.servers)
   return store.servers.filter(server => server.connected === false)
 })
 const connectedServers = computed(() => store.servers.filter(server => server.connected === true))
@@ -75,7 +74,7 @@ const badSessions = computed(() => store.allSessions.filter(s => s.status !== "W
           </div>
           <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
                style="width: 2.5rem; height: 2.5rem">
-            <i class="pi pi-inbox text-cyan-500 text-xl"></i>
+            <i class="pi pi-cloud-download text-cyan-500 text-xl"></i>
           </div>
         </div>
         <template v-if="serversRequireUpdates.length > 0">

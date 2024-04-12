@@ -73,7 +73,10 @@ function refreshServers() {
 
 <template>
   <div class="flex justify-content-between align-items-center mb-2">
-    <h5 class="m-0">Servers</h5>
+    <h5 class="m-0">
+      <i class="pi pi-server"></i>
+      Servers
+    </h5>
     <div>
       <Button icon="pi pi-refresh" rounded text="" @click="refreshServers"/>
     </div>

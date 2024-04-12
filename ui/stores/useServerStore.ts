@@ -4,6 +4,7 @@ import type {ServerInfo} from "../service/IServerService";
 import {InMemoryServerService} from "../service/InMemoryServerService";
 import type {Session} from "../service/Session";
 import {computed} from "../.nuxt/imports";
+import {first} from "lodash";
 
 
 export const useServerStore = defineStore('serverStore', () => {
@@ -36,6 +37,7 @@ export const useServerStore = defineStore('serverStore', () => {
             server.connected = true
         } catch (e) {
             server.connected = false
+            console.error(`Failed to refresh server - ${id}`, e)
         }
     }
 
