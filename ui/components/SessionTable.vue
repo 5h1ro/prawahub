@@ -6,6 +6,7 @@ import {useConfirm} from "primevue/useconfirm";
 import {useServerStore} from "../stores/useServerStore";
 import lodash from "lodash";
 import {useAsyncData} from "nuxt/app";
+import {SessionStatuses} from "../service/Session";
 
 const toast = useToast();
 const confirmPopup = useConfirm();
@@ -28,6 +29,7 @@ onBeforeMount(() => {
 const initFilters = () => {
   filters.value = {
     global: {value: null, matchMode: FilterMatchMode.CONTAINS},
+    status: {value: null, matchMode: FilterMatchMode.EQUALS},
   };
 };
 
@@ -87,9 +89,8 @@ function clearFilter() {
       :dataKey="(data) => `${data.name}-${data.server.id}`"
       :rowHover="true"
       v-model:filters="filters"
-      filterDisplay="menu"
+      filterDisplay="row"
       :loading="loading"
-      :filters="filters"
       :globalFilterFields="['name', 'server.name', 'status']"
       showGridlines
       @row-click="rowClick"
@@ -118,11 +119,26 @@ function clearFilter() {
       </template>
     </Column>
 
-    <Column field="status" header="Status">
+    <Column field="status" header="Status" :showFilterMenu="false" style="max-width: 5rem">
       <template #body="{ data }">
         <SessionStatusTag
             :status="data.status"
         ></SessionStatusTag>
+      </template>
+
+      <template #filter="{ filterModel }">
+        <Dropdown
+            v-model="filterModel.value" :options="SessionStatuses"
+            placeholder="Any" class="p-column-filter"
+            :showClear="true"
+        >
+          <template #option="{ option }">
+            <SessionStatusTag
+                :status="option"
+                :value="option"
+            ></SessionStatusTag>
+          </template>
+        </Dropdown>
       </template>
     </Column>
 
