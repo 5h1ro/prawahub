@@ -16,9 +16,12 @@ export default defineNuxtConfig({
             ]
         }
     },
-    modules: ['nuxt-primevue'],
+    modules: [
+        'nuxt-primevue',
+        '@pinia/nuxt',
+    ],
     primevue: {
-        options: { ripple: true },
+        options: {ripple: true},
         components: {
             exclude: ['Editor']
         }

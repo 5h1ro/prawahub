@@ -1,14 +1,16 @@
 <script setup>
 import {ref, onMounted, onBeforeMount} from 'vue';
 import {useToast} from 'primevue/usetoast';
-import {InMemoryServerService} from "../service/InMemoryServerService";
 import {FilterMatchMode} from "primevue/api";
 import {useConfirm} from "primevue/useconfirm";
+import {useServerStore} from "../stores/useServerStore";
 
 const toast = useToast();
 const confirmPopup = useConfirm();
 
-const servers = ref(null);
+const serverStore = useServerStore()
+const {servers} = storeToRefs(serverStore)
+
 const dt = ref(null);
 const filters = ref({});
 const loading = ref(null);
@@ -18,7 +20,6 @@ const statuses = ref([
   {label: 'OUTOFSTOCK', value: 'outofstock'}
 ]);
 
-const serverInfoService = new InMemoryServerService()
 
 const getBadgeSeverity = (inventoryStatus) => {
   switch (inventoryStatus.toLowerCase()) {
@@ -34,10 +35,8 @@ const getBadgeSeverity = (inventoryStatus) => {
 };
 
 onBeforeMount(() => {
-  serverInfoService.list().then(data => {
-    servers.value = data;
-  });
   initFilters()
+  useAsyncData('serverStore', () => serverStore.refresh())
 });
 onMounted(() => {
 });
@@ -134,7 +133,7 @@ function confirmDeleteServer(event, server) {
     <Column field="version" header="Version">
       <template #body="{ data }">
         <code>
-          2024.3.1
+          {{ data.version || "-" }}
         </code>
       </template>
     </Column>

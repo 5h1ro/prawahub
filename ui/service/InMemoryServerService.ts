@@ -1,5 +1,5 @@
-import {IServerService, ServerInfo} from "./IServerService";
-import {Session} from "./Session";
+import type {IServerService, ServerInfo} from "./IServerService";
+import type {Session} from "./Session";
 
 export class InMemoryServerService implements IServerService {
     constructor() {
@@ -9,7 +9,11 @@ export class InMemoryServerService implements IServerService {
     private servers: ServerInfo[] = [];
 
     async get(id: string): Promise<ServerInfo> {
-        return this.servers.find(server => server.id === id);
+        const server = this.servers.find(server => server.id === id);
+        if (!server) {
+            throw new Error(`Server ${id} not found`);
+        }
+        return server;
     }
 
     async list(): Promise<ServerInfo[]> {
@@ -27,7 +31,7 @@ export class InMemoryServerService implements IServerService {
         }
     }
 
-    async getVersion(id: string): Promise<String> {
+    async getVersion(id: string): Promise<string> {
         return "1.0.0";
     }
 

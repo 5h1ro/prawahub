@@ -1,4 +1,4 @@
-import {Session} from "./Session";
+import type {Session} from "./Session";
 
 export interface ServerConnection {
     url: string;
@@ -9,6 +9,7 @@ export interface ServerInfo {
     id: string,
     name: string,
     connection: ServerConnection,
+    version?: string,
 }
 
 export interface IServerService {
