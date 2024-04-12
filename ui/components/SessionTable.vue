@@ -86,7 +86,7 @@ function refreshServers() {
       filterDisplay="menu"
       :loading="loading"
       :filters="filters"
-      :globalFilterFields="['name']"
+      :globalFilterFields="['name', 'server']"
       showGridlines
       @row-click="rowClick"
       class="p-datatable--clickable"
@@ -107,15 +107,13 @@ function refreshServers() {
 
     <Column field="name" header="Name">
       <template #body="{ data }">
-        <b>
-          {{ data.name }}
-        </b>
+        {{ data.name }}
       </template>
     </Column>
 
     <Column field="server" header="Server">
       <template #body="{ data }">
-        {{ data.server }}
+        {{ store.getServer(data.server).name }}
       </template>
     </Column>
 

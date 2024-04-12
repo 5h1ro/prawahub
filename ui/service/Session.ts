@@ -6,4 +6,5 @@ export interface Session {
     name: string;
     status: SessionStatus;
     config: SessionConfig;
+    server?: string;
 }

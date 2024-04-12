@@ -4,7 +4,7 @@ import type {ServerInfo} from "../service/IServerService";
 import {InMemoryServerService} from "../service/InMemoryServerService";
 import type {Session} from "../service/Session";
 import {computed} from "../.nuxt/imports";
-import {first} from "lodash";
+import lodash, {first} from "lodash";
 
 
 export const useServerStore = defineStore('serverStore', () => {
@@ -76,10 +76,20 @@ export const useServerStore = defineStore('serverStore', () => {
         await refresh()
     }
 
+    function getServer(id: string) {
+        console.log('getServer', id)
+        return servers.value.filter(server => server.id === id)?.[0]
+    }
+
     const allSessions = computed(() => {
             const result = new Array<Session>()
             sessions.forEach((value, key) => {
-                result.push(...value)
+                const sessions = value.map(session => {
+                    const data = lodash.cloneDeep(session)
+                    data.server = key
+                    return data
+                })
+                result.push(...sessions)
             })
             return result
         }
@@ -92,6 +102,7 @@ export const useServerStore = defineStore('serverStore', () => {
         addServer,
         deleteServer,
         editServer,
+        getServer,
         latestVersion,
     }
 })
