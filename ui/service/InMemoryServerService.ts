@@ -54,7 +54,7 @@ export class InMemoryServerService implements IServerService {
         }
         await sleep(1000)
         if (id.endsWith("111")) {
-            return "1.1.1";
+            return "2024.3.1";
         }
         return "1.0.0";
     }

@@ -8,6 +8,7 @@ import {computed} from "../.nuxt/imports";
 export const useServerStore = defineStore('counter', () => {
     // TODO: implement the store
     const serverInfoService = new InMemoryServerService()
+    const latestVersion = ref('2024.3.1')
 
     const servers = ref<ServerInfo[]>([])
     const sessions = reactive(new Map<string, Session[]>())
@@ -72,13 +73,23 @@ export const useServerStore = defineStore('counter', () => {
 
     const notConnectedServers = computed(() => servers.value.filter(server => server.connected === false))
     const connectedServers = computed(() => servers.value.filter(server => server.connected === true))
+    const allSessions = computed(() => {
+            const result = new Array<Session>()
+            for (const sessionsForServer of sessions.values()) {
+                result.push(...sessionsForServer)
+            }
+            return result
+        }
+    )
     return {
         servers,
         sessions,
+        allSessions,
         refresh,
         addServer,
         deleteServer,
         editServer,
+        latestVersion,
         notConnectedServers,
         connectedServers,
     }
