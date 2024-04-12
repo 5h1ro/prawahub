@@ -105,7 +105,7 @@ function clearFilter() {
     <template #header>
       <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-0">
         <div class="flex gap-2">
-          <Button label="Start" icon="pi pi-play" severity="success" @click="openNew"/>
+          <Button label="New" icon="pi pi-plus" severity="success" @click="openNew"/>
         </div>
         <IconField iconPosition="left">
           <InputIcon class="pi pi-search"/>
@@ -162,14 +162,15 @@ function clearFilter() {
     <Column>
       <template #body="{data}">
         <div class="text-right">
-          <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded outlined @click="editSession(data)"/>
-          <ConfirmPopup></ConfirmPopup>
-          <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded outlined
+          <Button icon="pi pi-play" class="mr-2" rounded outlined @click="editSession(data)"/>
+          <Button icon="pi pi-pause" class="mr-2" severity="secondary" rounded outlined @click="editSession(data)"/>
+          <Button icon="pi pi-stop" class="mt-2" severity="danger" rounded outlined
                   @click="confirmDeleteSession($event, data)"/>
         </div>
       </template>
     </Column>
   </DataTable>
+  <ConfirmPopup></ConfirmPopup>
 </template>
 
 <style lang="scss">
