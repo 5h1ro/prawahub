@@ -13,7 +13,7 @@ onBeforeMount(() => {
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <ServerTable></ServerTable>
+        <SessionTable></SessionTable>
       </div>
     </div>
   </div>

@@ -1,7 +1,8 @@
 <script setup>
-import {onMounted} from 'vue';
+import {onBeforeMount, onMounted} from 'vue';
 import {useServerStore} from "../stores/useServerStore";
 import {computed} from "../.nuxt/imports";
+import {useAsyncData} from "nuxt/app";
 
 
 const store = useServerStore()
@@ -11,6 +12,12 @@ const notConnectedServers = computed(() => {
 const connectedServers = computed(() => store.servers.filter(server => server.connected === true))
 const serversRequireUpdates = computed(() => store.servers.filter(s => s.version && s.version.version !== store.latestVersion))
 const badSessions = computed(() => store.allSessions.filter(s => s.status !== "WORKING" && s.status !== "STOPPED"))
+
+onBeforeMount(() => {
+  useAsyncData('store', () =>
+      store.refresh()
+  )
+});
 </script>
 
 <template>
@@ -90,6 +97,12 @@ const badSessions = computed(() => store.allSessions.filter(s => s.status !== "W
     <div class="col-12">
       <div class="card">
         <ServerTable></ServerTable>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card">
+        <SessionTable></SessionTable>
       </div>
     </div>
   </div>

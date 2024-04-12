@@ -22,11 +22,6 @@ const loading = ref(null);
 
 onBeforeMount(() => {
   initFilters()
-  useAsyncData('store', () =>
-      store.refresh()
-  )
-});
-onMounted(() => {
 });
 
 
@@ -113,9 +108,7 @@ function refreshServers() {
 
     <Column field="name" header="Name">
       <template #body="{ data }">
-        <b>
-          {{ data.name }}
-        </b>
+        {{ data.name }}
       </template>
     </Column>
 
