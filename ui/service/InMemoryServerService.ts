@@ -1,6 +1,6 @@
 import type {IServerService, ServerInfo, Version} from "./IServerService";
 import lodash from 'lodash'
-import type {Session} from "./Session";
+import type {Session, SessionStatus} from "./Session";
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -36,7 +36,7 @@ export class InMemoryServerService implements IServerService {
     }
 
     async edit(id: string, data: ServerInfo): Promise<void> {
-        if (!data){
+        if (!data) {
             throw new Error('data is required')
         }
         const server = this.servers.find(server => server.id === id);
@@ -73,33 +73,17 @@ export class InMemoryServerService implements IServerService {
             throw new Error('Getting sessions failed');
         }
         const differentStatuses = id.endsWith("111");
-        return [
-            {
-                name: `Session 1 - ${id}`,
-                status: 'WORKING',
+        const sessions: Session[] = []
+        const statuses: SessionStatus[] = differentStatuses ? ["WORKING", "FAILED", "SCAN_QR_CODE", "STARTING", "STOPPED"] : ["WORKING"]
+        const numbersOfSessions = 10
+        while (sessions.length < numbersOfSessions) {
+            sessions.push({
+                name: `Session ${sessions.length + 1}`,
+                status: statuses[Math.floor(Math.random() * statuses.length)],
                 config: {},
-            },
-            {
-                name: `Session 2 - ${id}`,
-                status: differentStatuses ? 'STOPPED' : "WORKING",
-                config: {},
-            },
-            {
-                name: `Session 3 - ${id}`,
-                status: differentStatuses ? 'SCAN_QR_CODE' : "WORKING",
-                config: {},
-            },
-            {
-                name: `Session 4 - ${id}`,
-                status: differentStatuses ? 'FAILED' : "WORKING",
-                config: {},
-            },
-            {
-                name: `Session 5 - ${id}`,
-                status: differentStatuses ? 'STARTING' : "WORKING",
-                config: {},
-            }
-        ];
+            })
+        }
+        return sessions
     }
 
     fakeData() {

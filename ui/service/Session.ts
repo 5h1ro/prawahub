@@ -1,8 +1,9 @@
 export interface SessionConfig {
 }
+export type SessionStatus = "STOPPED" | "STARTING" | "SCAN_QR_CODE" | "WORKING" | "FAILED";
 
 export interface Session {
     name: string;
-    status: "STOPPED" | "STARTING" | "SCAN_QR_CODE" | "WORKING" | "FAILED";
+    status: SessionStatus;
     config: SessionConfig;
 }
