@@ -10,6 +10,9 @@ const confirmPopup = useConfirm();
 
 const serverStore = useServerStore()
 const {servers} = storeToRefs(serverStore)
+const server = ref({connection: {}}
+);
+const serverDialog = ref(false)
 
 const dt = ref(null);
 const filters = ref({});
@@ -30,7 +33,10 @@ const initFilters = () => {
 };
 
 function openNew() {
-  toast.add({severity: 'success', summary: 'Success', detail: 'Server Created', life: 3000});
+  server.value = {
+    connection: {}
+  };
+  serverDialog.value = true;
 }
 
 function rowClick(event) {
@@ -146,6 +152,10 @@ function confirmDeleteServer(event, server) {
       </template>
     </Column>
   </DataTable>
+  <ServerDialog
+      :server="server"
+      :visible="serverDialog"
+  ></ServerDialog>
 </template>
 
 <style lang="scss">
