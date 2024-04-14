@@ -26,9 +26,8 @@ async function copyRequest(event) {
   await navigator.clipboard.writeText(value);
   event.preventDefault();
 }
+const methods = ['GET', 'POST', 'PUT', 'DELETE', "PATCH"]
 
-
-// TODO: For test
 const data = {
   "id": 1,
   "name": "Session 1",
@@ -41,7 +40,6 @@ const data = {
     }
   }
 }
-const methods = ['GET', 'POST', 'PUT', 'DELETE', "PATCH"]
 response.value = JSON.stringify(data, null, 2)
 
 </script>

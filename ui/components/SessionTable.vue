@@ -16,6 +16,7 @@ const {allSessions, refreshing} = storeToRefs(store)
 const sessions = allSessions
 const session = ref({})
 const sessionDialog = ref(false)
+const sessionControlDialog = ref(false)
 
 const dt = ref(null);
 const filters = ref({});
@@ -69,6 +70,11 @@ function clearFilter() {
   initFilters()
 }
 
+function rowClick(event) {
+  sessionControlDialog.value = true;
+  session.value = event.data
+}
+
 </script>
 
 <template>
@@ -87,11 +93,12 @@ function clearFilter() {
       :dataKey="(data) => `${data.name}-${data.server.id}-${data.status}`"
       :rowHover="true"
       v-model:filters="filters"
-      v-model:expandedRows="expandedRows"
       filterDisplay="row"
       :loading="loading"
       :globalFilterFields="['name', 'server.id', 'server.name', 'server.connection.url', 'status']"
+      @row-click="rowClick"
       showGridlines
+      class="p-datatable--clickable"
   >
 
     <template #header>
@@ -108,8 +115,6 @@ function clearFilter() {
     <template #empty> No sessions found</template>
     <template #loading> Loading sessions...</template>
 
-
-    <Column expander style="width: 2rem"/>
     <Column field="name" header="Name" sortable>
       <template #body="{ data }">
         {{ data.name }}
@@ -181,13 +186,12 @@ function clearFilter() {
         </div>
       </template>
     </Column>
-    <template #expansion="slotProps">
-      <div class="p-3">
-        <SessionControl :session="slotProps.data"></SessionControl>
-      </div>
-    </template>
   </DataTable>
   <ConfirmPopup></ConfirmPopup>
+  <SessionControlDialog
+      v-model:visible="sessionControlDialog"
+      v-model:session="session"
+  ></SessionControlDialog>
 </template>
 
 <style lang="scss">
