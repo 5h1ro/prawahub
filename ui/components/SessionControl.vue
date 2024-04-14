@@ -28,14 +28,14 @@ const refreshScreenshot = () => {
     <SplitterPanel :size="100">
       <Splitter layout="vertical">
         <SplitterPanel :size="50">
-          <div class="p-2">
+          <div class="p-4 pt-3">
             <div class="flex justify-content-center align-items-center">
               <h5>Request</h5>
             </div>
           </div>
         </SplitterPanel>
         <SplitterPanel :size="50">
-          <div class="p-2">
+          <div class="p-4 pt-3">
             <div class="flex justify-content-center align-items-center">
               <h5>Response</h5>
             </div>
