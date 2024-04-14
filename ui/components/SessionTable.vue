@@ -74,15 +74,13 @@ function clearFilter() {
 </script>
 
 <template>
-  <div class="flex justify-content-between align-items-center mb-2">
-    <h5 class="m-0">
-      <i class="pi pi-whatsapp"></i>
-      <span>
+  <h5>
+    <i class="pi pi-whatsapp"></i>
+    <span class="mr-1">
       Sessions
       </span>
-      <RefreshIcon :refreshing="refreshing"/>
-    </h5>
-  </div>
+    <RefreshIcon :refreshing="refreshing"/>
+  </h5>
 
   <DataTable
       :value="sessions.length > 0 ? sessions : []"
