@@ -20,6 +20,7 @@ const sessionDialog = ref(false)
 const dt = ref(null);
 const filters = ref({});
 const loading = ref(null);
+const expandedRows = ref([]);
 
 onBeforeMount(() => {
   initFilters()
@@ -86,6 +87,7 @@ function clearFilter() {
       :dataKey="(data) => `${data.name}-${data.server.id}-${data.status}`"
       :rowHover="true"
       v-model:filters="filters"
+      v-model:expandedRows="expandedRows"
       filterDisplay="row"
       :loading="loading"
       :globalFilterFields="['name', 'server.id', 'server.name', 'server.connection.url', 'status']"
@@ -107,16 +109,19 @@ function clearFilter() {
     <template #loading> Loading sessions...</template>
 
 
+    <Column expander style="width: 2rem"/>
     <Column field="name" header="Name" sortable>
       <template #body="{ data }">
         {{ data.name }}
       </template>
     </Column>
 
-    <Column field="status" header="Status" :showFilterMenu="false" style="max-width: 5rem">
+    <Column field="status" header="Status" :showFilterMenu="false" style="max-width: 9rem">
       <template #body="{ data }">
         <div class="flex gap-2">
-          <ScreenshotButton></ScreenshotButton>
+          <div>
+            <ScreenshotButton></ScreenshotButton>
+          </div>
           <div class="my-auto">
             <SessionStatusTag
                 :status="data.status"
@@ -160,7 +165,7 @@ function clearFilter() {
           </template>
           <template #option="slotProps">
             <ServerConnectionIcon :connected="slotProps.option.connected"></ServerConnectionIcon>
-            <span class="ml-1">{{ slotProps.option.name }} ({{slotProps.option.connection.url}}) </span>
+            <span class="ml-1">{{ slotProps.option.name }} ({{ slotProps.option.connection.url }}) </span>
           </template>
         </Dropdown>
       </template>
@@ -176,6 +181,11 @@ function clearFilter() {
         </div>
       </template>
     </Column>
+    <template #expansion="slotProps">
+      <div class="p-3">
+        <h5>Orders for</h5>
+      </div>
+    </template>
   </DataTable>
   <ConfirmPopup></ConfirmPopup>
 </template>
