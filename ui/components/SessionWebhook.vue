@@ -24,7 +24,7 @@ const events = [
       <InputText id="url" v-model.trim="webhook.url" required="true" autofocus/>
     </div>
 
-    <div>
+    <div class="field">
       <label for="events">Events</label>
       <MultiSelect
           id="events"
