@@ -1,5 +1,5 @@
 import {RPCApiClient, RPCRequest} from "../ServerRPCService";
-import {ServerId} from "../IServerAPI";
+import {ServerId} from "../ServerAPI";
 import type {Session, SessionStatus} from "../Session";
 import {sleep} from "./utils";
 

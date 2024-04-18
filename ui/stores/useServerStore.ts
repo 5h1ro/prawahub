@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {ref, reactive} from "vue"
-import type {IServerAPI, ServerInfo} from "../service/IServerAPI";
+import type {ServerAPI, ServerInfo} from "../service/ServerAPI";
 import {InMemoryServerAPI} from "../service/inmemory/InMemoryServerAPI";
 import type {Session} from "../service/Session";
 import {computed} from "../.nuxt/imports";
@@ -11,7 +11,7 @@ import {ServerRPCService} from "../service/ServerRPCService";
 
 
 export const useServerStore = defineStore('serverStore', () => {
-    const serverInfoAPI: IServerAPI = new InMemoryServerAPI()
+    const serverInfoAPI: ServerAPI = new InMemoryServerAPI()
     const rpcApi = new InMemoryRPCApi()
 
     const serverRPCService = new ServerRPCService(rpcApi)

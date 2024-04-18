@@ -1,4 +1,4 @@
-import {ServerId} from "./IServerAPI";
+import {ServerId} from "./ServerAPI";
 import {Session} from "./Session";
 
 export interface RPCRequest {

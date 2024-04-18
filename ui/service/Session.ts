@@ -1,4 +1,4 @@
-import {ServerInfo} from "./IServerAPI";
+import {ServerInfo} from "./ServerAPI";
 
 export interface SessionConfig {
 }
