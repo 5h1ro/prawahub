@@ -5,9 +5,17 @@ function add() {
   webhooks.value.push({
     url: "https://",
     events: ["session.status", "message", "message.reaction"],
+    hmac: {
+      key: null,
+    },
+    retries: {
+      delaySeconds: 2,
+      attempts: 15,
+    }
   })
 }
-function remove(index){
+
+function remove(index) {
   webhooks.value.splice(index, 1)
 }
 </script>
