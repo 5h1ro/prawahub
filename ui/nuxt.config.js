@@ -42,5 +42,14 @@ export default defineNuxtConfig({
             `
         }
     ],
-    css: ['primeicons/primeicons.css', 'primeflex/primeflex.scss', 'primevue/resources/primevue.min.css', '@/assets/styles.scss']
+    css: [
+        // PrimeVue
+        'primeicons/primeicons.css',
+        'primeflex/primeflex.scss',
+        'primevue/resources/primevue.min.css',
+        // Font Awesome
+        '@fortawesome/fontawesome-svg-core/styles.css',
+        // Custom
+        '@/assets/styles.scss'
+    ]
 });

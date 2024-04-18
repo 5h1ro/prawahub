@@ -61,8 +61,12 @@ function hide() {
           v-model="session.config.debug"
           onLabel="Debug Enabled"
           offLabel="Debug Disabled"
-          onIcon="pi pi-check"
-      />
+          onIcon="fa fa-bug"
+      >
+        <template #icon>
+          <font-awesome-icon icon="fa-solid fa-bug" class="mr-2"/>
+        </template>
+      </ToggleButton>
     </div>
 
     <template #footer>
