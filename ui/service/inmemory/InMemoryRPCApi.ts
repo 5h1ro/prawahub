@@ -7,6 +7,7 @@ export class InMemoryRPCApi implements RPCApiClient {
     private sessions = new Map<ServerId, Session[]>()
 
     async call(serverId: ServerId, request: RPCRequest): Promise<any> {
+        console.log('InMemoryRPCApi.call', {serverId, request})
         const failed = serverId.endsWith("000");
         if (failed) {
             const delay = Math.random() * 3000
@@ -43,7 +44,8 @@ export class InMemoryRPCApi implements RPCApiClient {
                     config: {},
                 })
             }
-            this.sessions.set(id, newSessions)
+            // this.sessions.set(id, newSessions)
+            this.sessions.set(id, [])
         }
         return this.sessions.get(id)
     }
@@ -69,7 +71,7 @@ export class InMemoryRPCApi implements RPCApiClient {
             throw new Error(`Server ${serverId} not found`)
         }
         const exist = sessions.find(session => session.name === body.name)
-        if (exist.status != <SessionStatus>'STOPPED' || exist.status != <SessionStatus>'FAILED') {
+        if (exist !== undefined && (exist.status !== <SessionStatus>'STOPPED' || exist.status != <SessionStatus>'FAILED')) {
             throw new Error(`Session ${body.name} already ${exist.status}`)
         }
 

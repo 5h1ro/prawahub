@@ -95,17 +95,17 @@ export const useServerStore = defineStore('serverStore', () => {
 
     async function startSession(id: ServerId, body: SessionStartRequest): Promise<void> {
         await serverRPCService.startSession(id, body)
-        await fetchSessions(id)
+        refresh()
     }
 
     async function stopSession(id: ServerId, sessionName: string, logout: boolean): Promise<void> {
         await serverRPCService.stopSession(id, sessionName, logout)
-        await fetchSessions(id)
+        refresh()
     }
 
     async function logoutSession(id: ServerId, sessionName: string): Promise<void> {
         await serverRPCService.logoutSession(id, sessionName)
-        await fetchSessions(id)
+        refresh()
     }
 
     const allSessions = computed(() => {

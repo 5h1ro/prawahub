@@ -22,11 +22,11 @@ export class ServerRPCService {
         this.api = api;
     }
 
-    async call(serverId: ServerId, request: RPCRequest): Promise<any> {
+    call(serverId: ServerId, request: RPCRequest): Promise<any> {
         return this.api.call(serverId, request);
     }
 
-    async getSessions(serverId: ServerId): Promise<Session[]> {
+    getSessions(serverId: ServerId): Promise<Session[]> {
         return this.api.call(serverId, {
             method: 'GET',
             uri: '/api/sessions',
@@ -34,7 +34,7 @@ export class ServerRPCService {
         });
     }
 
-    async startSession(serverId: ServerId, body: SessionStartRequest): Promise<void> {
+    startSession(serverId: ServerId, body: SessionStartRequest): Promise<void> {
         return this.api.call(serverId, {
             method: 'POST',
             uri: '/api/sessions',
@@ -43,7 +43,7 @@ export class ServerRPCService {
         });
     }
 
-    async stopSession(serverId: ServerId, sessionName: string, logout: boolean): Promise<void> {
+    stopSession(serverId: ServerId, sessionName: string, logout: boolean): Promise<void> {
         return this.api.call(serverId, {
             method: 'DELETE',
             uri: `/api/sessions/${sessionName}`,
@@ -52,7 +52,7 @@ export class ServerRPCService {
         });
     }
 
-    async logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
+    logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
         return this.api.call(serverId, {
             method: 'POST',
             uri: `/api/sessions/${sessionName}/logout`,
@@ -60,7 +60,7 @@ export class ServerRPCService {
         });
     }
 
-    async getScreenshot(serverId: ServerId, sessionName: string): Promise<string> {
+    getScreenshot(serverId: ServerId, sessionName: string): Promise<string> {
         return this.api.call(serverId, {
             method: 'GET',
             uri: `/api/screenshot`,

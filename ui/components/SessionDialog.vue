@@ -1,6 +1,7 @@
 <script setup>
 import {useServerStore} from "../stores/useServerStore";
-import {ref} from "vue";
+import {ref, toRaw} from "vue";
+import lodash from "lodash";
 
 const visible = defineModel("visible");
 const session = defineModel("session");
@@ -9,27 +10,23 @@ const toast = useToast();
 const store = useServerStore()
 
 const submitted = ref(false);
-const validConnectionUrl = computed(
+const sessionStartRequest = computed(
     () => {
-      const url = session.value.connection?.url
-      if (!url) return false
-      return url.startsWith("http://") || url.startsWith("https://")
+      return {
+        name: session.value.name,
+        config: lodash.cloneDeep(session.value.config),
+      }
     })
-
 
 async function saveSession() {
   submitted.value = true;
-  if (!session.value.name || !validConnectionUrl.value) {
+  if (!session.value.name) {
     return
   }
 
-  if (session.value.id) {
-    toast.add({severity: 'success', summary: 'Successful', detail: 'Updated', life: 3000});
-  } else {
-    toast.add({severity: 'success', summary: 'Successful', detail: 'Created', life: 3000});
-  }
+  await store.startSession(session.value.server, sessionStartRequest.value)
   hide()
-  session.value = {connection: {}}
+  session.value = undefined
 }
 
 function hide() {
