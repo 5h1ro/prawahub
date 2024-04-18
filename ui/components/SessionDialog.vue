@@ -42,6 +42,17 @@ function hide() {
 <template>
   <Dialog v-model:visible="visible" :style="{ width: '450px' }" header="Session" :modal="true" class="p-fluid">
     <div class="field">
+      <label for="server">Server</label>
+      <ServerDropdown
+          placeholder="Select Server"
+          v-model="session.server"
+          :showClear="false"
+          :required="true"
+      ></ServerDropdown>
+      <small class="p-invalid" v-if="submitted && !session.server">Server is required.</small>
+    </div>
+
+    <div class="field">
       <label for="name">Name</label>
       <InputText id="name" v-model.trim="session.name" required="true" autofocus :invalid="submitted && !session.name"/>
       <small class="p-invalid" v-if="submitted && !session.name">Name is required.</small>

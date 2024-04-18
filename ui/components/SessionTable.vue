@@ -160,25 +160,13 @@ function rowClick(event) {
 
     <Column field="server.name" filterField='server.id' header="Server" :showFilterMenu="false">
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
-            optionValue="id"
-            v-model="filterModel.value" :options="store.servers"
+        <ServerDropdown
+            placeholder="Any"
             @change="filterCallback()"
-            placeholder="Any" class="p-column-filter"
+            v-model="filterModel.value"
             :showClear="true"
-        >
-          <template #value="slotProps">
-            <template v-if="slotProps.value">
-              <ServerConnectionIcon :connected="store.getServer(slotProps.value).connected"></ServerConnectionIcon>
-              <span class="ml-1">{{ store.getServer(slotProps.value).name }} </span>
-            </template>
-            <span v-else>{{ slotProps.placeholder }}</span>
-          </template>
-          <template #option="slotProps">
-            <ServerConnectionIcon :connected="slotProps.option.connected"></ServerConnectionIcon>
-            <span class="ml-1">{{ slotProps.option.name }} ({{ slotProps.option.connection.url }}) </span>
-          </template>
-        </Dropdown>
+            :required="false"
+        ></ServerDropdown>
       </template>
     </Column>
 
