@@ -12,8 +12,10 @@ export const SessionStatuses = [
     "STOPPED",
 ];
 
+type SessionName = string;
+
 export interface Session {
-    name: string;
+    name: SessionName;
     status: SessionStatus;
     config: SessionConfig;
     server?: ServerInfo;

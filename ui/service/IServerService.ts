@@ -1,12 +1,14 @@
 import type {Session} from "./Session";
 
+type ServerId = string;
+
 export interface ServerConnection {
     url: string;
     key?: string;
 }
 
 export interface ServerInfo {
-    id: string,
+    id: ServerId,
     name: string,
     connection: ServerConnection,
     version?: Version,
@@ -26,15 +28,15 @@ export interface Version {
 export interface IServerService {
     add(data: CreateServerInfo): Promise<void>;
 
-    get(id: string): Promise<ServerInfo>;
+    get(serverId: ServerId): Promise<ServerInfo>;
 
     list(): Promise<ServerInfo[]>;
 
-    remove(id: string): Promise<void>;
+    remove(serverId: ServerInfo): Promise<void>;
 
-    edit(id: string, data: ServerInfo): Promise<void>;
+    edit(serverId: ServerId, data: ServerInfo): Promise<void>;
 
-    getVersion(id: string): Promise<Version>;
+    getVersion(serverId: ServerId): Promise<Version>;
 
-    getSessions(id: string): Promise<Session[]>;
+    getSessions(serverId: ServerId): Promise<Session[]>;
 }
