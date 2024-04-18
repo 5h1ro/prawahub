@@ -45,18 +45,24 @@ export class ServerRPCService {
 
     stopSession(serverId: ServerId, sessionName: string, logout: boolean): Promise<void> {
         return this.api.call(serverId, {
-            method: 'DELETE',
-            uri: `/api/sessions/${sessionName}`,
+            method: 'POST',
+            uri: `/api/sessions/`,
             params: {},
-            body: {logout: logout},
+            body: {
+                logout: logout,
+                session: sessionName,
+            },
         });
     }
 
     logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
         return this.api.call(serverId, {
             method: 'POST',
-            uri: `/api/sessions/${sessionName}/logout`,
+            uri: `/api/sessions/logout`,
             params: {},
+            body: {
+                session: sessionName,
+            },
         });
     }
 

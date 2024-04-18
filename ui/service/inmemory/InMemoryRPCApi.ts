@@ -2,6 +2,7 @@ import {RPCApiClient, RPCRequest} from "../ServerRPCService";
 import {ServerId} from "../ServerAPI";
 import type {Session, SessionStartRequest, SessionStatus} from "../Session";
 import {sleep} from "./utils";
+import {random} from "lodash";
 
 export class InMemoryRPCApi implements RPCApiClient {
     private sessions = new Map<ServerId, Session[]>()
@@ -24,9 +25,9 @@ export class InMemoryRPCApi implements RPCApiClient {
         } else if (request.uri === '/api/sessions' && request.method === 'POST') {
             return this.startSession(serverId, request.body);
         } else if (request.uri === '/api/sessions/stop' && request.method === 'POST') {
-            return this.stopSession(serverId, request.params.name, request.params.logout);
+            return this.stopSession(serverId, request.body.session, request.params.logout);
         } else if (request.uri === '/api/sessions/logout' && request.method === 'POST') {
-            return this.logoutSession(serverId, request.params.name);
+            return this.logoutSession(serverId, request.body.session);
         }
     }
 
@@ -85,7 +86,7 @@ export class InMemoryRPCApi implements RPCApiClient {
         // Simulate session starting
         const delay = Math.random() * 2000
         setTimeout(() => {
-            session.status = 'WORKING'
+            session.status = random(0, 1) > 0.1 ? 'FAILED' : 'WORKING'
         }, delay)
     }
 
@@ -98,6 +99,7 @@ export class InMemoryRPCApi implements RPCApiClient {
     }
 
     async logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
+        console.log('InMemoryRPCApi.logoutSession', {serverId, sessionName})
         const session = this.getSession(serverId, sessionName, [], true)
         const sessions = this.sessions.get(serverId)
         const index = sessions.indexOf(session)

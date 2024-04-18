@@ -57,11 +57,14 @@ function editSession(selected) {
 }
 
 function confirmDeleteSession(event, session) {
+  console.log(session)
   confirmPopup.require({
     target: event.target,
-    message: `Delete '${session.name}'?`,
+    message: `Logout from session '${session.name}'?`,
     icon: 'pi pi-exclamation-triangle',
-    accept: () => {
+    accept: async () => {
+      await store.logoutSession(session.server.id, session.name)
+      toast.add({severity: 'success', summary: 'Done', detail: '', life: 3000});
     },
     reject: () => {
     }
