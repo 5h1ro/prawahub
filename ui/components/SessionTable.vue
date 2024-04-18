@@ -14,6 +14,7 @@ const confirmPopup = useConfirm();
 const store = useServerStore()
 const {allSessions, refreshing} = storeToRefs(store)
 const sessions = allSessions
+
 const session = ref({})
 const sessionDialog = ref(false)
 const sessionControlDialog = ref(false)
@@ -21,7 +22,6 @@ const sessionControlDialog = ref(false)
 const dt = ref(null);
 const filters = ref({});
 const loading = ref(null);
-const expandedRows = ref([]);
 
 onBeforeMount(() => {
   initFilters()
@@ -104,7 +104,7 @@ function rowClick(event) {
     <template #header>
       <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-0">
         <div class="flex gap-2">
-          <Button label="New" icon="pi pi-plus" severity="success" @click="openNew"/>
+          <Button label="Start New" icon="pi pi-plus" severity="success" @click="openNew"/>
         </div>
         <IconField iconPosition="left">
           <InputIcon class="pi pi-search"/>
@@ -192,6 +192,10 @@ function rowClick(event) {
       v-model:visible="sessionControlDialog"
       v-model:session="session"
   ></SessionControlDialog>
+  <SessionDialog
+      v-model:visible="sessionDialog"
+      v-model:session="session"
+  ></SessionDialog>
 </template>
 
 <style lang="scss">

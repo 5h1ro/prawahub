@@ -17,17 +17,15 @@ const validConnectionUrl = computed(
     })
 
 
-async function savesession() {
+async function saveSession() {
   submitted.value = true;
   if (!session.value.name || !validConnectionUrl.value) {
     return
   }
 
   if (session.value.id) {
-    await store.editsession(session.value.id, session.value)
     toast.add({severity: 'success', summary: 'Successful', detail: 'Updated', life: 3000});
   } else {
-    await store.addsession(session.value)
     toast.add({severity: 'success', summary: 'Successful', detail: 'Created', life: 3000});
   }
   hide()
@@ -42,30 +40,19 @@ function hide() {
 </script>
 
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '450px' }" header="session" :modal="true" class="p-fluid">
+  <Dialog v-model:visible="visible" :style="{ width: '450px' }" header="Session" :modal="true" class="p-fluid">
     <div class="field">
       <label for="name">Name</label>
       <InputText id="name" v-model.trim="session.name" required="true" autofocus :invalid="submitted && !session.name"/>
       <small class="p-invalid" v-if="submitted && !session.name">Name is required.</small>
     </div>
-    <div class="field">
-      <label for="connection-url">API URL</label>
-      <InputText id="connection-url" v-model.trim="session.connection.url" required="true"
-                 :invalid="submitted && !validConnectionUrl"/>
-      <small class="p-invalid" v-if="submitted && !session.connection.url">URL is required.</small>
-      <small class="p-invalid" v-if="submitted && !validConnectionUrl">URL is not correct.</small>
-    </div>
-    <div class="field">
-      <label for="connection-key">API Key (optional)</label>
-      <Password id="connection-key" v-model.trim="session.connection.key" :feedback="false"/>
-    </div>
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
       <Button
-          :label="session.id? 'Save': 'Connect' "
-          :icon="{'pi pi-check': !!session.id, 'pi pi-link': !session.id}"
-          text="" @click="savesession"
+          :label="session.server? 'Start': 'Start New' "
+          :icon="{'pi pi-check': !!session.server, 'pi pi-plus': !session.server}"
+          text="" @click="saveSession"
       />
     </template>
   </Dialog>
