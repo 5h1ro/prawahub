@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {ref, reactive} from "vue"
-import type {IServerService, ServerInfo} from "../service/IServerService";
-import {InMemoryServerService} from "../service/InMemoryServerService";
+import type {IServerAPI, ServerInfo} from "../service/IServerAPI";
+import {InMemoryServerAPI} from "../service/InMemoryServerAPI";
 import type {Session} from "../service/Session";
 import {computed} from "../.nuxt/imports";
 // @ts-ignore
@@ -10,7 +10,7 @@ import lodash from "lodash";
 
 export const useServerStore = defineStore('serverStore', () => {
     // TODO: implement the store
-    const serverInfoService: IServerService = new InMemoryServerService()
+    const serverInfoService: IServerAPI = new InMemoryServerAPI()
     const latestVersion = ref('2024.3.1')
     const refreshing = ref(false)
 

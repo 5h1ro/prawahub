@@ -1,4 +1,4 @@
-import type {IServerService, ServerInfo, Version} from "./IServerService";
+import type {IServerAPI, ServerId, ServerInfo, Version} from "./IServerAPI";
 import type {Session, SessionStatus} from "./Session";
 // @ts-ignore
 import lodash from 'lodash'
@@ -7,7 +7,7 @@ function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export class InMemoryServerService implements IServerService {
+export class InMemoryServerAPI implements IServerAPI {
     constructor() {
         this.fakeData();
     }
@@ -20,7 +20,7 @@ export class InMemoryServerService implements IServerService {
         this.servers.push(server)
     }
 
-    async get(id: string): Promise<ServerInfo> {
+    async get(id: ServerId): Promise<ServerInfo> {
         const server = this.servers.find(server => server.id === id);
         if (!server) {
             throw new Error(`Server ${id} not found`);
@@ -32,11 +32,11 @@ export class InMemoryServerService implements IServerService {
         return this.servers;
     }
 
-    async remove(id: string): Promise<void> {
+    async remove(id: ServerId): Promise<void> {
         this.servers = this.servers.filter(server => server.id !== id);
     }
 
-    async edit(id: string, data: ServerInfo): Promise<void> {
+    async edit(id: ServerId, data: ServerInfo): Promise<void> {
         if (!data) {
             throw new Error('data is required')
         }
@@ -47,7 +47,7 @@ export class InMemoryServerService implements IServerService {
         this.servers[this.servers.indexOf(server)] = data;
     }
 
-    async getVersion(id: string): Promise<Version> {
+    async getVersion(id: ServerId): Promise<Version> {
         const failed = id.endsWith("000");
         if (failed) {
             await sleep(3000)
