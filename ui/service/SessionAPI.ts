@@ -1,6 +1,7 @@
 import {ServerId} from "./IServerAPI";
 import {Session, SessionStartRequest} from "./Session";
-import {RPCRequest, SessionAPIClient} from "./SessionAPIClient";
+import {SessionAPIClient} from "./SessionAPIClient";
+import {HTTPRequest} from "./HTTPRequest";
 
 export class SessionAPI {
     private api: SessionAPIClient;
@@ -9,7 +10,7 @@ export class SessionAPI {
         this.api = api;
     }
 
-    call(serverId: ServerId, request: RPCRequest): Promise<any> {
+    call(serverId: ServerId, request: HTTPRequest): Promise<any> {
         return this.api.call(serverId, request);
     }
 

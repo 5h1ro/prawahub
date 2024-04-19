@@ -2,12 +2,13 @@ import type {ServerId} from "../IServerAPI";
 import type {Session, SessionStartRequest, SessionStatus} from "../Session";
 import {sleep} from "./utils";
 import {random} from "lodash";
-import {RPCRequest, SessionAPIClient} from "../SessionAPIClient";
+import {SessionAPIClient} from "../SessionAPIClient";
+import {HTTPRequest} from "../HTTPRequest";
 
 export class SessionAPIClientMock implements SessionAPIClient {
     private sessions = new Map<ServerId, Session[]>()
 
-    async call(serverId: ServerId, request: RPCRequest): Promise<any> {
+    async call(serverId: ServerId, request: HTTPRequest): Promise<any> {
         console.log('SessionAPIClientMock.call', {serverId, request})
         const failed = serverId.endsWith("000");
         if (failed) {

@@ -1,12 +1,6 @@
 import {ServerId} from "./IServerAPI";
-
-export interface RPCRequest {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    uri: string;
-    params: any;
-    body?: any;
-}
+import {HTTPRequest} from "./HTTPRequest";
 
 export interface SessionAPIClient {
-    call(serverId: ServerId, request: RPCRequest): Promise<any>;
+    call(serverId: ServerId, request: HTTPRequest): Promise<any>;
 }
