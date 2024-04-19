@@ -1,4 +1,4 @@
-package pro.devlike.plugins
+package pro.devlike.wahahub.plugins
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,16 +18,16 @@ fun Application.configureDatabases() {
         )
     val dbConnection: Connection = connectToPostgres(embedded = true)
     val cityService = CityService(dbConnection)
-    
+
     routing {
-    
+
         // Create city
         post("/cities") {
             val city = call.receive<City>()
             val id = cityService.create(city)
             call.respond(HttpStatusCode.Created, id)
         }
-    
+
         // Read city
         get("/cities/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -38,7 +38,7 @@ fun Application.configureDatabases() {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-    
+
         // Update city
         put("/cities/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -46,7 +46,7 @@ fun Application.configureDatabases() {
             cityService.update(id, user)
             call.respond(HttpStatusCode.OK)
         }
-    
+
         // Delete city
         delete("/cities/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -62,7 +62,7 @@ fun Application.configureDatabases() {
             val id = userService.create(user)
             call.respond(HttpStatusCode.Created, id)
         }
-        
+
             // Read user
         get("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -73,7 +73,7 @@ fun Application.configureDatabases() {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-        
+
             // Update user
         put("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
@@ -81,7 +81,7 @@ fun Application.configureDatabases() {
             userService.update(id, user)
             call.respond(HttpStatusCode.OK)
         }
-        
+
             // Delete user
         delete("/users/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")

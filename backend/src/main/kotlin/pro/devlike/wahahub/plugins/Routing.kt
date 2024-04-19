@@ -1,4 +1,4 @@
-package pro.devlike.plugins
+package pro.devlike.wahahub.plugins
 
 import io.ktor.http.*
 import io.ktor.resources.*

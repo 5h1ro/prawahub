@@ -5,7 +5,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.test.*
-import pro.devlike.plugins.*
+import pro.devlike.wahahub.plugins.configureRouting
 
 class ApplicationTest {
     @Test

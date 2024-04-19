@@ -1,4 +1,4 @@
-package pro.devlike.plugins
+package pro.devlike.wahahub.plugins
 
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction

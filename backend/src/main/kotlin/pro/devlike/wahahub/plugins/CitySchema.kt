@@ -1,4 +1,4 @@
-package pro.devlike.plugins
+package pro.devlike.wahahub.plugins
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable

@@ -1,4 +1,4 @@
-package pro.devlike.plugins
+package pro.devlike.wahahub.plugins
 
 import com.fasterxml.jackson.databind.*
 import io.ktor.serialization.jackson.*
