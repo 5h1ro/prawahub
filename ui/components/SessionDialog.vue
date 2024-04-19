@@ -112,17 +112,32 @@ function hide() {
         </template>
       </ToggleButton>
     </div>
+    <div>
+    </div>
 
     <template #footer>
-      <Button :label="modeView ? 'Close' : 'Cancel'" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
-      <Button
-          v-if="!modeView"
-          :label="modeNew? 'Start New': 'Start' "
-          :icon="{'pi pi-play': modeStart, 'pi pi-plus': modeNew}"
-          text=""
-          @click="saveSession"
-          :loading="loading"
-      />
+      <div class="w-full flex flex-column gap-2">
+        <div>
+          <InlineMessage
+              severity="warn"
+              v-if="modeStart && (!['STOPPED', 'FAILED'].includes(session.status))"
+          >
+            The session is in '<b>{{ session.status }}'</b> status!
+            If you want to change config - please stop it first and run again.
+          </InlineMessage>
+        </div>
+        <div class="flex justify-content-end">
+          <Button :label="modeView ? 'Close' : 'Cancel'" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
+          <Button
+              v-if="!modeView"
+              :label="modeNew? 'Start New': 'Start' "
+              :icon="{'pi pi-play': modeStart, 'pi pi-plus': modeNew}"
+              text=""
+              @click="saveSession"
+              :loading="loading"
+          />
+        </div>
+      </div>
     </template>
   </Dialog>
 

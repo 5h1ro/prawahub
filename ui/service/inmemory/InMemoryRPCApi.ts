@@ -74,15 +74,18 @@ export class InMemoryRPCApi implements RPCApiClient {
             throw new Error(`Server ${serverId} not found`)
         }
         let session = sessions.find(session => session.name === body.name)
+        let finalStatus
         if (session) {
             session.status = "STARTING"
             session.config = body.config
+            finalStatus = "WORKING"
         } else {
             session = {
                 name: body.name,
                 status: <SessionStatus>'STARTING',
                 config: body.config,
             }
+            finalStatus = random(0, 1) > 0.1 ? 'FAILED' : 'WORKING'
             sessions.push(session)
         }
 
@@ -90,7 +93,7 @@ export class InMemoryRPCApi implements RPCApiClient {
         // Simulate session starting
         const delay = Math.random() * 2000
         setTimeout(() => {
-            session.status = random(0, 1) > 0.1 ? 'FAILED' : 'WORKING'
+            session.status = finalStatus
         }, delay)
     }
 
