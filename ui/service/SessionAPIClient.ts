@@ -8,8 +8,5 @@ export interface RPCRequest {
 }
 
 export interface SessionAPIClient {
-    call(
-        serverId: ServerId,
-        request: RPCRequest,
-    ): Promise<any>;
+    call(serverId: ServerId, request: RPCRequest): Promise<any>;
 }
