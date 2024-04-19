@@ -100,13 +100,22 @@ function rowClick(event) {
 </script>
 
 <template>
-  <h5>
-    <i class="pi pi-whatsapp"></i>
-    <span class="mr-1">
+  <div class="flex justify-content-between">
+    <div>
+      <h5>
+        <i class="pi pi-whatsapp"></i>
+        <span class="mr-1">
       Sessions
       </span>
-    <RefreshIcon :refreshing="refreshing"/>
-  </h5>
+        <RefreshIcon :refreshing="refreshing"/>
+      </h5>
+    </div>
+    <div>
+      <button @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
+        <i class="pi pi-refresh"></i>
+      </button>
+    </div>
+  </div>
 
   <DataTable
       :value="sessions.length > 0 ? sessions : []"
