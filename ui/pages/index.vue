@@ -10,7 +10,7 @@ const notConnectedServers = computed(() => {
   return store.servers.filter(server => server.connected === false)
 })
 const connectedServers = computed(() => store.servers.filter(server => server.connected === true))
-const serversRequireUpdates = computed(() => store.servers.filter(s => s.version && s.version.version !== store.latestVersion))
+const serversRequireUpdates = computed(() => store.servers.filter(s => store.latestVersion && s.version && s.version.version !== store.latestVersion))
 const badSessions = computed(() => store.allSessions.filter(s => s.status !== "WORKING" && s.status !== "STOPPED"))
 
 onBeforeMount(() => {

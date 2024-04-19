@@ -8,6 +8,7 @@ import lodash from "lodash";
 import {ServerAPI} from "../service/ServerAPI";
 import {HubServerAPIMock} from "../service/mock/HubServerAPIMock";
 import {ServerAPIClientMock} from "../service/mock/ServerAPIClientMock";
+import {WAHAGithubAPI} from "../service/WAHAGithubAPI";
 
 
 export const useServerStore = defineStore('serverStore', () => {
@@ -15,8 +16,9 @@ export const useServerStore = defineStore('serverStore', () => {
     const serverAPIClient = new ServerAPIClientMock()
 
     const serverAPI = new ServerAPI(serverAPIClient)
-    const latestVersion = ref('2024.3.1')
+    const latestVersion = ref(undefined)
     const refreshing = ref(false)
+    const wahaGithubAPI = new WAHAGithubAPI()
 
     const servers = ref<ServerInfo[]>([])
     const sessions = reactive(new Map<string, Session[]>())
@@ -25,6 +27,14 @@ export const useServerStore = defineStore('serverStore', () => {
         console.log('fetchServers')
         const data = await hubServerAPI.list()
         servers.value = data.map(server => reactive(server))
+    }
+
+    async function fetchLatestWAHAVersion() {
+        if (latestVersion.value) {
+            return
+        }
+        const version = await wahaGithubAPI.getLatestVersion()
+        latestVersion.value = version || latestVersion.value
     }
 
     async function refreshServer(id: string) {
@@ -59,6 +69,7 @@ export const useServerStore = defineStore('serverStore', () => {
 
     async function refresh() {
         console.log('refresh')
+        fetchLatestWAHAVersion()
         refreshing.value = true
         await fetchServers()
         const requests = []
