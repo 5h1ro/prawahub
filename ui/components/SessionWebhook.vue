@@ -31,6 +31,8 @@ const events = [
           v-model="webhook.events"
           :options="events"
           placeholder="Select Events"
+          :max-selected-labels="1"
+          selectedItemsLabel="{0} events selected"
       />
     </div>
 
