@@ -8,6 +8,7 @@ defineProps(
       placeholder: String,
       required: Boolean,
       invalid: Boolean,
+      disabled: Boolean,
     }
 );
 
@@ -25,6 +26,7 @@ const store = useServerStore()
       :showClear="showClear"
       :required="required"
       :invalid="invalid"
+      :disabled="disabled"
   >
     <template #value="slotProps">
       <template v-if="slotProps.value">

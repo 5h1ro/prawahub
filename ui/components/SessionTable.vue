@@ -21,6 +21,7 @@ const session = ref({
   },
 })
 const sessionDialog = ref(false)
+const sessionDialogMode = ref(undefined)
 const sessionControlDialog = ref(false)
 
 const dt = ref(null);
@@ -72,15 +73,30 @@ function openNew() {
       ],
     },
   };
+  sessionDialogMode.value = "new"
   sessionDialog.value = true;
 }
 
 
-function editSession(selected) {
-  session.value = lodash.cloneDeep(selected);
+function showSessionConfig(selected) {
+  session.value = {
+    server: selected.server.id,
+    config: selected.config,
+  };
+  sessionDialogMode.value = "view"
   sessionDialog.value = true;
 }
-function confirmStopSession(event, session){
+
+function startSession(selected) {
+  session.value = {
+    server: selected.server.id,
+    config: selected.config,
+  };
+  sessionDialogMode.value = "start"
+  sessionDialog.value = true;
+}
+
+function confirmStopSession(event, session) {
   confirmPopup.require({
     target: event.target,
     message: `Stop '${session.name}' session?\n`,
@@ -230,10 +246,12 @@ function rowClick(event) {
     <Column>
       <template #body="{data}">
         <div class="text-right">
-          <Button icon="pi pi-cog" class="mr-2" severity="secondary" rounded outlined @click="editSession(data)"/>
-          <Button icon="pi pi-play" class="mr-2" rounded outlined @click="editSession(data)"/>
-          <Button icon="pi pi-pause" class="mr-2" severity="secondary" rounded outlined @click="confirmStopSession($event, data)"/>
-          <Button icon="pi pi-stop" class="mt-2" severity="danger" rounded outlined @click="confirmLogoutSession($event, data)"/>
+          <Button icon="pi pi-cog" class="mr-2" severity="secondary" rounded outlined @click="showSessionConfig(data)"/>
+          <Button icon="pi pi-play" class="mr-2" rounded outlined @click="startSession(data)"/>
+          <Button icon="pi pi-pause" class="mr-2" severity="secondary" rounded outlined
+                  @click="confirmStopSession($event, data)"/>
+          <Button icon="pi pi-stop" class="mt-2" severity="danger" rounded outlined
+                  @click="confirmLogoutSession($event, data)"/>
         </div>
       </template>
     </Column>
@@ -246,6 +264,7 @@ function rowClick(event) {
   <SessionDialog
       v-model:visible="sessionDialog"
       v-model:session="session"
+      :mode="sessionDialogMode"
   ></SessionDialog>
 </template>
 

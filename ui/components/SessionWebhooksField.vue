@@ -1,5 +1,8 @@
 <script setup>
 const webhooks = defineModel("webhooks");
+const props = defineProps({
+  disabled: Boolean,
+})
 
 function add() {
   webhooks.value.push(
@@ -34,6 +37,7 @@ function remove(index) {
           text=""
           @click="add"
           severity="secondary"
+          :disabled="disabled"
       />
     </div>
 
@@ -47,6 +51,7 @@ function remove(index) {
           v-for="(webhook, index) in webhooks"
           v-model:webhook="webhooks[index]"
           @remove="remove(index)"
+          :disabled="disabled"
       ></SessionWebhook>
     </template>
 

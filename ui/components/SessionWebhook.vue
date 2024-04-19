@@ -1,5 +1,9 @@
 <script setup>
 const webhook = defineModel("webhook");
+const props = defineProps({
+  disabled: Boolean,
+})
+
 const events = [
   "session.status",
   "message",
@@ -21,7 +25,9 @@ const events = [
   <Fieldset :legend="webhook.url" toggleable>
     <div class="field">
       <label for="url">URL</label>
-      <InputText id="url" v-model.trim="webhook.url" required="true" autofocus/>
+      <InputText id="url" v-model.trim="webhook.url" required="true" autofocus
+                 :disabled="disabled"
+      />
     </div>
 
     <div class="field">
@@ -33,6 +39,7 @@ const events = [
           placeholder="Select Events"
           :max-selected-labels="1"
           selectedItemsLabel="{0} events selected"
+          :disabled="disabled"
       />
     </div>
 
@@ -48,6 +55,7 @@ const events = [
               buttonLayout="horizontal"
               :min="1"
               :step="1"
+              :disabled="disabled"
           >
             <template #incrementbuttonicon>
               <span class="pi pi-plus"/>
@@ -66,6 +74,7 @@ const events = [
               buttonLayout="horizontal"
               :min="1"
               :step="1"
+              :disabled="disabled"
           >
             <template #incrementbuttonicon>
               <span class="pi pi-plus"/>
@@ -80,7 +89,9 @@ const events = [
 
     <div class="field">
       <label for="hmac">HMAC Key (optional)</label>
-      <InputText id="hmac" v-model.trim="webhook.hmac.key"/>
+      <InputText id="hmac" v-model.trim="webhook.hmac.key"
+                 :disabled="disabled"
+      />
     </div>
 
     <Button
@@ -89,6 +100,7 @@ const events = [
         text=""
         @click="$emit('remove')"
         severity="warning"
+        :disabled="disabled"
     />
   </Fieldset>
 </template>

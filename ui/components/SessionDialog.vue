@@ -1,10 +1,20 @@
 <script setup>
 import {useServerStore} from "../stores/useServerStore";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 import lodash from "lodash";
 
 const visible = defineModel("visible");
 const session = defineModel("session");
+const props = defineProps({
+  mode: String,
+})
+const modeNew = computed(() => props.mode === 'new')
+const modeView = computed(() => props.mode === 'view')
+const modeStart = computed(() => props.mode === 'start')
+
+const disabled = computed(() => modeView.value)
+const disabledServer = computed(() => disabled.value || modeStart.value)
+
 
 const toast = useToast();
 const store = useServerStore()
@@ -60,13 +70,17 @@ function hide() {
           :showClear="false"
           :required="true"
           :invalid="submitted && !session.server"
+          :disabled="disabledServer"
       ></ServerDropdown>
       <small class="p-invalid" v-if="submitted && !session.server">Server is required.</small>
     </div>
 
     <div class="field">
       <label for="name">Name</label>
-      <InputText id="name" v-model.trim="session.name" required="true" autofocus :invalid="submitted && !session.name"/>
+      <InputText
+          id="name" v-model.trim="session.name" required="true" autofocus :invalid="submitted && !session.name"
+          :disabled="disabled"
+      />
       <small class="p-invalid" v-if="submitted && !session.name">Name is required.</small>
     </div>
 
@@ -74,6 +88,7 @@ function hide() {
       <SessionWebhooksField
           ref="webhooks"
           v-model:webhooks="session.config.webhooks"
+          :disabled="disabled"
       ></SessionWebhooksField>
     </div>
 
@@ -86,6 +101,7 @@ function hide() {
           onLabel="Debug Enabled"
           offLabel="Debug Disabled"
           onIcon="fa fa-bug"
+          :disabled="disabled"
       >
         <template #icon>
           <font-awesome-icon icon="fa-solid fa-bug" class="mr-2"/>
@@ -94,10 +110,11 @@ function hide() {
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
+      <Button :label="modeView ? 'Close' : 'Cancel'" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
       <Button
-          :label="false? 'Start': 'Start New' "
-          :icon="{'pi pi-check': !!session.server, 'pi pi-plus': !session.server}"
+          v-if="!modeView"
+          :label="modeNew? 'Start New': 'Start' "
+          :icon="{'pi pi-play': modeStart, 'pi pi-plus': modeNew}"
           text=""
           @click="saveSession"
           :loading="loading"
