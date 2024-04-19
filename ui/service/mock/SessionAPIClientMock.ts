@@ -1,14 +1,14 @@
-import type {RPCApiClient, RPCRequest} from "../ServerRPCService";
-import type {ServerId} from "../ServerAPI";
+import type {ServerId} from "../IServerAPI";
 import type {Session, SessionStartRequest, SessionStatus} from "../Session";
 import {sleep} from "./utils";
 import {random} from "lodash";
+import {RPCRequest, SessionAPIClient} from "../SessionAPIClient";
 
-export class InMemoryRPCApi implements RPCApiClient {
+export class SessionAPIClientMock implements SessionAPIClient {
     private sessions = new Map<ServerId, Session[]>()
 
     async call(serverId: ServerId, request: RPCRequest): Promise<any> {
-        console.log('InMemoryRPCApi.call', {serverId, request})
+        console.log('SessionAPIClientMock.call', {serverId, request})
         const failed = serverId.endsWith("000");
         if (failed) {
             const delay = Math.random() * 3000
@@ -120,7 +120,7 @@ export class InMemoryRPCApi implements RPCApiClient {
     }
 
     async logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
-        console.log('InMemoryRPCApi.logoutSession', {serverId, sessionName})
+        console.log('SessionAPIClientMock.logoutSession', {serverId, sessionName})
         const session = this.getSession(serverId, sessionName, [], true)
         const sessions = this.sessions.get(serverId)
         const index = sessions.indexOf(session)

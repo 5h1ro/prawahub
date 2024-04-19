@@ -1,10 +1,10 @@
-import type {ServerAPI, ServerId, ServerInfo, Version} from "../ServerAPI";
+import type {IServerAPI, ServerId, ServerInfo, Version} from "../IServerAPI";
 import type {Session, SessionStatus} from "../Session";
 // @ts-ignore
 import lodash from 'lodash'
 import {sleep} from "./utils";
 
-export class InMemoryServerAPI implements ServerAPI {
+export class ServerAPIMock implements IServerAPI {
     constructor() {
         this.fakeData();
     }

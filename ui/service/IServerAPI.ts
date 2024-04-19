@@ -25,7 +25,7 @@ export interface Version {
     engine: string;
 }
 
-export interface ServerAPI {
+export interface IServerAPI {
     add(data: CreateServerInfo): Promise<void>;
 
     get(id: ServerId): Promise<ServerInfo>;

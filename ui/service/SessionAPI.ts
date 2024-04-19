@@ -1,24 +1,11 @@
-import {ServerId} from "./ServerAPI";
+import {ServerId} from "./IServerAPI";
 import {Session, SessionStartRequest} from "./Session";
+import {RPCRequest, SessionAPIClient} from "./SessionAPIClient";
 
-export interface RPCRequest {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    uri: string;
-    params: any;
-    body?: any;
-}
+export class SessionAPI {
+    private api: SessionAPIClient;
 
-export interface RPCApiClient {
-    call(
-        serverId: ServerId,
-        request: RPCRequest,
-    ): Promise<any>;
-}
-
-export class ServerRPCService {
-    private api: RPCApiClient;
-
-    constructor(api: RPCApiClient) {
+    constructor(api: SessionAPIClient) {
         this.api = api;
     }
 

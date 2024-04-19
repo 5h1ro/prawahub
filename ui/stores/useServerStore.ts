@@ -1,20 +1,20 @@
 import {defineStore} from 'pinia'
 import {ref, reactive} from "vue"
-import type {ServerAPI, ServerId, ServerInfo} from "../service/ServerAPI";
-import {InMemoryServerAPI} from "../service/inmemory/InMemoryServerAPI";
+import type {IServerAPI, ServerId, ServerInfo} from "../service/IServerAPI";
 import type {Session, SessionStartRequest} from "../service/Session";
 import {computed} from "../.nuxt/imports";
 // @ts-ignore
 import lodash from "lodash";
-import {InMemoryRPCApi} from "../service/inmemory/InMemoryRPCApi";
-import {ServerRPCService} from "../service/ServerRPCService";
+import {SessionAPI} from "../service/SessionAPI";
+import {ServerAPIMock} from "../service/mock/ServerAPIMock";
+import {SessionAPIClientMock} from "../service/mock/SessionAPIClientMock";
 
 
 export const useServerStore = defineStore('serverStore', () => {
-    const serverInfoAPI: ServerAPI = new InMemoryServerAPI()
-    const rpcApi = new InMemoryRPCApi()
+    const serverInfoAPI: IServerAPI = new ServerAPIMock()
+    const sessionAPIClient = new SessionAPIClientMock()
 
-    const serverRPCService = new ServerRPCService(rpcApi)
+    const serverRPCService = new SessionAPI(sessionAPIClient)
     const latestVersion = ref('2024.3.1')
     const refreshing = ref(false)
 
