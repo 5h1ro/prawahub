@@ -4,7 +4,7 @@ const icon = computed(() => props.refreshing ? 'pi pi-refresh pi-spin refresh-ic
 </script>
 
 <template>
-  <i v-if="refreshing" :class="icon"/>
+  <ProgressSpinner v-if="true" style="width: 1rem; height: 1rem" stroke-width="4"/>
 </template>
 
 <style scoped lang="scss">

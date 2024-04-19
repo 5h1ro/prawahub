@@ -102,7 +102,7 @@ function rowClick(event) {
 <template>
   <div class="flex justify-content-between">
     <div>
-      <h5>
+      <h5 class="flex align-items-center gap-1">
         <i class="pi pi-whatsapp"></i>
         <span class="mr-1">
       Sessions

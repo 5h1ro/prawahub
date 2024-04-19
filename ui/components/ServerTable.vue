@@ -71,7 +71,7 @@ function refreshServers() {
 <template>
   <div class="flex justify-content-between">
     <div>
-      <h5>
+      <h5 class="flex align-items-center gap-1">
         <i class="pi pi-server"></i>
         <span class="mr-1">
       Servers
