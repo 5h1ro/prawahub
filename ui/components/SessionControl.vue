@@ -47,7 +47,7 @@ response.value = JSON.stringify(data, null, 2)
 
 <template>
   <Splitter style="min-height: 75%" class="mb-5">
-    <SplitterPanel :size="40">
+    <SplitterPanel :size="50">
       <div class="px-4 pb-4">
         <div class="flex justify-content-center align-items-center">
           <h5 class="m-0">Screenshot</h5>
@@ -63,7 +63,7 @@ response.value = JSON.stringify(data, null, 2)
       </div>
     </SplitterPanel>
 
-    <SplitterPanel :size="100">
+    <SplitterPanel :size="50">
       <Splitter layout="vertical">
         <SplitterPanel :size="50">
           <div class="p-4 pt-0 h-full flex flex-column">
