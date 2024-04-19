@@ -1,4 +1,5 @@
 <script setup>
+import {computed} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useServerStore} from "../stores/useServerStore";
 
@@ -16,6 +17,14 @@ const requestExample = {
   "session": props.session.name,
 }
 const requestBody = ref(JSON.stringify(requestExample, null, 2))
+const rpcRequest = computed(() => {
+  return {
+    method: requestMethod.value,
+    uri: requestEndpoint.value,
+    params: undefined,
+    body: JSON.parse(requestBody.value),
+  }
+})
 
 async function copyResponse(event) {
   await navigator.clipboard.writeText(response.value);
@@ -23,21 +32,24 @@ async function copyResponse(event) {
 }
 
 async function copyRequest(event) {
-  const value = `${requestMethod.value} ${requestEndpoint.value}\n` + requestBody.value
-  await navigator.clipboard.writeText(value);
+  await navigator.clipboard.writeText(JSON.stringify(rpcRequest.value, null, 2));
   event.preventDefault();
 }
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE', "PATCH"]
 
-const exampleResponse = {
-  "id": "false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA",
-  "timestamp": 1666943582,
-  "from": "11111111111@c.us",
-  "fromMe": true,
-  "to": "11111111111@c.us",
-  "participant": "string",
-}
+const exampleResponse =
+    {
+      status: 200,
+      response: {
+        "id": "false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA",
+        "timestamp": 1666943582,
+        "from": "11111111111@c.us",
+        "fromMe": true,
+        "to": "11111111111@c.us",
+        "participant": "string",
+      }
+    }
 response.value = JSON.stringify(exampleResponse, null, 2)
 </script>
 
@@ -105,7 +117,7 @@ response.value = JSON.stringify(exampleResponse, null, 2)
                 </div>
               </div>
               <div class="text-center">
-                <Button><b>Execute</b></Button>
+                <Button><b>Send</b></Button>
               </div>
             </div>
           </div>
