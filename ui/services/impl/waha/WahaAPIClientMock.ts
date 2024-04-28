@@ -1,11 +1,11 @@
-import type {ServerId, Version} from "../IHubServerAPI";
-import type {Session, SessionStartRequest, SessionStatus} from "../waha/dtos";
-import {sleep} from "./utils";
+import type {ServerId, Version} from "../../hub/IHubServerAPI";
+import type {Session, SessionStartRequest, SessionStatus} from "../../waha/dtos";
+import {sleep} from "../../utils";
 import {random} from "lodash";
-import {IWahaAPIClient} from "../waha/IWahaAPIClient";
-import {HTTPRequest} from "../waha/HTTPRequest";
+import {IWahaAPIClient} from "../../waha/IWahaAPIClient";
+import {HTTPRequest} from "../../waha/HTTPRequest";
 
-export class ServerAPIClientMock implements IWahaAPIClient {
+export class WahaAPIClientMock implements IWahaAPIClient {
     private sessions = new Map<ServerId, Session[]>()
 
     async call(serverId: ServerId, request: HTTPRequest): Promise<any> {

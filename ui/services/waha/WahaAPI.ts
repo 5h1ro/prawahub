@@ -1,4 +1,4 @@
-import {ServerId} from "../IHubServerAPI";
+import {ServerId} from "../hub/IHubServerAPI";
 import {Session, SessionStartRequest} from "./dtos";
 import {IWahaAPIClient} from "./IWahaAPIClient";
 import {HTTPRequest} from "./HTTPRequest";

@@ -1,8 +1,8 @@
-import type {IHubServerAPI, ServerId, ServerInfo, Version} from "../IHubServerAPI";
-import type {Session, SessionStatus} from "../waha/dtos";
+import type {IHubServerAPI, ServerId, ServerInfo, Version} from "../../hub/IHubServerAPI";
+import type {Session, SessionStatus} from "../../waha/dtos";
 // @ts-ignore
 import lodash from 'lodash'
-import {sleep} from "./utils";
+import {sleep} from "../../utils";
 
 export class HubServerAPIMock implements IHubServerAPI {
     constructor() {

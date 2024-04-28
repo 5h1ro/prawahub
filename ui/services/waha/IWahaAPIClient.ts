@@ -1,4 +1,4 @@
-import {ServerId} from "../IHubServerAPI";
+import {ServerId} from "../hub/IHubServerAPI";
 import {HTTPRequest} from "./HTTPRequest";
 
 export interface IWahaAPIClient {
