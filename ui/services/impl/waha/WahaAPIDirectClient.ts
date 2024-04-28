@@ -24,6 +24,7 @@ export class WahaAPIDirectClient implements IWahaAPIClient {
         let url = new URL(request.uri, connection.url).toString()
         const headers = {
             'Content-Type': 'application/json',
+            "Accept": "application/json",
         }
         if (connection.key) {
             headers['Authorization'] = `Bearer ${connection.key}`

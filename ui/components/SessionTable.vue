@@ -224,7 +224,7 @@ const globalFilterFields = [
       <template #body="{ data }">
         <div class="flex gap-2">
           <div>
-            <ScreenshotButton></ScreenshotButton>
+            <ScreenshotButton :session="data"></ScreenshotButton>
           </div>
           <div class="my-auto">
             <SessionStatusTag
