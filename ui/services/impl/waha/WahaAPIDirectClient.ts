@@ -3,7 +3,7 @@ import {HTTPRequest} from "../../waha/HTTPRequest";
 import {ServerConnection} from "../../hub/IHubServerAPI";
 
 
-interface Resolver {
+interface ServerResolver {
     resolve(serverId: string): Promise<ServerConnection>
 }
 
@@ -11,7 +11,7 @@ interface Resolver {
  * Call directly API using axios
  */
 class WahaAPIDirectClient implements IWahaAPIClient {
-    constructor(private resolver: Resolver) {
+    constructor(private resolver: ServerResolver) {
     }
 
     async call(serverId: string, request: HTTPRequest): Promise<any> {
