@@ -24,20 +24,25 @@ defineExpose({
 </script>
 
 <template>
-  <Skeleton
-      v-if="pending"
-      width="40rem"
-      height="20rem"
-  ></Skeleton>
-  <Base64Img
-      v-if="!pending && data"
-      :data="data.data"
-      :mimetype="data.mimetype"
-  ></Base64Img>
-  <pre style="background-color: #f8f9fa; padding: 1rem; color: red" v-if="error">
-    {{ error }}
+  <template v-if="pending">
+    <Skeleton
+        width="40rem"
+        height="20rem"
+    ></Skeleton>
+  </template>
+  <template v-else>
+    <Base64Img
+        v-if="data"
+        :data="data.data"
+        :mimetype="data.mimetype"
+    ></Base64Img>
+    <pre
+        v-if="error"
+        style="background-color: #f8f9fa; padding: 1rem; color: red; width: 40rem; height: 20rem"
+    >
+{{ error }}
   </pre>
-
+  </template>
 </template>
 
 <style scoped lang="scss">
