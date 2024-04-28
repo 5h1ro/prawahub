@@ -40,7 +40,7 @@ defineExpose({
         v-if="error"
         style="background-color: #f8f9fa; padding: 1rem; color: red; width: 40rem; height: 20rem"
     >
-{{ error }}
+{{ error.cause.response.data.message || error.cause.response.data || error }}
   </pre>
   </template>
 </template>
