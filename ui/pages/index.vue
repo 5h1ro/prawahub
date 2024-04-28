@@ -96,7 +96,10 @@ onBeforeMount(() => {
           <span class="text-500"> require updates</span>
         </template>
         <template v-else>
-          <span class="text-green-500 font-medium">Up to date</span>
+          <span class="text-green-500 font-medium">
+            <i class="pi text-green-500 pi-check-circle"></i>
+            Up to date
+          </span>
         </template>
       </div>
     </div>
