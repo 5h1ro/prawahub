@@ -1,4 +1,4 @@
-import type {ServerInfo} from "./IHubServerAPI";
+import type {ServerInfo} from "../IHubServerAPI";
 
 export interface SessionConfig {
 }

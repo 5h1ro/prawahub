@@ -1,12 +1,12 @@
-import {ServerId} from "./IHubServerAPI";
-import {Session, SessionStartRequest} from "./Session";
-import {ServerAPIClient} from "./ServerAPIClient";
+import {ServerId} from "../IHubServerAPI";
+import {Session, SessionStartRequest} from "./dtos";
+import {IWahaAPIClient} from "./IWahaAPIClient";
 import {HTTPRequest} from "./HTTPRequest";
 
-export class ServerAPI {
-    private api: ServerAPIClient;
+export class WahaAPI {
+    private api: IWahaAPIClient;
 
-    constructor(api: ServerAPIClient) {
+    constructor(api: IWahaAPIClient) {
         this.api = api;
     }
 

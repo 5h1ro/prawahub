@@ -1,5 +1,5 @@
 import type {IHubServerAPI, ServerId, ServerInfo, Version} from "../IHubServerAPI";
-import type {Session, SessionStatus} from "../Session";
+import type {Session, SessionStatus} from "../waha/dtos";
 // @ts-ignore
 import lodash from 'lodash'
 import {sleep} from "./utils";

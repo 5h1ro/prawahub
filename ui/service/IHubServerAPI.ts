@@ -1,5 +1,3 @@
-import type {Session} from "./Session";
-
 export type ServerId = string;
 
 export interface ServerConnection {

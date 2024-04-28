@@ -6,7 +6,7 @@ import {useConfirm} from "primevue/useconfirm";
 import {useServerStore} from "../stores/useServerStore";
 import lodash from "lodash";
 import {useAsyncData} from "nuxt/app";
-import {SessionStatuses} from "../service/Session";
+import {SessionStatuses} from "../service/waha/dtos";
 
 const toast = useToast();
 const confirmPopup = useConfirm();
