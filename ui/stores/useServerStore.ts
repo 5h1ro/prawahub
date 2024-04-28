@@ -1,14 +1,14 @@
 import {defineStore} from 'pinia'
 import {ref, reactive} from "vue"
-import type {IHubServerAPI, ServerId, ServerInfo} from "../service/IHubServerAPI";
-import type {Session, SessionStartRequest} from "../service/waha/dtos";
+import type {IHubServerAPI, ServerId, ServerInfo} from "../services/IHubServerAPI";
+import type {Session, SessionStartRequest} from "../services/waha/dtos";
 import {computed} from "../.nuxt/imports";
 // @ts-ignore
 import lodash from "lodash";
-import {WahaAPI} from "../service/waha/WahaAPI";
-import {HubServerAPIMock} from "../service/mock/HubServerAPIMock";
-import {ServerAPIClientMock} from "../service/mock/ServerAPIClientMock";
-import {WahaGlobalVersionAPI} from "../service/WahaGlobalVersionAPI";
+import {WahaAPI} from "../services/waha/WahaAPI";
+import {HubServerAPIMock} from "../services/mock/HubServerAPIMock";
+import {ServerAPIClientMock} from "../services/mock/ServerAPIClientMock";
+import {WahaGlobalVersionAPI} from "../services/WahaGlobalVersionAPI";
 
 
 export const useServerStore = defineStore('serverStore', () => {
