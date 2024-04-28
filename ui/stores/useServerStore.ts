@@ -16,13 +16,13 @@ import {WahaAPIDirectClient} from "../services/impl/waha/WahaAPIDirectClient";
 export const useServerStore = defineStore('serverStore', () => {
     // Mock
     // const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
-    // const serverAPIClient = new WahaAPIMockClient()
+    // const wahaAPIClient = new WahaAPIMockClient()
 
     // Local
     const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
-    const serverAPIClient = new WahaAPIDirectClient(hubServerAPI)
+    const wahaAPIClient = new WahaAPIDirectClient(hubServerAPI)
 
-    const serverAPI = new WahaAPI(serverAPIClient)
+    const wahaAPI = new WahaAPI(wahaAPIClient)
     const latestVersion = ref(undefined)
     const refreshing = ref(false)
     const wahaGithubAPI = new WahaGlobalVersionAPI()
@@ -66,12 +66,12 @@ export const useServerStore = defineStore('serverStore', () => {
 
     async function fetchSessions(id: string) {
         console.log('fetchSessions', id)
-        sessions.set(id, await serverAPI.getSessions(id))
+        sessions.set(id, await wahaAPI.getSessions(id))
     }
 
     async function fetchVersion(server: ServerInfo) {
         console.log('fetchVersion', server.id)
-        server.version = await serverAPI.getVersion(server.id)
+        server.version = await wahaAPI.getVersion(server.id)
     }
 
     async function refresh() {
@@ -112,17 +112,17 @@ export const useServerStore = defineStore('serverStore', () => {
     }
 
     async function startSession(id: ServerId, body: SessionStartRequest): Promise<void> {
-        await serverAPI.startSession(id, body)
+        await wahaAPI.startSession(id, body)
         refresh()
     }
 
     async function stopSession(id: ServerId, sessionName: string, logout: boolean): Promise<void> {
-        await serverAPI.stopSession(id, sessionName, logout)
+        await wahaAPI.stopSession(id, sessionName, logout)
         refresh()
     }
 
     async function logoutSession(id: ServerId, sessionName: string): Promise<void> {
-        await serverAPI.logoutSession(id, sessionName)
+        await wahaAPI.logoutSession(id, sessionName)
         refresh()
     }
 
