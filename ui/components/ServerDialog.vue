@@ -33,8 +33,8 @@ async function saveServer() {
   } else {
     await req(
         store.addServer(server.value),
-        "Server added",
-        "Failed to add server",
+        "Connected to server",
+        "Failed to connect to server",
     )
   }
   hide()
