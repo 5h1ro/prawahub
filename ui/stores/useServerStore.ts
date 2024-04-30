@@ -10,14 +10,17 @@ import {WahaGlobalVersionAPI} from "../services/WahaGlobalVersionAPI";
 import {HubServerLocalAPI} from "../services/impl/hub/HubServerLocalAPI";
 import {WahaAPIDirectClient} from "../services/impl/waha/WahaAPIDirectClient";
 import {sleep} from "../services/utils";
+import {useToast} from "primevue/usetoast";
 
 
 export const useServerStore = defineStore('serverStore', () => {
+    const toast = useToast();
+
     // Mock
     // const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
     // const wahaAPIClient = new WahaAPIMockClient()
 
-    // Local
+    // Local, Dashboard
     const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
     const wahaAPIClient = new WahaAPIDirectClient(hubServerAPI)
 
@@ -56,9 +59,23 @@ export const useServerStore = defineStore('serverStore', () => {
         // Await all, set connected based on the result
         try {
             await Promise.all(requests)
+            if (server.connected === false) {
+                toast.add({
+                    severity: 'success',
+                    summary: `Server connected`,
+                    detail: `${server.name} (${server.connection.url}) is now connected.`,
+                    life: 3000
+                });
+            }
             server.connected = true
         } catch (e) {
             server.connected = false
+            toast.add({
+                severity: 'error',
+                summary: `Server connection failed`,
+                detail: `${server.name} (${server.connection.url}) is not connected.`,
+                life: 3000
+            });
             console.error(`Failed to refresh server - ${id}`, e)
         }
     }
