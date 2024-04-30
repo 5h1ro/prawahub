@@ -14,12 +14,13 @@ export class WahaAPI {
         return this.api.call(serverId, request);
     }
 
-    getSessions(serverId: ServerId): Promise<Session[]> {
-        return this.api.call(serverId, {
+    async getSessions(serverId: ServerId): Promise<Session[]> {
+        const sessions = await this.api.call(serverId, {
             method: 'GET',
             uri: '/api/sessions',
             params: {all: true},
-        }).then(sessions => sessions.map(this.processSession))
+        });
+        return sessions.map(this.processSession);
     }
 
     processSession(session: Session) {
