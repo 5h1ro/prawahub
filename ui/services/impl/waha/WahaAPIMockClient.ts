@@ -9,7 +9,6 @@ export class WahaAPIMockClient implements IWahaAPIClient {
     private sessions = new Map<ServerId, Session[]>()
 
     async call(serverId: ServerId, request: HTTPRequest): Promise<any> {
-        console.log('ServerAPIClientMock.call', {serverId, request})
         const failed = serverId.endsWith("000");
         if (failed) {
             const delay = Math.random() * 3000
@@ -123,7 +122,6 @@ export class WahaAPIMockClient implements IWahaAPIClient {
     }
 
     async logoutSession(serverId: ServerId, sessionName: string): Promise<void> {
-        console.log('ServerAPIClientMock.logoutSession', {serverId, sessionName})
         const session = this.getSession(serverId, sessionName, [], true)
         const sessions = this.sessions.get(serverId)
         const index = sessions.indexOf(session)

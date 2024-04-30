@@ -33,7 +33,6 @@ export const useServerStore = defineStore('serverStore', () => {
     const sessions = reactive(new Map<string, Session[]>())
 
     async function fetchServers() {
-        console.log('fetchServers')
         const data = await hubServerAPI.list()
         servers.value = data.map(server => reactive(server))
     }
@@ -47,7 +46,6 @@ export const useServerStore = defineStore('serverStore', () => {
     }
 
     async function refreshServer(id: string) {
-        console.log('refreshServer', id)
         const server = servers.value.find(server => server.id === id)
         if (!server) {
             return
@@ -73,17 +71,14 @@ export const useServerStore = defineStore('serverStore', () => {
     }
 
     async function fetchSessions(id: string) {
-        console.log('fetchSessions', id)
         sessions.set(id, await wahaAPI.getSessions(id))
     }
 
     async function fetchVersion(server: ServerInfo) {
-        console.log('fetchVersion', server.id)
         server.version = await wahaAPI.getVersion(server.id)
     }
 
     async function refresh() {
-        console.log('refresh')
         fetchLatestWAHAVersion()
         refreshing.value = true
         await fetchServers()
@@ -95,7 +90,6 @@ export const useServerStore = defineStore('serverStore', () => {
             await Promise.all(requests)
         } finally {
             refreshing.value = false
-            console.log('refresh - COMPLETED')
         }
     }
 

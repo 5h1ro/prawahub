@@ -26,8 +26,8 @@ const loading = ref(false);
 const startConfig = computed(
     () => {
       const config = lodash.cloneDeep(session.value.config)
-      if (!proxyEnabled) {
-        delete config.proxy
+      if (!proxyEnabled.value) {
+        config.proxy = undefined
       }
       return config
     }
@@ -69,6 +69,19 @@ function hide() {
 const canNotStartSession = computed(() => {
   return modeStart.value && (!['STOPPED', 'FAILED'].includes(session.value.status))
 })
+
+async function copyRequest(event) {
+  await navigator.clipboard.writeText(JSON.stringify(
+      {
+        method: "POST",
+        uri: "/api/sessions/start",
+        body: sessionStartRequest.value,
+      },
+      null,
+      2
+  ));
+  event.preventDefault();
+}
 
 </script>
 
@@ -136,7 +149,7 @@ const canNotStartSession = computed(() => {
         </ToggleButton>
       </div>
 
-      <div v-if="proxyEnabled" class="card">
+      <div v-if="proxyEnabled" class="card mb-4">
         <div class="field">
           <label for="proxy-server">Server</label>
           <InputText
@@ -151,7 +164,7 @@ const canNotStartSession = computed(() => {
           <small class="p-invalid" v-if="submitted && !session.config.proxy.server">Server is required.</small>
         </div>
         <div class="flex gap-3">
-          <div class="field">
+          <div class="field w-full">
             <label for="proxy-username">Username (optional)</label>
             <InputText
                 id="proxy-username"
@@ -159,7 +172,7 @@ const canNotStartSession = computed(() => {
                 :disabled="modeView"
             />
           </div>
-          <div class="field">
+          <div class="field w-full">
             <label for="proxy-password">Password (optional)</label>
             <Password
                 id="proxy-password"
@@ -200,6 +213,14 @@ const canNotStartSession = computed(() => {
           </InlineMessage>
         </div>
         <div class="flex justify-content-end">
+          <Button
+              label="Copy Request"
+              text=""
+              v-tooltip.focus.bottom="{ value: 'Copied to clipboard' }"
+              :tabindex="0"
+              icon="pi pi-copy"
+              @click="copyRequest($event)">
+          </Button>
           <Button :label="modeView ? 'Close' : 'Cancel'" icon="pi pi-times" text="" @click="hide" severity="secondary"/>
           <Button
               v-if="!modeView"

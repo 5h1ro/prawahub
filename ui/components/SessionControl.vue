@@ -7,7 +7,6 @@ const props = defineProps(['session'])
 const screenshot = ref(null)
 
 const refreshScreenshot = () => {
-  console.log(screenshot)
   screenshot.value.refresh()
 }
 const profilePicture = ref(null)
