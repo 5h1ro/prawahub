@@ -26,8 +26,8 @@ defineExpose({
 <template>
   <template v-if="pending">
     <Skeleton
-        width="100%"
-        height="10rem"
+        width="20rem"
+        height="20rem"
     ></Skeleton>
   </template>
   <template v-else>

@@ -162,7 +162,7 @@ async function copyRequest(event) {
               autofocus
               :invalid="submitted && !session.config.proxy.server"
               :disabled="modeView"
-              placeholder="address:port"
+              placeholder="host:port"
           />
           <small class="p-invalid" v-if="submitted && !session.config.proxy.server">Server is required.</small>
         </div>
