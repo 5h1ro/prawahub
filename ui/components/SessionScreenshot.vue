@@ -1,5 +1,6 @@
 <script setup>
 import {useServerStore} from "../stores/useServerStore";
+import {sleep} from "../services/utils";
 
 const store = useServerStore()
 const props = defineProps({
@@ -11,8 +12,9 @@ const {
   pending,
   error,
   refresh
-} = useAsyncData(() => {
-  return store.getScreenshot(props.session.server.id, props.session.name)
+} = useAsyncData(async () => {
+  await sleep(1000)
+  return await store.getScreenshot(props.session.server.id, props.session.name)
 })
 
 defineExpose({
@@ -24,8 +26,8 @@ defineExpose({
 <template>
   <template v-if="pending">
     <Skeleton
-        width="40rem"
-        height="20rem"
+        width="100%"
+        height="10rem"
     ></Skeleton>
   </template>
   <template v-else>
@@ -36,7 +38,7 @@ defineExpose({
     ></Base64Img>
     <pre
         v-if="error"
-        style="background-color: #f8f9fa; padding: 1rem; color: red; width: 40rem; height: 20rem;  white-space: pre-wrap;"
+        style="background-color: #f8f9fa; padding: 1rem; color: red; white-space: pre-wrap;"
     >
 {{ error.cause.response.data.message || error.cause.response.data || error }}
   </pre>

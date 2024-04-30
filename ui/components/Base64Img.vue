@@ -11,7 +11,7 @@ const imageSrc = computed(() => `data:${props.mimetype};base64, ${props.data}`)
 </script>
 
 <template>
-  <img :src="imageSrc" style="max-width:40rem"/>
+  <img :src="imageSrc" style="max-width:100%"/>
 </template>
 
 <style scoped lang="scss">
