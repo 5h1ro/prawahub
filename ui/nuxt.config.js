@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     devtools: {enabled: true},
     ssr: false,
     app: {
+        baseURL: '/dashboard/',
         head: {
             title: 'Dashboard | WAHA',
             link: [
