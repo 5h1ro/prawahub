@@ -1,4 +1,5 @@
 <script setup>
+import {watch} from 'vue';
 import {useServerStore} from "../stores/useServerStore";
 import {sleep} from "../services/utils";
 
@@ -12,10 +13,12 @@ const {
   pending,
   error,
   refresh
-} = useAsyncData(async () => {
-  await sleep(1000)
-  return await store.getScreenshot(props.session.server.id, props.session.name)
-})
+} = useAsyncData(
+    `session-screenshot-${props.session.server.id}-${props.session.name}`,
+    async () => {
+      await sleep(1000)
+      return await store.getScreenshot(props.session.server.id, props.session.name)
+    })
 
 defineExpose({
   refresh,
@@ -25,24 +28,24 @@ defineExpose({
 
 <template>
   <template v-if="pending">
+    <ProgressBar mode="indeterminate" style="height: 6px"></ProgressBar>
     <Skeleton
-        width="20rem"
+        v-if="!data && !error"
+        width="100%"
         height="20rem"
     ></Skeleton>
   </template>
-  <template v-else>
-    <Base64Img
-        v-if="data"
-        :data="data.data"
-        :mimetype="data.mimetype"
-    ></Base64Img>
-    <pre
-        v-if="error"
-        style="background-color: #f8f9fa; padding: 1rem; color: red; white-space: pre-wrap;"
-    >
+  <Base64Img
+      v-if="data"
+      :data="data.data"
+      :mimetype="data.mimetype"
+  ></Base64Img>
+  <pre
+      v-if="error"
+      style="background-color: #f8f9fa; padding: 1rem; color: red; white-space: pre-wrap;"
+  >
 {{ error.cause.response.data.message || error.cause.response.data || error }}
   </pre>
-  </template>
 </template>
 
 <style scoped lang="scss">

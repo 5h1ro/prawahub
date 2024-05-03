@@ -44,7 +44,7 @@ onMounted(() => {
               <h5 class="m-0">Screenshot</h5>
               <RefreshButton @click="refreshScreenshot"></RefreshButton>
             </div>
-            <div class="flex justify-content-center align-items-center">
+            <div class="m-auto w-full">
               <SessionScreenshot
                   ref="screenshot"
                   :session="session"

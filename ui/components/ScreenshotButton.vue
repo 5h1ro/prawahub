@@ -1,16 +1,34 @@
 <script setup>
 const props = defineProps(['disabled', 'session']);
+
 const op = ref(null);
+const screenshot = ref(null)
+
 const toggle = (event) => {
   op.value.toggle(event);
 };
+
+const refreshScreenshot = () => {
+  screenshot.value.refresh()
+}
 
 </script>
 
 <template>
   <Button :disabled="disabled" type="button" icon="pi pi-camera" @click="toggle" rounded outlined/>
   <OverlayPanel ref="op" appendTo="body" :showCloseIcon="true">
-    <SessionScreenshot :session="session"></SessionScreenshot>
+    <div class="">
+      <div class="flex justify-content-center align-items-center">
+        <h5 class="m-0">Screenshot</h5>
+        <RefreshButton @click="refreshScreenshot"></RefreshButton>
+      </div>
+      <div class="m-auto w-full">
+        <SessionScreenshot
+            ref="screenshot"
+            :session="session"
+        ></SessionScreenshot>
+      </div>
+    </div>
   </OverlayPanel>
 </template>
 
