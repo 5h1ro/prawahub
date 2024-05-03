@@ -42,7 +42,7 @@ function openNew() {
 }
 
 function rowClick(event) {
-  router.push('/sessions');
+  editServer(event.data)
 }
 
 function editServer(selected) {
@@ -108,6 +108,8 @@ function refreshServers() {
       :filters="filters"
       :globalFilterFields="['name', 'id', 'connection.url']"
       showGridlines
+      @row-click="rowClick"
+      class="p-datatable--clickable"
   >
 
     <template #header>
