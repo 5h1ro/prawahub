@@ -73,8 +73,14 @@ function openNew() {
             delaySeconds: 2,
             attempts: 15,
           }
-        }
+        },
       ],
+      noweb: {
+        store: {
+          enabled: true,
+          fullSync: true
+        }
+      },
       proxy: {},
     },
   };

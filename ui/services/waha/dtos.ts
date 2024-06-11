@@ -16,9 +16,19 @@ export interface Webhook {
     retries?: WebhookRetry,
 }
 
+export interface NowebStoreConfig {
+    enabled: boolean,
+    fullSync: boolean
+}
+
+export interface NowebConfig {
+    store?: NowebStoreConfig
+}
+
 export interface SessionConfig {
     webhooks: Webhook[];
     proxy: any;
+    noweb?: NowebConfig;
 }
 
 export type SessionStatus = "STOPPED" | "STARTING" | "SCAN_QR_CODE" | "WORKING" | "FAILED";

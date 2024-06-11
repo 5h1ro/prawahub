@@ -33,6 +33,9 @@ export class WahaAPI {
         if (!session.config.webhooks) {
             session.config.webhooks = []
         }
+        if (!session.config.noweb) {
+            session.config.noweb = {store: {enabled: false, fullSync: false}}
+        }
         for (const webhook of session.config.webhooks) {
             if (!webhook.retries) {
                 webhook.retries = {attempts: 15, delaySeconds: 2}

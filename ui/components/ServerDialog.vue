@@ -50,8 +50,13 @@ function hide() {
 
 <template>
   <Dialog v-model:visible="visible" header="Server" :modal="true" class="p-fluid">
-    <img :src="'/demo/images/product/' + server.image" :alt="server.image" v-if="server.image" width="150"
-         class="mt-0 mx-auto mb-5 block shadow-2"/>
+    <div class="mb-4">
+      <InlineMessage severity="info">
+        Servers data is saved in your <b>browser's local storage</b>.
+        <br>
+        It's safe to put server API and key here.
+      </InlineMessage>
+    </div>
     <div class="field">
       <label for="name">Name</label>
       <InputText id="name" v-model.trim="server.name" required="true" autofocus :invalid="submitted && !server.name"/>

@@ -20,6 +20,13 @@ const disabledServer = computed(() => disabled.value || modeStart.value)
 const req = useShowToastOnResult()
 const store = useServerStore()
 
+const server = computed(() => {
+  return store.getServer(session.value.server)
+})
+
+const isNOWEB = computed(() => server.value.version.engine === 'NOWEB')
+const isWEBJS = computed(() => server.value.version.engine === 'WEBJS')
+
 const proxyEnabled = ref(!!session.value.config?.proxy?.server)
 watch(session, async (newSession, _) => {
   proxyEnabled.value = !!newSession.config?.proxy?.server
@@ -36,13 +43,16 @@ const startConfig = computed(
     }
 )
 
-const sessionStartRequest = computed(
-    () => {
-      return {
-        name: session.value.name,
-        config: startConfig.value,
-      }
-    })
+const sessionStartRequest = computed(() => {
+  const config = {...startConfig.value}
+  if (!isNOWEB.value) {
+    delete config.noweb
+  }
+  return {
+    name: session.value.name,
+    config: config,
+  }
+})
 
 async function saveSession() {
   submitted.value = true;
@@ -127,6 +137,51 @@ async function copyRequest(event) {
       <small class="p-invalid" v-if="submitted && !session.name">Name is required.</small>
     </div>
 
+    <div class="mb-4" v-if="isNOWEB">
+      <div class="mb-3">
+        <label>Engine Settings </label>
+      </div>
+      <Accordion :activeIndex="0">
+        <AccordionTab header="NOWEB">
+          <template #header>
+            &nbsp;<Tag value="New"></Tag>
+          </template>
+          <!-- Store -->
+          <div class="flex flex-column gap-2">
+            <div>
+              <b>Store</b> allows you to store contacts, chats, messages in the database, so you can get it in API.
+            </div>
+            <div>
+              <ToggleButton
+                  v-model="session.config.noweb.store.enabled"
+                  onLabel="Store: Enabled"
+                  offLabel="Store: Disabled"
+                  :disabled="disabledServer"
+                  v-tooltip="'Store contacts, chats, messages in the database, so you can get it in API'"
+              >
+                <template #icon>
+                  <font-awesome-icon icon="fa-solid fa-folder" class="mr-2"/>
+                </template>
+              </ToggleButton>
+            </div>
+            <div>
+              <ToggleButton
+                  v-model="session.config.noweb.store.fullSync"
+                  onLabel="Store: Full Sync On"
+                  offLabel="Store: Full Sync Off"
+                  :disabled="disabledServer"
+                  v-tooltip="'Sync all contacts, chats, messages from the phone at the start.\nOtherwise the store can miss some information.'"
+              >
+                <template #icon>
+                  <font-awesome-icon icon="fa-solid fa-sync" class="mr-2"/>
+                </template>
+              </ToggleButton>
+            </div>
+          </div>
+        </AccordionTab>
+      </Accordion>
+    </div>
+
     <div class="field">
       <SessionWebhooksField
           ref="webhooks"
@@ -187,7 +242,6 @@ async function copyRequest(event) {
         </div>
       </div>
     </div>
-
 
     <div class="field flex justify-content-between align-items-center">
       <div>
