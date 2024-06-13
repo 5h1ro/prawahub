@@ -78,7 +78,7 @@ function openNew() {
       noweb: {
         store: {
           enabled: true,
-          fullSync: true
+          fullSync: false
         }
       },
       proxy: {},
