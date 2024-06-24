@@ -11,6 +11,7 @@ import {HubServerLocalAPI} from "../services/impl/hub/HubServerLocalAPI";
 import {WahaAPIDirectClient} from "../services/impl/waha/WahaAPIDirectClient";
 import {sleep} from "../services/utils";
 import {useToast} from "primevue/usetoast";
+import {WebSocketClient} from "../services/WebSocketService";
 
 
 export const useServerStore = defineStore('serverStore', () => {
@@ -31,10 +32,41 @@ export const useServerStore = defineStore('serverStore', () => {
 
     const servers = ref<ServerInfo[]>([])
     const sessions = reactive(new Map<string, Session[]>())
+    let websocketClients: Map<string, WebSocketClient> = new Map()
 
     async function fetchServers() {
         const data = await hubServerAPI.list()
         servers.value = data.map(server => reactive(server))
+    }
+
+    function connectWebSockets() {
+        // Disconnect clients
+        websocketClients.forEach(client => {
+            client.stop()
+        })
+        websocketClients.clear()
+
+        servers.value.forEach(server => {
+            const client = new WebSocketClient(server)
+            websocketClients.set(server.id, client)
+            client.connect()
+            client.on('session.status', (data: any) => {
+                    const status = data.payload.status
+                    const me = data.me
+                    const sessionName = data.session
+                    const session = sessions.get(server.id)?.find(session => session.name === sessionName)
+                    if (!session) {
+                        console.log(`Session not found - '${sessionName}' on '${server.name}'`)
+                        refresh()
+                        return
+                    }
+                    session.status = status
+                    if (me) {
+                        session.me = me
+                    }
+                }
+            )
+        })
     }
 
     async function fetchLatestWAHAVersion() {
@@ -82,6 +114,7 @@ export const useServerStore = defineStore('serverStore', () => {
         fetchLatestWAHAVersion()
         refreshing.value = true
         await fetchServers()
+        connectWebSockets()
         const requests = []
         for (const server of servers.value) {
             requests.push(refreshServer(server.id))

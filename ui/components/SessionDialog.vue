@@ -24,12 +24,12 @@ const server = computed(() => {
   return store.getServer(session.value.server)
 })
 
-const isNOWEB = computed(() => server.value.version.engine === 'NOWEB')
-const isWEBJS = computed(() => server.value.version.engine === 'WEBJS')
+const isNOWEB = computed(() => server.value?.version?.engine === 'NOWEB')
+const isWEBJS = computed(() => server.value?.version?.engine === 'WEBJS')
 
 const proxyEnabled = ref(!!session.value.config?.proxy?.server)
 watch(session, async (newSession, _) => {
-  proxyEnabled.value = !!newSession.config?.proxy?.server
+  proxyEnabled.value = newSession?.config?.proxy?.server
 })
 const submitted = ref(false);
 const loading = ref(false);

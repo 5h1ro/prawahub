@@ -22,6 +22,7 @@
         "@types/lodash": "^4.17.0",
         "axios": "^1.6.8",
         "chart.js": "3.3.2",
+        "eventemitter3": "^5.0.1",
         "lodash": "^4.17.21",
         "pinia": "^2.1.7",
         "primeflex": "^3.3.0",
