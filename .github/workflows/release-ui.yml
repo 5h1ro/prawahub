@@ -47,6 +47,11 @@ jobs:
           name: dashboard
           path: public
 
+      - name: Build
+        working-directory: ui
+        run: |
+          touch public/.nojekyll
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
