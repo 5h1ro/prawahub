@@ -12,12 +12,15 @@ const events = [
   "message.reaction",
   "message.ack",
   "message.revoked",
-  "state.change",
+  "chat.archive",
   "group.join",
   "group.leave",
   "presence.update",
   "poll.vote",
   "poll.vote.failed",
+  "call.received",
+  "call.accepted",
+  "call.rejected",
 ]
 
 </script>
