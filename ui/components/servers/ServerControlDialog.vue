@@ -6,6 +6,7 @@ const visible = defineModel("visible");
 const props = defineProps(['server'])
 const store = useServerStore()
 const showAll = ref(false)
+const req = useShowToastOnResult()
 
 function sortVariables(variables) {
   /**
@@ -18,7 +19,8 @@ function sortVariables(variables) {
     return 3
   })
 }
-function formatVariables(variables){
+
+function formatVariables(variables) {
   /**
    * KEY1=VALUE1
    * KEY2=VALUE2
@@ -34,7 +36,11 @@ const {
 } = useAsyncData(
     `server-environment-${props.server.id}`,
     async () => {
-      const data = await store.getServerEnvironment(props.server.id, showAll.value)
+      const data = await req(
+          store.getServerEnvironment(props.server.id, showAll.value),
+          undefined,
+          "Failed to fetch server environment",
+      )
       // convert from key-value to {name: key, value: value}
       const vars = Object.keys(data).map(key => ({name: key, value: data[key]}))
       return sortVariables(vars)
