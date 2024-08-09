@@ -66,7 +66,7 @@ async function copyVariables(event) {
     <template #header>
       <div class="flex flex-wrap justify-content-between">
         <div class="flex gap-2 align-items-center">
-          <span class="text-xl font-bold">Variables</span>
+          <span class="text-xl font-bold">Copy</span>
           <Button
               rounded
               text=""
