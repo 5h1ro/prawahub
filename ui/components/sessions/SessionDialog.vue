@@ -13,11 +13,9 @@ const props = defineProps({
   mode: String,
 })
 const modeNew = computed(() => props.mode === 'new')
-const modeView = computed(() => props.mode === 'view')
-const modeStart = computed(() => props.mode === 'start')
+const modeUpdate = computed(() => props.mode === 'update')
 
-const disabled = computed(() => modeView.value)
-const disabledServer = computed(() => disabled.value || modeStart.value)
+const disabledServer = computed(() => modeUpdate.value)
 
 
 const req = useShowToastOnResult()
@@ -36,7 +34,7 @@ watch(session, async (newSession, _) => {
 })
 const submitted = ref(false);
 const loading = ref(false);
-const startConfig = computed(
+const sessionConfig = computed(
     () => {
       const config = lodash.cloneDeep(session.value.config)
       if (!proxyEnabled.value) {
@@ -46,8 +44,8 @@ const startConfig = computed(
     }
 )
 
-const sessionStartRequest = computed(() => {
-  const config = {...startConfig.value}
+const createSessionRequest = computed(() => {
+  const config = {...sessionConfig.value}
   if (!isNOWEB.value) {
     delete config.noweb
   }
@@ -57,12 +55,36 @@ const sessionStartRequest = computed(() => {
   }
 })
 
-async function saveSession(start) {
+async function updateSession() {
   submitted.value = true;
 
   try {
     loading.value = true
-    const body = lodash.cloneDeep(sessionStartRequest.value)
+    const body = lodash.cloneDeep(createSessionRequest.value)
+    await req(
+        store.updateSession(session.value.server, session.value.name, body.config),
+        undefined,
+        "Failed to update session",
+    )
+    toast.add({
+      severity: 'success',
+      summary: "Updated",
+      detail: session.value.name,
+      life: 3000
+    });
+  } finally {
+    loading.value = false
+  }
+  session.value = undefined
+  hide()
+}
+
+async function createSession(start) {
+  submitted.value = true;
+
+  try {
+    loading.value = true
+    const body = lodash.cloneDeep(createSessionRequest.value)
     body.start = start
     const result = await req(
         store.createSession(session.value.server, body),
@@ -88,8 +110,8 @@ function hide() {
   visible.value = false;
 }
 
-const canNotStartSession = computed(() => {
-  return modeStart.value && (!['STOPPED', 'FAILED'].includes(session.value.status))
+const isStopped = computed(() => {
+  return session.value.status === "STOPPED"
 })
 
 async function copyRequest(event) {
@@ -97,7 +119,7 @@ async function copyRequest(event) {
       {
         method: "POST",
         uri: "/api/sessions",
-        body: sessionStartRequest.value,
+        body: createSessionRequest.value,
       },
       null,
       2
@@ -119,8 +141,8 @@ async function copyRequest(event) {
       <SessionHeader :session="session"></SessionHeader>
     </template>
     <div class="mb-2">
-      <InlineMessage severity="info" v-if="modeStart">
-        To change the <b>Server</b> or <b>Name</b> - please logout from the session and run again.
+      <InlineMessage severity="info" v-if="modeUpdate">
+        To change the <b>Server</b> or <b>Name</b> - please remove the session and run again.
       </InlineMessage>
     </div>
 
@@ -198,7 +220,6 @@ async function copyRequest(event) {
       <SessionWebhooksField
           ref="webhooks"
           v-model:webhooks="session.config.webhooks"
-          :disabled="disabled"
       ></SessionWebhooksField>
     </div>
 
@@ -211,7 +232,6 @@ async function copyRequest(event) {
             v-model="proxyEnabled"
             onLabel="Proxy On"
             offLabel="Proxy Off"
-            :disabled="disabled"
         >
           <template #icon>
             <font-awesome-icon icon="fa-solid fa-server" class="mr-2"/>
@@ -227,7 +247,6 @@ async function copyRequest(event) {
               v-model.trim="session.config.proxy.server"
               required="true"
               :invalid="submitted && !session.config.proxy.server"
-              :disabled="modeView"
               placeholder="host:port"
           />
           <small class="p-invalid" v-if="submitted && !session.config.proxy.server">Server is required.</small>
@@ -238,7 +257,6 @@ async function copyRequest(event) {
             <InputText
                 id="proxy-username"
                 v-model.trim="session.config.proxy.username"
-                :disabled="modeView"
             />
           </div>
           <div class="field w-full">
@@ -246,7 +264,6 @@ async function copyRequest(event) {
             <Password
                 id="proxy-password"
                 v-model.trim="session.config.proxy.password"
-                :disabled="modeView"
                 :feedback="false"
                 toggleMask
             />
@@ -264,7 +281,6 @@ async function copyRequest(event) {
           onLabel="Debug Enabled"
           offLabel="Debug Disabled"
           onIcon="fa fa-bug"
-          :disabled="disabled"
       >
         <template #icon>
           <font-awesome-icon icon="fa-solid fa-bug" class="mr-2"/>
@@ -275,9 +291,9 @@ async function copyRequest(event) {
     <template #footer>
       <div class="w-full flex flex-column gap-2">
         <div>
-          <InlineMessage severity="warn" v-if="canNotStartSession">
-            The session is in '<b>{{ session.status }}'</b> status!
-            If you want to change config - please stop it first and run again.
+          <InlineMessage severity="warn" v-if="modeUpdate && !isStopped">
+            The session is in '<b>{{ session.status }}'</b> status,
+            in order to save configuration the session will be restarted.
           </InlineMessage>
         </div>
         <div class="flex justify-content-end">
@@ -291,22 +307,36 @@ async function copyRequest(event) {
               @click="copyRequest($event)">
           </Button>
           <Button
-              v-if="!modeView"
+              v-if="!modeUpdate"
               label="Create"
               icon="pi pi-plus"
               text=""
-              @click="saveSession(false)"
+              @click="createSession(false)"
               :loading="loading"
-              :disabled="canNotStartSession"
           />
           <Button
-              v-if="!modeView"
+              v-if="!modeUpdate"
               label="Create & Start"
               icon="pi pi-play"
               text=""
-              @click="saveSession(true)"
+              @click="createSession(true)"
               :loading="loading"
-              :disabled="canNotStartSession"
+          />
+          <Button
+              v-if="!modeUpdate"
+              label="Create & Start"
+              icon="pi pi-play"
+              text=""
+              @click="createSession(true)"
+              :loading="loading"
+          />
+          <Button
+              v-if="modeUpdate"
+              label="Save"
+              icon="pi pi-save"
+              text=""
+              @click="updateSession"
+              :loading="loading"
           />
         </div>
       </div>

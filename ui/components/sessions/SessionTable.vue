@@ -90,18 +90,7 @@ function showSessionConfig(selected) {
     server: selected.server.id,
     config: selected.config,
   });
-  sessionDialogMode.value = "view"
-  sessionDialog.value = true;
-}
-
-function startSession(selected) {
-  session.value = lodash.cloneDeep({
-    name: selected.name,
-    status: selected.status,
-    server: selected.server.id,
-    config: selected.config,
-  });
-  sessionDialogMode.value = "start"
+  sessionDialogMode.value = "update"
   sessionDialog.value = true;
 }
 
@@ -235,7 +224,6 @@ const globalFilterFields = [
         <SessionActions
             :session="data"
             @view="showSessionConfig"
-            @start="startSession"
         />
       </template>
     </Column>
