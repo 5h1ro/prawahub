@@ -54,8 +54,7 @@ function openNew() {
 
   session.value = {
     server: server.id,
-    // Generate UUID
-    name: 'session_' + Math.random().toString(36).substring(7),
+    name: "",
     config: {
       webhooks: [
         {

@@ -146,8 +146,9 @@ export const useServerStore = defineStore('serverStore', () => {
     }
 
     async function createSession(id: ServerId, body: SessionStartRequest) {
-        await wahaAPI.createSession(id, body)
+        const result = await wahaAPI.createSession(id, body)
         refresh()
+        return result
     }
 
     async function updateSession(id: ServerId, name: string, config: SessionConfig) {

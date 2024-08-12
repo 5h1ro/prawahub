@@ -60,17 +60,19 @@ const sessionStartRequest = computed(() => {
 
 async function saveSession() {
   submitted.value = true;
-  if (!session.value.name) {
-    return
-  }
 
   try {
     loading.value = true
-    await req(
+    const result = await req(
         store.createSession(session.value.server, sessionStartRequest.value),
-        `Started - '${session.value.name}'`,
+        undefined,
         "Failed to start session",
     )
+    toast.add({
+      severity: 'success',
+      summary: `Started - '${result.name}'`,
+      life: 3000
+    });
   } finally {
     loading.value = false
   }
@@ -133,12 +135,15 @@ async function copyRequest(event) {
     </div>
 
     <div class="field">
-      <label for="name">Name</label>
+      <label for="name">Name (optional)</label>
       <InputText
-          id="name" v-model.trim="session.name" required="true" autofocus :invalid="submitted && !session.name"
+          id="name"
+          v-model.trim="session.name"
+          required="false"
+          autofocus
+          placeholder="session_1111111111111"
           :disabled="!modeNew"
       />
-      <small class="p-invalid" v-if="submitted && !session.name">Name is required.</small>
     </div>
 
     <div class="mb-4" v-if="isNOWEB">
