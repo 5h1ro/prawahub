@@ -282,7 +282,7 @@ async function copyRequest(event) {
         </div>
         <div class="flex justify-content-end">
           <Button
-              label="Copy Request"
+              label="Copy"
               text=""
               v-tooltip.focus.bottom="{ value: 'Copied to clipboard' }"
               :tabindex="0"
@@ -290,13 +290,6 @@ async function copyRequest(event) {
               severity="secondary"
               @click="copyRequest($event)">
           </Button>
-          <Button
-              :label="modeView ? 'Close' : 'Cancel'"
-              icon="pi pi-times"
-              text=""
-              severity="secondary"
-              @click="hide"
-          />
           <Button
               v-if="!modeView"
               label="Create"
