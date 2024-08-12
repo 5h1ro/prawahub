@@ -14,9 +14,10 @@ const stopping = ref(false)
 const loggingOut = ref(false)
 const removing = ref(false)
 const starting = ref(false)
+const restarting = ref(false)
 const allDisabled = computed(
     () => {
-      return stopping.value || loggingOut.value || removing.value || starting.value
+      return stopping.value || loggingOut.value || removing.value || starting.value || restarting.value
     }
 )
 
@@ -30,6 +31,35 @@ async function startSession() {
   ).finally(
       () => starting.value = false
   )
+}
+function confirmRestartSession(event) {
+  const session = props.session
+  confirmPopup.require({
+    target: event.target,
+    message: `Restart '${session.name}' session?`,
+    icon: 'pi pi-exclamation-triangle',
+    rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+    acceptClass: 'p-button-info p-button-sm',
+    rejectLabel: 'No',
+    acceptLabel: 'Yes, Restart',
+    accept: async () => {
+      stopping.value = true
+      toast.add({
+        severity: 'info',
+        summary: `Restarting - '${session.name}'...`,
+        life: 3000
+      });
+      await req(
+          store.restartSession(session.server.id, session.name),
+          `Restarted - '${session.name}'`,
+          `Failed to restart session - '${session.name}'`,
+      ).finally(
+          () => stopping.value = false
+      )
+    },
+    reject: () => {
+    }
+  });
 }
 
 function confirmStopSession(event) {
@@ -69,7 +99,7 @@ function confirmLogoutSession(event) {
     message: `Logout '${session.name}' session?\n`,
     icon: 'pi pi-exclamation-triangle',
     rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
-    acceptClass: 'p-button-danger p-button-sm',
+    acceptClass: 'p-button-warning p-button-sm',
     rejectLabel: 'No',
     acceptLabel: 'Yes, Logout',
     accept: async () => {
@@ -140,6 +170,14 @@ function confirmRemoveSession(event) {
         rounded
         outlined
         @click="startSession"
+        :disabled="allDisabled"
+    />
+    <Button
+        icon="pi pi-replay"
+        severity="info"
+        rounded outlined
+        @click="confirmRestartSession($event, session)"
+        :loading="restarting"
         :disabled="allDisabled"
     />
     <Button
