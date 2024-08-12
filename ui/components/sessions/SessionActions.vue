@@ -1,5 +1,6 @@
 <script setup>
 import {useConfirm} from "primevue/useconfirm";
+import {useToast} from "primevue/usetoast";
 
 const props = defineProps(['session'])
 
@@ -8,16 +9,26 @@ const store = useServerStore()
 const confirmPopup = useConfirm();
 const req = useShowToastOnResult()
 
+const toast = useToast();
 const stopping = ref(false)
 const loggingOut = ref(false)
 const removing = ref(false)
+const starting = ref(false)
+const allDisabled = computed(
+    () => {
+      return stopping.value || loggingOut.value || removing.value || starting.value
+    }
+)
 
 async function startSession() {
   const session = props.session
+  starting.value = true
   await req(
       store.startSession(session.server.id, session.name),
       `Started - '${session.name}'`,
       `Failed to start session - '${session.name}'`,
+  ).finally(
+      () => starting.value = false
   )
 }
 
@@ -33,6 +44,11 @@ function confirmStopSession(event) {
     acceptLabel: 'Yes, Stop',
     accept: async () => {
       stopping.value = true
+      toast.add({
+        severity: 'info',
+        summary: `Stopping - '${session.name}'...`,
+        life: 3000
+      });
       await req(
           store.stopSession(session.server.id, session.name),
           `Stopped - '${session.name}'`,
@@ -58,6 +74,11 @@ function confirmLogoutSession(event) {
     acceptLabel: 'Yes, Logout',
     accept: async () => {
       loggingOut.value = true
+      toast.add({
+        severity: 'info',
+        summary: `Logging out - '${session.name}'...`,
+        life: 3000
+      });
       await req(
           store.logoutSession(session.server.id, session.name),
           `Logged out - '${session.name}'`,
@@ -83,9 +104,14 @@ function confirmRemoveSession(event) {
     acceptLabel: 'Yes, Delete',
     accept: async () => {
       removing.value = true
+      toast.add({
+        severity: 'info',
+        summary: `Removing - '${session.name}'...`,
+        life: 3000
+      });
       await req(
           store.deleteServer(session.server.id, session.name),
-          `Logged out - '${session.name}'`,
+          `Removed - '${session.name}'`,
           `Failed to delete session - '${session.name}'`,
       ).finally(
           () => removing.value = false
@@ -106,6 +132,7 @@ function confirmRemoveSession(event) {
         rounded
         outlined
         @click="$emit('view', session)"
+        :disabled="allDisabled"
     />
     <Button
         icon="pi pi-play"
@@ -113,6 +140,7 @@ function confirmRemoveSession(event) {
         rounded
         outlined
         @click="startSession"
+        :disabled="allDisabled"
     />
     <Button
         icon="pi pi-stop"
@@ -120,6 +148,7 @@ function confirmRemoveSession(event) {
         rounded outlined
         @click="confirmStopSession($event, session)"
         :loading="stopping"
+        :disabled="allDisabled"
     />
     <Button
         icon="pi pi-sign-out"
@@ -128,6 +157,7 @@ function confirmRemoveSession(event) {
         outlined
         @click="confirmLogoutSession($event, session)"
         :loading="loggingOut"
+        :disabled="allDisabled"
     />
     <Button
         icon="pi pi-trash"
@@ -136,6 +166,7 @@ function confirmRemoveSession(event) {
         outlined
         @click="confirmRemoveSession($event, session)"
         :loading="loggingOut"
+        :disabled="allDisabled"
     />
   </div>
 </template>
