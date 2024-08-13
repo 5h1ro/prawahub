@@ -112,10 +112,14 @@ function openSessionControl(data) {
   session.value = data
 }
 
-const globalFilterFields = [
-  'name',
-  'me.id',
-]
+const globalFilterFields = computed(
+    () => {
+      return [
+        'name',
+        'me.id',
+      ]
+    }
+)
 
 </script>
 
@@ -158,8 +162,11 @@ const globalFilterFields = [
         <Button label="Start New" icon="pi pi-play" severity="success" @click="openNew"/>
         <IconField iconPosition="left">
           <InputIcon class="pi pi-search"/>
-          <InputText v-model="filters['global'].value" placeholder="Search by name or phone number"
-                     style="width: 100%"/>
+          <InputText
+              v-model="filters['global'].value"
+              placeholder="Search (name, phone, metadata)"
+              style="width: 100%"
+          />
         </IconField>
       </div>
     </template>

@@ -8,11 +8,18 @@ const props = defineProps(['metadata'])
 
 <template>
   <div class="metadata">
-    <pre v-for="(value, key) in metadata" :key="key">{{ key }} = {{ value }}</pre>
+    <pre v-for="(value, key) in metadata" :key="key">{{ key }}={{ value }}</pre>
   </div>
 
 </template>
 
 <style scoped lang="scss">
+.metadata {
+  font-size: 0.9rem
+}
+.metadata__value {
+  margin: 0.5rem
+}
+
 
 </style>

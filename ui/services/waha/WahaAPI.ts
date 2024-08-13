@@ -28,10 +28,14 @@ export class WahaAPI {
             session.config = {
                 webhooks: [],
                 proxy: {},
+                metadata: {},
             }
         }
         if (!session.config.webhooks) {
             session.config.webhooks = []
+        }
+        if (!session.config.metadata){
+            session.config.metadata = {}
         }
         if (!session.config.noweb) {
             session.config.noweb = {store: {enabled: false, fullSync: false}}
