@@ -28,7 +28,7 @@ function remove(index) {
 <template>
   <div class="flex flex-column gap-2">
     <div>
-      <label>Webhooks</label>
+      <h5>Webhooks</h5>
     </div>
 
     <template v-if="webhooks.length === 0">
