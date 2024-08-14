@@ -1,4 +1,7 @@
 <script setup>
+import {ref, watch} from "vue";
+import {convertKeyValueToList} from "../../utils/objects";
+
 const webhook = defineModel("webhook");
 const props = defineProps({
   disabled: Boolean,
@@ -26,6 +29,14 @@ const events = [
   "label.chat.added",
   "label.chat.deleted",
 ]
+const customHeadersKeyValue = ref(
+    convertKeyValueToList(webhook.value.customerHeaders)
+)
+const customHeadersEnabled = ref(customHeadersKeyValue.value.length > 0)
+watch(customHeadersKeyValue, (value) => {
+  webhook.value.customerHeaders = convertListToKeyValue(value)
+})
+
 
 </script>
 
@@ -40,6 +51,7 @@ const events = [
           <div>
             <Button
                 label=""
+                text
                 rounded
                 v-tooltip.top="'Delete Webhook'"
                 style="height:2rem; width: 2rem"
@@ -122,6 +134,29 @@ const events = [
         <InputText id="hmac" v-model.trim="webhook.hmac.key"
                    :disabled="disabled"
         />
+      </div>
+      <div class="field">
+        <div class="field flex justify-content-between align-items-center">
+          <div>
+            <label for="hmac">Custom Headers (optional)</label>
+          </div>
+          <ToggleButton
+              v-model="customHeadersEnabled"
+              id="customHeaders"
+              onLabel="Headers On"
+              offLabel="Headers Off"
+          >
+            <template #icon>
+              <font-awesome-icon icon="fa-solid fa-fingerprint" class="mr-2"/>
+            </template>
+          </ToggleButton>
+        </div>
+        <KeyValueTable
+            v-if="customHeadersEnabled"
+            v-model="customHeadersKeyValue"
+            key-column-name="Header"
+            prefix="X-Header-"
+        ></KeyValueTable>
       </div>
     </AccordionTab>
   </Accordion>

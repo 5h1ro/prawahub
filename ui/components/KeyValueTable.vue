@@ -2,7 +2,10 @@
 import {ref} from 'vue';
 
 const data = defineModel()
-const props = defineProps(['keyColumnName'])
+const props = defineProps([
+  'keyColumnName',
+  'prefix',
+])
 const editingRows = ref([]);
 
 const onRowEditSave = (event) => {
@@ -30,7 +33,7 @@ const onCellEditComplete = (event) => {
 function addRow() {
   const count = data.value.length + 1;
   // add row at the start
-  const key = `user.id.${count}`
+  const key = `${props.prefix}${count}`
   data.value.unshift({key: key, value: '123'});
 }
 
@@ -59,7 +62,7 @@ function deleteRow(index) {
     >
       <Column
           field="key"
-          header="Name"
+          :header="props.keyColumnName"
           style="width: 40%"
       >
         <template #editor="{ data, field }">
