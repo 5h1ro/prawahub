@@ -29,6 +29,25 @@ onBeforeMount(() => {
   initFilters()
 });
 
+const columns = ref([
+  {field: "name", header: "Name"},
+  {field: "metadata", header: "Metadata"},
+  {field: "me", header: "Me"},
+  {field: "status", header: "Status"},
+  {field: "server", header: "Server"},
+])
+const selectedColumns = ref(columns.value)
+const onToggle = (val) => {
+  selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
+
+const isNameEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'name'}))
+const isMetadataEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'metadata'}))
+const isMeEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'me'}))
+const isStatusEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'status'}))
+const isServerEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'server'}))
+
+
 
 const initFilters = () => {
   filters.value = {
@@ -168,24 +187,44 @@ const globalFilterFields = computed(
 
     <template #header>
       <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-0">
-        <Button label="Start New" icon="pi pi-play" severity="success" @click="openNew"/>
-        <IconField iconPosition="left">
-          <InputIcon class="pi pi-search"/>
-          <InputText
-              v-model="filters['global'].value"
-              placeholder="Search by name, phone, metadata"
-              style="width: 100%"
-          />
-        </IconField>
+        <div>
+          <Button label="Start New" icon="pi pi-play" severity="success" @click="openNew"/>
+        </div>
+        <div class="flex gap-2">
+          <div style="text-align:left">
+            <MultiSelect
+                placeholder="Select Columns"
+                :modelValue="selectedColumns"
+                :options="columns"
+                optionLabel="header"
+                display="chip"
+                @update:modelValue="onToggle"
+            />
+          </div>
+          <IconField iconPosition="left">
+            <InputIcon class="pi pi-search"/>
+            <InputText
+                v-model="filters['global'].value"
+                placeholder="Search by name, phone, metadata"
+                style="width: 100%"
+            />
+          </IconField>
+        </div>
       </div>
     </template>
     <template #empty> No sessions found</template>
     <template #loading> Loading sessions...</template>
 
-    <Column field="name" header="Name" sortable>
+    <Column
+        v-if="isNameEnabled"
+        field="name" header="Name" sortable
+    >
     </Column>
 
-    <Column header="Metadata">
+    <Column
+        v-if="isMetadataEnabled"
+        header="Metadata"
+    >
       <template #body="{ data }">
         <Metadata
             :metadata="data.config?.metadata"
@@ -193,7 +232,10 @@ const globalFilterFields = computed(
       </template>
     </Column>
 
-    <Column header="Me">
+    <Column
+        v-if="isMeEnabled"
+        header="Me"
+    >
       <template #body="{ data }">
         <div class="text-center">
           <SessionChip :session="data"></SessionChip>
@@ -201,7 +243,9 @@ const globalFilterFields = computed(
       </template>
     </Column>
 
-    <Column field="status" header="Status" :showFilterMenu="false" style="width: 9rem">
+    <Column
+        v-if="isStatusEnabled"
+        field="status" header="Status" :showFilterMenu="false" style="width: 9rem">
       <template #body="{ data }">
         <div class="flex gap-2">
           <div>
@@ -233,7 +277,9 @@ const globalFilterFields = computed(
       </template>
     </Column>
 
-    <Column field="server.name" filterField='server.id' header="Server" :showFilterMenu="false">
+    <Column
+        v-if="isServerEnabled"
+        field="server.name" filterField='server.id' header="Server" :showFilterMenu="false">
       <template #filter="{ filterModel, filterCallback }">
         <ServerDropdown
             placeholder="Any"
