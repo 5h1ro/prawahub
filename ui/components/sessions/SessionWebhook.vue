@@ -41,7 +41,7 @@ const events = [
             <Button
                 label=""
                 rounded
-                v-tooltip.top="'Delete'"
+                v-tooltip.top="'Delete Webhook'"
                 style="height:2rem; width: 2rem"
                 icon="pi pi-trash"
                 severity="warning"

@@ -27,8 +27,17 @@ function remove(index) {
 
 <template>
   <div class="flex flex-column gap-2">
-    <div>
+    <div class="flex justify-content-between align-items-center w-full">
       <h5>🔄 Webhooks</h5>
+      <div class="pr-2">
+        <Button
+            label="Add Webhook"
+            text
+            icon="pi pi-plus"
+            severity="success"
+            @click="add"
+        />
+      </div>
     </div>
 
     <template v-if="webhooks.length === 0">
@@ -45,16 +54,6 @@ function remove(index) {
           :disabled="disabled"
       ></SessionWebhook>
     </template>
-    <div>
-      <Button
-          label="Add Webhook"
-          icon="pi pi-plus"
-          text=""
-          @click="add"
-          severity="secondary"
-          :disabled="disabled"
-      />
-    </div>
   </div>
 </template>
 

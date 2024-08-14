@@ -344,7 +344,7 @@ async function copyRequest(event) {
               v-if="!modeUpdate"
               label="Create & Start"
               icon="pi pi-play"
-              text=""
+              text
               @click="createSession(true)"
               :loading="loading"
           />
