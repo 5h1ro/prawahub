@@ -31,7 +31,25 @@ const events = [
 
 <template>
   <Accordion :activeIndex="0">
-    <AccordionTab :header="`Webhook ${props.index + 1}`">
+    <AccordionTab>
+      <template #header>
+        <div class="flex justify-content-between align-items-center w-full">
+          <div>
+            Webhook {{ props.index + 1 }}
+          </div>
+          <div>
+            <Button
+                label=""
+                rounded
+                v-tooltip.top="'Delete'"
+                style="height:2rem; width: 2rem"
+                icon="pi pi-trash"
+                severity="warning"
+                @click="$emit('remove')"
+            />
+          </div>
+        </div>
+      </template>
       <div class="field">
         <label for="url">URL</label>
         <InputText id="url" v-model.trim="webhook.url" required="true"
@@ -105,15 +123,6 @@ const events = [
                    :disabled="disabled"
         />
       </div>
-
-      <Button
-          label="Remove Webhook"
-          icon="pi pi-trash"
-          text=""
-          @click="$emit('remove')"
-          severity="warning"
-          :disabled="disabled"
-      />
     </AccordionTab>
   </Accordion>
 </template>
