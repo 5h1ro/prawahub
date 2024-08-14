@@ -40,12 +40,21 @@ const selectedColumns = ref(columns.value)
 const onToggle = (val) => {
   selectedColumns.value = columns.value.filter(col => val.includes(col));
 };
+function isEnabled(field) {
+  if (!selectedColumns.value){
+    return true
+  }
+  if (!selectedColumns.value.length === 0){
+    return true
+  }
+  return lodash.find(selectedColumns.value, {field})
+}
 
-const isNameEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'name'}))
-const isMetadataEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'metadata'}))
-const isMeEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'me'}))
-const isStatusEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'status'}))
-const isServerEnabled = computed(() => lodash.find(selectedColumns.value, {field: 'server'}))
+const isNameEnabled = computed(() => isEnabled("name"))
+const isMetadataEnabled = computed(() => isEnabled("metadata"))
+const isMeEnabled = computed(() => isEnabled("me"))
+const isStatusEnabled = computed(() => isEnabled("status"))
+const isServerEnabled = computed(() => isEnabled("server"))
 
 
 
@@ -187,17 +196,18 @@ const globalFilterFields = computed(
 
     <template #header>
       <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-0">
-        <div>
+        <div class="flex flex-column">
           <Button label="Start New" icon="pi pi-play" severity="success" @click="openNew"/>
         </div>
-        <div class="flex gap-2">
-          <div style="text-align:left">
+        <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-2">
+          <div style="text-align:left" clas="flex flex-column">
             <MultiSelect
-                placeholder="Select Columns"
+                placeholder="Columns"
                 :modelValue="selectedColumns"
                 :options="columns"
                 optionLabel="header"
-                display="chip"
+                selectedItemsLabel="Columns"
+                maxSelectedLabels="1"
                 @update:modelValue="onToggle"
             />
           </div>
