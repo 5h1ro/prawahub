@@ -24,6 +24,7 @@ async function refreshServers() {
 
 <template>
   <div class="p-dialog-title flex gap-2 align-items-center">
+    <i class="pi pi-whatsapp"></i>
         <span>
           {{ session?.name }}
         </span>

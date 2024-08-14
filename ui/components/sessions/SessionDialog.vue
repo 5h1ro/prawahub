@@ -137,13 +137,22 @@ async function copyRequest(event) {
 <template>
   <Dialog
       v-model:visible="visible"
-      header="Session"
       :modal="true"
       class="p-fluid"
       maximizable
   >
+    <template #header v-if="modeNew">
+      <div>
+        <h5>
+          <i class="pi pi-whatsapp"></i>
+          Create Session
+        </h5>
+      </div>
+    </template>
     <template #header v-if="!modeNew">
-      <SessionHeader :session="session"></SessionHeader>
+      <div>
+        <SessionHeader :session="session"></SessionHeader>
+      </div>
     </template>
     <div class="mb-2">
       <InlineMessage severity="info" v-if="modeUpdate">
