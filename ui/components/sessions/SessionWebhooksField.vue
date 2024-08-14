@@ -5,19 +5,20 @@ const props = defineProps({
 })
 
 function add() {
-  webhooks.value.push(
-      {
-        url: "https://httpbin.org/post",
-        events: ["session.status", "message", "message.reaction"],
-        hmac: {
-          key: null,
-        },
-        retries: {
-          delaySeconds: 2,
-          attempts: 15,
-        }
-      }
-  )
+  const webhook = {
+    url: "https://httpbin.org/post",
+    events: ["session.status", "message", "message.reaction"],
+    hmac: {
+      key: null,
+    },
+    retries: {
+      delaySeconds: 2,
+      attempts: 15,
+    }
+  }
+  // push at start
+  webhooks.value.push(webhook)
+
 }
 
 function remove(index) {
@@ -50,6 +51,7 @@ function remove(index) {
           v-for="(webhook, index) in webhooks"
           v-model:webhook="webhooks[index]"
           :index="index"
+          :total="webhooks.length"
           @remove="remove(index)"
           :disabled="disabled"
       ></SessionWebhook>
