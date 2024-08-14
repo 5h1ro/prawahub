@@ -214,14 +214,14 @@ const globalFilterFields = computed(
           <Button label="Start New" icon="pi pi-play" severity="success" @click="openNew"/>
         </div>
         <div class="flex justify-content-between flex-column sm:flex-row gap-2 sm:gap-2">
-          <div style="text-align:left" clas="flex flex-column">
+          <div style="text-align:left" class="flex flex-column">
             <MultiSelect
                 placeholder="Columns"
                 :modelValue="selectedColumns"
                 :options="columns"
                 optionLabel="header"
                 selectedItemsLabel="Columns"
-                :maxSelectedLabels="1"
+                :maxSelectedLabels="0"
                 @update:modelValue="onToggle"
             />
           </div>
