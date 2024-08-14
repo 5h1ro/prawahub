@@ -38,6 +38,7 @@ async function refreshServers() {
       <span>)</span>
     </div>
     <button
+        v-tooltip.top="'Refresh'"
         v-if="refresh"
         @click="refreshServers()" class="p-link layout-topbar-button" :disabled="refreshing">
       <i class="pi pi-refresh"></i>

@@ -148,6 +148,7 @@ function confirmRemoveSession(event) {
   <div class="flex flex-row gap-2 justify-content-end">
     <Button
         icon="pi pi-cog"
+        v-tooltip.top="'Configuration'"
         severity="help"
         rounded
         outlined
@@ -156,6 +157,7 @@ function confirmRemoveSession(event) {
     />
     <Button
         icon="pi pi-play"
+        v-tooltip.top="'Start'"
         severity="success"
         rounded
         outlined
@@ -165,6 +167,7 @@ function confirmRemoveSession(event) {
     />
     <Button
         icon="pi pi-replay"
+        v-tooltip.top="'Restart'"
         severity="info"
         rounded outlined
         @click="confirmRestartSession($event, session)"
@@ -173,6 +176,7 @@ function confirmRemoveSession(event) {
     />
     <Button
         icon="pi pi-stop"
+        v-tooltip.top="'Stop'"
         severity="secondary"
         rounded outlined
         @click="confirmStopSession($event, session)"
@@ -181,6 +185,7 @@ function confirmRemoveSession(event) {
     />
     <Button
         icon="pi pi-sign-out"
+        v-tooltip.top="'Logout'"
         severity="warning"
         rounded
         outlined
@@ -190,6 +195,7 @@ function confirmRemoveSession(event) {
     />
     <Button
         icon="pi pi-trash"
+        v-tooltip.top="'Delete'"
         severity="danger"
         rounded
         outlined

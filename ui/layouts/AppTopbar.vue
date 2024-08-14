@@ -90,7 +90,9 @@ const {refreshing} = storeToRefs(store)
       <div class="m-auto">
         <RefreshIcon :refreshing="refreshing"/>
       </div>
-      <button @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
+      <button
+          v-tooltip.bottom="'Refresh'"
+          @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
         <i class="pi pi-refresh"></i>
         <span>Refresh</span>
       </button>

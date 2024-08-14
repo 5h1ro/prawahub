@@ -94,7 +94,9 @@ function refreshServers() {
     </div>
 
     <div>
-      <button @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
+      <button
+          v-tooltip.top="'Refresh'"
+          @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
         <i class="pi pi-refresh"></i>
       </button>
     </div>
@@ -184,9 +186,13 @@ function refreshServers() {
     <Column>
       <template #body="{data}">
         <div class="flex flex-row gap-2 justify-content-end">
-          <Button icon="pi pi-pencil" severity="success" rounded outlined @click="editServer(data)"/>
+          <Button
+              v-tooltip.top="'Edit'"
+              icon="pi pi-pencil" severity="success" rounded outlined @click="editServer(data)"/>
           <ConfirmPopup></ConfirmPopup>
-          <Button icon="pi pi-times" severity="warning" rounded outlined @click="confirmDeleteServer($event, data)"/>
+          <Button
+              v-tooltip.top="'Remove'"
+              icon="pi pi-times" severity="warning" rounded outlined @click="confirmDeleteServer($event, data)"/>
         </div>
       </template>
     </Column>

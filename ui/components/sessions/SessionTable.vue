@@ -138,7 +138,9 @@ const globalFilterFields = computed(
       </h5>
     </div>
     <div>
-      <button @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
+      <button
+          v-tooltip.top="'Refresh'"
+          @click="refreshServers" class="p-link layout-topbar-button" :disabled="refreshing">
         <i class="pi pi-refresh"></i>
       </button>
     </div>
@@ -167,7 +169,7 @@ const globalFilterFields = computed(
           <InputIcon class="pi pi-search"/>
           <InputText
               v-model="filters['global'].value"
-              placeholder="Search (name, phone, metadata)"
+              placeholder="Search by name, phone, metadata"
               style="width: 100%"
           />
         </IconField>
