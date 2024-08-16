@@ -84,9 +84,9 @@ export const useServerStore = defineStore('serverStore', () => {
         }
         const requests = [
             fetchVersion(server),
-            fetchStatus(server),
             fetchSessions(server.id)
         ]
+        fetchStatus(server)
         // Await all, set connected based on the result
         try {
             await Promise.all(requests)

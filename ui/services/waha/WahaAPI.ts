@@ -159,7 +159,9 @@ export class WahaAPI {
     getServerVersion(serverId: ServerId): Promise<any> {
         return this.api.call(serverId, {
             method: 'GET',
-            uri: `/api/server/version`,
+            // use old API till 2025.6
+            uri: `/api/version`,
+            // uri: `/api/server/version`,
             params: {},
         });
     }
