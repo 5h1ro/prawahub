@@ -244,7 +244,7 @@ function refreshServers() {
           but if you're using Docker
           <br>
           and followed
-          <a href="https://waha.devlike.pro/docs/how-to/install/" target="_blank"><b>🔧 Install & Update</b></a> guide
+          <a href="https://waha.devlike.pro/docs/how-to/install/" target="_blank"><b>🔧 Install & Update</b></a> guide,
           Docker will start a new container.
         </p>
 
