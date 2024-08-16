@@ -70,6 +70,17 @@ const isNewVersionAvailable = computed(() => {
       </div>
     </div>
 
+    <div class="flex gap-2">
+      <div>
+        Uptime:
+      </div>
+      <div v-if="server.status">
+        <ServerUptime
+            :status="server.status"
+        />
+      </div>
+    </div>
+
     <InlineMessage
         v-if="isNewVersionAvailable"
         severity="info">
