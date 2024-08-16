@@ -12,6 +12,7 @@ const props = defineProps([
   "isRemoving",
   "allDisabled",
   "hideActions",
+  "skipConfirmation",
   "group",
 ])
 const emit = defineEmits([
@@ -23,8 +24,34 @@ const emit = defineEmits([
   "delete"
 ])
 
+function shouldConfirm(action) {
+  if (!props.skipConfirmation) {
+    return true
+  }
+  return !props.skipConfirmation.includes(action)
+}
+
 async function startSession() {
-  emit("start")
+  if (!shouldConfirm("start")) {
+    emit("start")
+    return
+  }
+
+  confirm.require({
+    group: props.group,
+    target: event.target,
+    message: `Start ${props.name}?`,
+    icon: 'pi pi-exclamation-triangle',
+    rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+    acceptClass: 'p-button-success p-button-sm',
+    rejectLabel: 'No',
+    acceptLabel: 'Yes, Start',
+    accept: () => {
+      emit("start")
+    },
+    reject: () => {
+    }
+  });
 }
 
 const shouldShowConfiguration = computed(() => {
@@ -32,7 +59,6 @@ const shouldShowConfiguration = computed(() => {
     return true
   }
   return !props.hideActions.includes('view')
-
 })
 
 function confirmRestartSession(event) {

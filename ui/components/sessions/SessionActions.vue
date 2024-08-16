@@ -80,7 +80,7 @@ async function deleteSession() {
   removing.value = true
   await req(
       store.deleteSession(session.server.id, session.name),
-      `Removed`,
+      `Deleted`,
       `Failed to delete session`,
       session.name,
       session.name
@@ -117,6 +117,7 @@ defineExpose({
         :is-removing="removing"
         :all-disabled="allDisabled"
         :hide-actions="[]"
+        :skip-confirmation="['start']"
     />
   </div>
 </template>
