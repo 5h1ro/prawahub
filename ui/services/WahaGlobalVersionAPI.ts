@@ -1,5 +1,5 @@
 export class WahaGlobalVersionAPI {
-    private versionFile = "https://api.github.com/repos/devlikeapro/waha/releases"
+    private versionFile = "https://api.github.com/repos/devlikeapro/waha/releases?per_page=1"
 
     /**
      * Get the latest version of waha using GitHub API
