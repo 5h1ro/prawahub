@@ -1,17 +1,12 @@
-
 export class WahaGlobalVersionAPI {
-    private versionFile = "https://raw.githubusercontent.com/devlikeapro/waha/core/src/version.ts"
+    private versionFile = "https://api.github.com/repos/devlikeapro/waha/releases"
 
     /**
-     * Fetch version file, find "version: '2024.4.3'" and return it
+     * Get the latest version of waha using GitHub API
      */
     async getLatestVersion(): Promise<string> {
         const response = await fetch(this.versionFile, {cache: "no-store"})
-        const text = await response.text()
-        const version = text.match(/version: '(\d+\.\d+\.\d+)'/)
-        if (!version) {
-            return undefined
-        }
-        return version[1]
+        const json = await response.json()
+        return json[0].tag_name
     }
 }
