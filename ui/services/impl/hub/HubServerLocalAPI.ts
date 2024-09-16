@@ -16,7 +16,7 @@ export class HubServerLocalAPI implements IHubServerAPI {
 
     private load(): ServerInfo[] {
         const data = localStorage.getItem(this.localStorageKey);
-        if (!data) {
+        if (!data || data.length == 0) {
             return [{
                 id: `waha_000000000000000001`,
                 name: 'WAHA',

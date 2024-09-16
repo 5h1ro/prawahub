@@ -12,18 +12,29 @@ import {WahaAPIDirectClient} from "../services/impl/waha/WahaAPIDirectClient";
 import {useToast} from "primevue/usetoast";
 import {WebSocketClient} from "../services/WebSocketService";
 import {sleep} from "../services/utils";
+import {WahaAPIMockClient} from "../services/impl/waha/WahaAPIMockClient";
+import {IWahaAPIClient} from "../services/waha/IWahaAPIClient";
+import {useRuntimeConfig} from "nuxt/app";
+import {HubServerMockAPI} from "../services/impl/hub/HubServerMockAPI";
 
 
 export const useServerStore = defineStore('serverStore', () => {
     const toast = useToast();
+    const config = useRuntimeConfig()
 
-    // Mock
-    // const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
-    // const wahaAPIClient = new WahaAPIMockClient()
+    let hubServerAPI: IHubServerAPI
+    let wahaAPIClient: IWahaAPIClient
 
-    // Local, Dashboard
-    const hubServerAPI: IHubServerAPI = new HubServerLocalAPI()
-    const wahaAPIClient = new WahaAPIDirectClient(hubServerAPI)
+    console.log(config.public.mockData)
+    if (config.public.mockData) {
+        // Mock
+        hubServerAPI = new HubServerMockAPI()
+        wahaAPIClient = new WahaAPIMockClient()
+    } else {
+        // Local, Dashboard
+        hubServerAPI = new HubServerLocalAPI()
+        wahaAPIClient = new WahaAPIDirectClient(hubServerAPI)
+    }
 
     const wahaAPI = new WahaAPI(wahaAPIClient)
     const latestVersion = ref(undefined)
@@ -130,6 +141,7 @@ export const useServerStore = defineStore('serverStore', () => {
             refreshing.value = false
         }
     }
+
     const refresh = lodash.debounce(_refresh, 1_000)
 
     async function addServer(server: ServerInfo) {

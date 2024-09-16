@@ -8,21 +8,19 @@ import {HTTPRequest} from "../../waha/HTTPRequest";
 export class WahaAPIMockClient implements IWahaAPIClient {
     private sessions = new Map<ServerId, Session[]>()
 
-    async call(serverId: ServerId, request: HTTPRequest): Promise<any> {
-        const failed = serverId.endsWith("000");
-        if (failed) {
-            const delay = Math.random() * 3000
-            await sleep(delay)
-            throw new Error('Getting sessions failed');
-        }
+    constructor() {
+        this.fakeData()
+    }
 
+
+    async call(serverId: ServerId, request: HTTPRequest): Promise<any> {
         // 0 - 1 sec delay
         const delay = Math.random() * 1000
-        await sleep(delay)
+        // await sleep(delay)
 
         if (request.uri === '/api/sessions' && request.method === 'GET') {
             return this.getSessions(serverId);
-        } else if (request.uri === '/api/sessions' && request.method === 'POST') {
+        } else if (request.uri === '/api/sessions/' && request.method === 'POST') {
             return this.startSession(serverId, request.body);
         } else if (request.uri === '/api/sessions/stop' && request.method === 'POST') {
             return this.stopSession(serverId, request.body.session, request.params.logout);
@@ -30,6 +28,10 @@ export class WahaAPIMockClient implements IWahaAPIClient {
             return this.logoutSession(serverId, request.body.session);
         } else if (request.uri === '/api/version' && request.method === 'GET') {
             return this.getVersion(serverId);
+        } else if (request.uri === '/api/server/version' && request.method === 'GET') {
+            return this.getVersion(serverId);
+        } else if (request.uri === '/api/server/status' && request.method === 'GET') {
+            return this.getServerStatus(serverId)
         } else {
             throw new Error(`Unknown request ${request.method} ${request.uri}`)
         }
@@ -37,7 +39,7 @@ export class WahaAPIMockClient implements IWahaAPIClient {
 
     async getSessions(id: ServerId): Promise<Session[]> {
         const sessions = this.sessions.get(id)
-        if (sessions === undefined) {
+        if (sessions === undefined || sessions.length === 0) {
             const differentStatuses = id.endsWith("111");
             const statuses: SessionStatus[] = differentStatuses ? ["WORKING", "FAILED", "SCAN_QR_CODE", "STARTING", "STOPPED"] : ["WORKING"]
             const numbersOfSessions = 10
@@ -74,7 +76,7 @@ export class WahaAPIMockClient implements IWahaAPIClient {
         return session
     }
 
-    async startSession(serverId: ServerId, body: SessionStartRequest): Promise<void> {
+    async startSession(serverId: ServerId, body: SessionStartRequest): Promise<any> {
         const sessions = this.sessions.get(serverId)
         if (sessions === undefined) {
             throw new Error(`Server ${serverId} not found`)
@@ -111,6 +113,7 @@ export class WahaAPIMockClient implements IWahaAPIClient {
                 }
             }
         }, delay)
+        return session
     }
 
     async stopSession(serverId: ServerId, sessionName: string, logout: boolean): Promise<void> {
@@ -145,5 +148,107 @@ export class WahaAPIMockClient implements IWahaAPIClient {
             version: "2024.3.0",
             engine: "NOWEB",
         }
+    }
+
+    async getServerStatus(id: ServerId) {
+        return {
+            "startTimestamp": 1723788847247,
+            "uptime": 3600000
+        }
+    }
+
+    fakeData() {
+        // On first sessions
+        this.sessions.set("waha_111111111111111111111111111", [
+            {
+                name: 'Session - Worker 1',
+                status: 'WORKING',
+                config: null,
+                me: {
+                    id: '12345@c.us',
+                    pushName: "Session 1",
+                }
+            },
+            {
+                name: 'Session - Worker 2',
+                status: 'STOPPED',
+                config: null,
+                me: {
+                    id: '23456@c.us',
+                    pushName: "Session 2",
+                }
+            },
+            {
+                name: 'Session - Worker BOTH',
+                status: 'STOPPED',
+                config: null,
+                me: null,
+            },
+            {
+                name: 'Session - NONE',
+                status: 'FAILED',
+                config: null,
+                me: {
+                    id: '0000@c.us',
+                    pushName: "Session NONE",
+                }
+            },
+        ])
+        this.sessions.set("waha_222222222222222222222222222", [
+                {
+                    name: 'Session - Worker BOTH',
+                    status: 'STOPPED',
+                    config: null,
+                    me: null,
+                },
+                {
+                    name: 'Session - Worker 2',
+                    status: 'WORKING',
+                    config: null,
+                    me: {
+                        id: '23456@c.us',
+                        pushName: "Session 2",
+                    }
+                },
+                {
+                    name: 'Session - Worker 1',
+                    status: 'STOPPED',
+                    config: null,
+                    me: {
+                        id: '12345@c.us',
+                        pushName: "Session 1",
+                    }
+                },
+                {
+                    name: 'Session - NONE',
+                    status: 'FAILED',
+                    config: null,
+                    me: {
+                        id: '0000@c.us',
+                        pushName: "Session NONE",
+                    }
+                },
+            ]
+        )
+        this.sessions.set("waha_333333333333333333333333333", [
+            {
+                name: 'Session - DEDICATED',
+                status: 'WORKING',
+                config: null,
+                me: {
+                    id: '7777@c.us',
+                    pushName: "Session DEDICATED",
+                }
+            },
+            {
+                name: 'Session - STOPPED',
+                status: 'STOPPED',
+                config: null,
+                me: {
+                    id: '7777@c.us',
+                    pushName: "Session STOPPED",
+                }
+            },
+        ])
     }
 }

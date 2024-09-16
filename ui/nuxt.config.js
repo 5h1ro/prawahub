@@ -3,6 +3,11 @@ export default defineNuxtConfig({
     typescript: false,
     devtools: {enabled: true},
     ssr: false,
+    runtimeConfig: {
+        public: {
+            mockData: '',
+        }
+    },
     app: {
         baseURL: '/dashboard/',
         head: {

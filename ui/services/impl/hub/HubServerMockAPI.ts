@@ -63,12 +63,20 @@ export class HubServerMockAPI implements IHubServerAPI {
                 },
             },
             {
-                id: 'waha_000000000000000000000000000',
-                name: 'Server Failed',
+                id: 'waha_333333333333333333333333333',
+                name: 'Server 3',
                 connection: {
-                    url: 'http://localhost:3001',
+                    url: 'http://localhost:3002',
+                    key: '123',
                 },
             },
+            // {
+            //     id: 'waha_000000000000000000000000000',
+            //     name: 'Server Failed',
+            //     connection: {
+            //         url: 'http://localhost:3001',
+            //     },
+            // },
         ];
     }
 }
