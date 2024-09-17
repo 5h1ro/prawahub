@@ -5,6 +5,7 @@ import {FilterMatchMode, FilterOperator} from "primevue/api";
 import lodash from "lodash";
 import {useAsyncData} from "nuxt/app";
 import {SessionStatuses} from "../../services/waha/dtos";
+import SessionLogin from "./SessionLogin.vue";
 
 const toast = useToast();
 
@@ -296,6 +297,9 @@ const globalFilterFields = computed(
         field="status" header="Status" :showFilterMenu="false" style="width: 9rem">
       <template #body="{ data }">
         <div class="flex gap-2">
+          <div>
+            <SessionLogin :session="data"/>
+          </div>
           <div>
             <ScreenshotButton :session="data"></ScreenshotButton>
           </div>

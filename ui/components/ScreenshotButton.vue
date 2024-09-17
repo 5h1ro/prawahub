@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(['disabled', 'session']);
+const props = defineProps(['session']);
 
 const op = ref(null);
 const screenshot = ref(null)
@@ -11,6 +11,12 @@ const toggle = (event) => {
 const refreshScreenshot = () => {
   screenshot.value.refresh()
 }
+const disabled = computed(() => {
+  if (props.session.status === "STOPPED") {
+    return true
+  }
+  return false
+})
 
 </script>
 

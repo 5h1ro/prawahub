@@ -251,6 +251,14 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.getScreenshot(serverId, sessionName)
     }
 
+    async function getQR(serverId: ServerId, sessionName: string): Promise<string> {
+        return wahaAPI.getQR(serverId, sessionName)
+    }
+
+    async function getPairingCode(serverId: ServerId, sessionName: string, phone): Promise<string> {
+        return wahaAPI.getPairingCode(serverId, sessionName, phone)
+    }
+
     async function getServerEnvironment(serverId: ServerId, all: boolean): Promise<any> {
         return wahaAPI.getServerEnvironment(serverId, all)
     }
@@ -305,6 +313,8 @@ export const useServerStore = defineStore('serverStore', () => {
         restartSession,
         logoutSession,
         getScreenshot,
+        getQR,
+        getPairingCode,
         getProfilePicture,
         getServerEnvironment,
         callServerAPI,
