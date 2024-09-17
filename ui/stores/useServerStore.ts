@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia'
+import { watchEffect } from '@vue/runtime-core';
 import {reactive, ref} from "vue"
 import type {IHubServerAPI, ServerId, ServerInfo} from "../services/hub/IHubServerAPI";
 import type {Session, SessionConfig, SessionStartRequest} from "../services/waha/dtos";
@@ -43,6 +44,19 @@ function filterSessions(sessions) {
     return filteredSessions;
 }
 
+function loadHideDuplicatedSessions() {
+    try{
+        return JSON.parse(localStorage.getItem("sessions.hideDuplicated")) || false
+    } catch (e) {
+        localStorage.removeItem("sessions.hideDuplicated")
+        return false
+    }
+}
+export function saveHideDuplicatedSessions(value) {
+    localStorage.setItem("sessions.hideDuplicated", JSON.stringify(value))
+}
+
+
 export const useServerStore = defineStore('serverStore', () => {
     const toast = useToast();
     const config = useRuntimeConfig()
@@ -50,7 +64,6 @@ export const useServerStore = defineStore('serverStore', () => {
     let hubServerAPI: IHubServerAPI
     let wahaAPIClient: IWahaAPIClient
 
-    console.log(config.public.mockData)
     if (config.public.mockData) {
         // Mock
         hubServerAPI = new HubServerMockAPI()
@@ -70,7 +83,7 @@ export const useServerStore = defineStore('serverStore', () => {
     const sessions = reactive(new Map<string, Session[]>())
     let websocketClients: Map<string, WebSocketClient> = new Map()
 
-    const hideDuplicatedSessions = ref(true)
+    const hideDuplicatedSessions = ref(loadHideDuplicatedSessions())
 
     async function fetchServers() {
         const data = await hubServerAPI.list()
