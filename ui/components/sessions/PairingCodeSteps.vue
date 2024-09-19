@@ -7,7 +7,7 @@ import lodash from "lodash";
 const props = defineProps(['session'])
 const phone = ref(null)
 const loading = ref(false)
-const code = ref('')
+const code = ref('XXXX-XXXX')
 
 const req = useShowToastOnResult()
 const store = useServerStore()
