@@ -38,6 +38,17 @@ const isNewVersionAvailable = computed(() => {
       </div>
     </div>
 
+    <div class="flex gap-1">
+      <div>
+        Dashboard URL:
+      </div>
+      <div>
+        <a :href="server.connection?.url + 'dashboard' " target="_blank" class="ml-2">{{ server.connection?.url + '/dashboard' }}
+          <i class="pi pi-external-link"></i>
+        </a>
+      </div>
+    </div>
+
     <div class="flex gap-2">
       <div>
         Engine:
