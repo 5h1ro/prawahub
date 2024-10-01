@@ -56,7 +56,7 @@ onBeforeMount(() => {
     <div class="card mb-0">
       <div class="flex justify-content-between mb-3">
         <div>
-          <span class="block text-900 font-medium mb-3">Servers</span>
+          <span class="block text-900 font-medium mb-3">Workers</span>
           <span class="text-900 font-medium text-xl">
               <span> {{ store.servers.length }}</span>
             </span>
@@ -102,7 +102,7 @@ onBeforeMount(() => {
       </div>
       <template v-if="serversRequireUpdates.length > 0">
         <span class="text-orange-400 font-medium">{{ serversRequireUpdates.length }}</span>
-        <span class="text-500"> servers ready for updates</span>
+        <span class="text-500"> workers ready for updates</span>
       </template>
       <template v-else>
           <span class="text-green-500 font-medium">

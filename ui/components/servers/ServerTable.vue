@@ -111,7 +111,7 @@ function refreshServers() {
       <h5 class="flex align-items-center gap-1">
         <i class="pi pi-server"></i>
         <span class="mr-1">
-      Servers
+      Workers
       </span>
         <RefreshIcon :refreshing="refreshing"/>
       </h5>
@@ -152,8 +152,8 @@ function refreshServers() {
         </IconField>
       </div>
     </template>
-    <template #empty> No servers found</template>
-    <template #loading> Loading servers...</template>
+    <template #empty> No workers found</template>
+    <template #loading> Loading workers...</template>
 
 
     <Column field="name" header="Name">

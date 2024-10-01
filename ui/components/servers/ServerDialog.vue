@@ -65,7 +65,7 @@ const isCurrentConnectionSecure = computed(() => {
   <Dialog v-model:visible="visible" header="Server" :modal="true" class="p-fluid">
     <div class="mb-4">
       <InlineMessage severity="info">
-        Servers data is saved in your <b>browser's local storage</b>.
+        Workers data is saved in your <b>browser's local storage</b>.
         <br>
         It's safe to put server API and key here.
       </InlineMessage>
