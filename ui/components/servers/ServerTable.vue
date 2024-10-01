@@ -156,6 +156,12 @@ function refreshServers() {
         <div>
           {{ data.name }}
         </div>
+        <div
+            v-if="data.status?.worker?.id && data.status?.worker?.id !== data.name"
+            class="mt-1"
+        >
+          Worker ID: {{ data.status?.worker?.id }}
+        </div>
       </template>
     </Column>
 
@@ -167,12 +173,6 @@ function refreshServers() {
               class="ml-1"
               :href="data.connection.url" target="_blank">
             {{ data.connection.url }}
-          </a>
-        </div>
-        <div class="mt-1">
-          <a :href="dashboard(data.connection?.url)" target="_blank">
-            Dashboard
-            <i class="pi pi-external-link"></i>
           </a>
         </div>
       </template>
