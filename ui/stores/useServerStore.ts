@@ -20,7 +20,7 @@ import {HubServerMockAPI} from "../services/impl/hub/HubServerMockAPI";
 
 function filterSessions(sessions) {
     // Group by session name and me.id to identify "theSame" sessions
-    const groupedSessions = lodash.groupBy(sessions, session => `${session.name}-${session.me?.id}`);
+    const groupedSessions = lodash.groupBy(sessions, session => `${session.name}`);
 
     // The result array
     const filteredSessions = [];

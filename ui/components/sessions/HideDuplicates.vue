@@ -20,7 +20,7 @@ store.$subscribe((mutation, state) => {
   >
     <label for="show-duplicates">Hide Duplicates</label>
     <i
-        v-tooltip='"Hide STOPPED sessions with the same \"name\" and \"me\".\nUseful when you use multiple workers with the same database"'
+        v-tooltip='"Hide STOPPED sessions with the same \"name\" .\nUseful when you use multiple workers with the same database"'
         class="pi pi-info-circle"></i>
     <InputSwitch
         id="show-duplicates"
