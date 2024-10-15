@@ -33,7 +33,8 @@ function remove(index) {
       <h5>🔄 Webhooks</h5>
       <div class="pr-2">
         <Button
-            label="Add Webhook"
+            v-tooltip.top="`Add Webhook`"
+            label="Webhook"
             text
             icon="pi pi-plus"
             severity="success"

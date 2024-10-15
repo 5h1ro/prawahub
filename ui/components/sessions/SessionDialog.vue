@@ -259,6 +259,7 @@ async function copyRequest(event) {
 
       <KeyValueTable
           v-model="metadataKeyValue"
+          entity-name="Metadata"
           key-column="key"
           key-column-name="Key"
           prefix="user.id."

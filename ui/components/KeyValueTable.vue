@@ -6,6 +6,7 @@ const props = defineProps([
   'keyColumn',
   'keyColumnName',
   'prefix',
+  'entityName'
 ])
 const editingRows = ref([]);
 
@@ -70,11 +71,9 @@ function deleteRow(index) {
         <template #header>
           <div class="flex flex-grow-1 justify-content-center">
             <Button
-                v-tooltip.top="'Add'"
-                label=""
-                rounded
+                v-tooltip.top="`Add ${entityName}`"
+                :label="entityName"
                 text
-                style="height:2rem; width: 2rem"
                 icon="pi pi-plus"
                 severity="success"
                 @click="addRow"

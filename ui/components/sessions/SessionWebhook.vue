@@ -160,6 +160,7 @@ watch(customHeadersEnabled, (value, oldValue) => {
         <KeyValueTable
             v-if="customHeadersEnabled"
             v-model="webhook.customHeaders"
+            entity-name="Header"
             key-column="name"
             key-column-name="Header"
             prefix="X-Header-"
