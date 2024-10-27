@@ -161,8 +161,9 @@ function openNew() {
             key: null,
           },
           retries: {
-            delaySeconds: 2,
+            delaySeconds: 1,
             attempts: 15,
+            policy: "exponential",
           },
           customHeaders: null,
         },
