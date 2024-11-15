@@ -10,6 +10,7 @@ import {WebSocketClient} from "../../services/WebSocketService";
 import WebSocketStatus from "./WebSocketStatus.vue";
 import {sleep} from "../../services/utils";
 import downloadjs from "downloadjs"
+import {showTime} from "../../utils/time";
 
 const toast = useToast();
 const store = useServerStore()
@@ -271,8 +272,7 @@ function download(event) {
     </Column>
     <Column field="timestamp" header="Time" sortable>
       <template #body="{data}">
-        <!-- HH:MM:ss with ms -->
-        <span>{{ new Date(data.timestamp).toISOString().slice(11, 23) }}</span>
+        <span>  {{ showTime(data.timestamp) }}</span>
       </template>
     </Column>
 
