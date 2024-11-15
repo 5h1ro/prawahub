@@ -262,6 +262,7 @@ const globalFilterFields = computed(
       style="white-space: nowrap;"
       sortField="name"
       :sortOrder="1"
+      resizableColumns
   >
 
     <template #header>

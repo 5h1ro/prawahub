@@ -55,6 +55,7 @@ export default defineNuxtConfig({
         // Font Awesome
         '@fortawesome/fontawesome-svg-core/styles.css',
         // Custom
-        '@/assets/styles.scss'
+        '@/assets/styles.scss',
+        'vue-json-pretty/lib/styles.css'
     ]
 });

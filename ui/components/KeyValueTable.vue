@@ -49,6 +49,7 @@ function deleteRow(index) {
                     })
                 }
             }"
+        resizableColumns
     >
       <Column
           :field="props.keyColumn"

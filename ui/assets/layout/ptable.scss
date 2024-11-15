@@ -1,3 +1,7 @@
 .p-datatable--clickable .p-datatable-tbody > tr {
   cursor: pointer;
 }
+// Do not pointer for p-datatable-row-expansion
+.p-datatable--clickable .p-datatable-tbody > tr.p-datatable-row-expansion {
+  cursor: default;
+}

@@ -136,6 +136,7 @@ function refreshServers() {
       :globalFilterFields="['name', 'id', 'connection.url']"
       showGridlines
       style="white-space: nowrap;"
+      resizableColumns
   >
 
     <template #header>

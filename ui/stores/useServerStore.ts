@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import { watchEffect } from '@vue/runtime-core';
+import {watchEffect} from '@vue/runtime-core';
 import {reactive, ref} from "vue"
 import type {IHubServerAPI, ServerId, ServerInfo} from "../services/hub/IHubServerAPI";
 import type {Session, SessionConfig, SessionStartRequest} from "../services/waha/dtos";
@@ -45,13 +45,14 @@ function filterSessions(sessions) {
 }
 
 function loadHideDuplicatedSessions() {
-    try{
+    try {
         return JSON.parse(localStorage.getItem("sessions.hideDuplicated")) || false
     } catch (e) {
         localStorage.removeItem("sessions.hideDuplicated")
         return false
     }
 }
+
 export function saveHideDuplicatedSessions(value) {
     localStorage.setItem("sessions.hideDuplicated", JSON.stringify(value))
 }
@@ -98,10 +99,13 @@ export const useServerStore = defineStore('serverStore', () => {
         websocketClients.clear()
 
         servers.value.forEach(server => {
-            const client = new WebSocketClient(server)
+            const client = new WebSocketClient(server, ['session.status'])
             websocketClients.set(server.id, client)
             client.connect()
-            client.on('session.status', (data: any) => {
+            client.on('event', (data: any) => {
+                    if (data.event !== 'session.status') {
+                        return
+                    }
                     const status = data.payload.status
                     const me = data.me
                     const sessionName = data.session

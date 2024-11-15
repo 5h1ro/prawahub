@@ -1,6 +1,7 @@
 <script setup>
 import {ref, watch} from "vue";
 import {convertKeyValueToList} from "../../utils/objects";
+import {WAHAEvents} from "../../services/WAHAEvents";
 
 const webhook = defineModel("webhook");
 const props = defineProps({
@@ -24,28 +25,7 @@ const retryPolicyTooltip = computed(() => {
     `Exponential: ${exponential.join(", ")}`,
   ].join("\n")
 })
-const events = [
-  "session.status",
-  "message",
-  "message.any",
-  "message.reaction",
-  "message.ack",
-  "message.waiting",
-  "message.revoked",
-  "chat.archive",
-  "group.join",
-  "group.leave",
-  "presence.update",
-  "poll.vote",
-  "poll.vote.failed",
-  "call.received",
-  "call.accepted",
-  "call.rejected",
-  "label.upsert",
-  "label.deleted",
-  "label.chat.added",
-  "label.chat.deleted",
-]
+const events = WAHAEvents
 const customHeadersEnabled = ref(webhook.value.customHeaders && webhook.value.customHeaders.length > 0)
 watch(customHeadersEnabled, (value, oldValue) => {
   if (oldValue && !value) {

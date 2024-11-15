@@ -64,6 +64,7 @@ async function copyVariables(event) {
   <DataTable
       :value="data"
       :loading="pending"
+      resizableColumns
   >
     <template #header>
       <div class="flex flex-wrap justify-content-between">

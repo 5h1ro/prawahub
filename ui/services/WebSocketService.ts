@@ -5,7 +5,10 @@ export class WebSocketClient {
     private connection: null | WebSocket
     private ev: EventEmitter<string | symbol, any>;
 
-    constructor(private server: ServerInfo) {
+    constructor(
+        private server: ServerInfo,
+        private events: string[],
+    ) {
         this.connection = null
         this.ev = new EventEmitter()
     }
@@ -26,8 +29,10 @@ export class WebSocketClient {
         // Add ?session=*&events=session.status
         const params = new URLSearchParams()
         params.append("session", "*")
-        params.append("events", "session.status")
-        if (this.server.connection.key){
+        for (const event of this.events) {
+            params.append("events", event)
+        }
+        if (this.server.connection.key) {
             params.append("x-api-key", this.server.connection.key)
         }
         url += "?" + params.toString()
@@ -36,16 +41,19 @@ export class WebSocketClient {
 
         this.connection.onopen = () => {
             console.debug(`WS - Connected - ${this.server.name}`)
+            this.ev.emit("open")
         }
         this.connection.onclose = () => {
             console.debug(`WS - Disconnected - ${this.server.name}`)
+            this.ev.emit("close")
         }
         this.connection.onerror = (e) => {
             console.error(`WS - Error - ${this.server.name}`, e)
+            this.ev.emit("error", e)
         }
         this.connection.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            this.ev.emit(data.event, data)
+            this.ev.emit("event", data)
         }
     }
 
@@ -54,9 +62,7 @@ export class WebSocketClient {
     }
 
     stop() {
-        if (this.connection?.readyState === 1){
-            this.connection?.close()
-        }
+        this.connection?.close()
         this.ev.removeAllListeners()
     }
 }

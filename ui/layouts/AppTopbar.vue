@@ -78,7 +78,7 @@ const {refreshing} = storeToRefs(store)
 
     <router-link to="/" class="layout-topbar-logo">
       <img class="mb-1" :src="logoUrl" alt="logo"/>
-    <span>Dashboard | WAHA</span>
+      <span>Dashboard | WAHA</span>
     </router-link>
 
 
@@ -87,6 +87,12 @@ const {refreshing} = storeToRefs(store)
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <router-link to="/event-monitor" class="layout-topbar-button">
+        <i class="pi pi-eye"
+           style="color: #459e74"
+           v-tooltip.bottom="'Event Monitor'"
+        ></i>
+      </router-link>
       <div class="m-auto">
         <RefreshIcon :refreshing="refreshing"/>
       </div>
@@ -96,10 +102,10 @@ const {refreshing} = storeToRefs(store)
         <i class="pi pi-refresh"></i>
         <span>Refresh</span>
       </button>
-<!--      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">-->
-<!--        <i class="pi pi-user"></i>-->
-<!--        <span>Profile</span>-->
-<!--      </button>-->
+      <!--      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">-->
+      <!--        <i class="pi pi-user"></i>-->
+      <!--        <span>Profile</span>-->
+      <!--      </button>-->
       <!--            <button @click="onSettingsClick()" class="p-link layout-topbar-button">-->
       <!--                <i class="pi pi-cog"></i>-->
       <!--                <span>Settings</span>-->
