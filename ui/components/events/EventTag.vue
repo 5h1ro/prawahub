@@ -15,17 +15,15 @@ const style = computed(() => {
   }
 })
 
+const tagEmojis = {
+  "session.status": "session.status 🖥️",
+  "message": "message ✉️",
+  "message.any": "message.any ✉️",
+  "message.ack": "message.ack 👀",
+};
+
 const value = computed(() => {
-  const event = props.event
-  switch (event) {
-    case "message":
-    case "message.any":
-      return `${event} ✉️`
-    case "message.ack":
-      return `${event} 👀`
-    default:
-      return props.event
-  }
+  return tagEmojis[props.event] || props.event
 })
 
 </script>
