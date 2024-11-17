@@ -34,9 +34,11 @@ onMounted(async () => {
 
 const events = ref([])
 
+const eventsByDefault = WAHAEvents.filter(e => e !== "engine.event")
+
 const filters = ref({
   global: {value: null, matchMode: FilterMatchMode.CONTAINS},
-  event: {value: WAHAEvents, matchMode: FilterMatchMode.IN},
+  event: {value: eventsByDefault, matchMode: FilterMatchMode.IN},
   session: {value: null, matchMode: FilterMatchMode.CONTAINS},
 })
 const globalFilterFields = ["_json"]
@@ -56,7 +58,12 @@ watch(selectedServer, () => {
   }
 })
 const includeEngineEvents = computed(() => {
-  return events.value.filter(e => e === "engine.event")
+  if (!filters.value.event.value) {
+    // No filters - all
+    return true
+  }
+  // check filters
+  return filters.value.event.value?.includes("engine.event")
 })
 watch(includeEngineEvents, () => {
   if (listening.value) {
