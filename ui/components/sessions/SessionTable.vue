@@ -339,9 +339,9 @@ const globalFilterFields = computed(
           </div>
           <div>
             <Button
-                icon="pi pi-whatsapp"
+                icon="pi pi-code"
                 v-tooltip.top="'Send Request'"
-                severity=""
+                severity="secondary"
                 rounded
                 outlined
                 @click="openSessionControl(data)"
