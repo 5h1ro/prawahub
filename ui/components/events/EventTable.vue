@@ -151,6 +151,11 @@ const clearEvents = () => {
   events.value = []
 }
 
+const clearEventsText = computed(() => {
+  const count = events.value.length
+  return `Clean Events (${count})`
+})
+
 function download(event) {
   downloadjs(JSON.stringify(events.value, null, 2), "events.json", "text/plain");
 }
@@ -228,7 +233,8 @@ function download(event) {
               @click="download($event)"
           />
           <Button
-              label="Clean Events" icon="pi pi-trash" severity="secondary"
+              :label="clearEventsText"
+              icon="pi pi-trash" severity="secondary"
               @click="clearEvents"
           />
           <IconField iconPosition="left">
