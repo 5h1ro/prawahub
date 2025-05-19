@@ -42,6 +42,13 @@ const values = computed(() => {
         payload.type,
         JSON.stringify(payload.participants),
       ]
+    case "event.response":
+    case "event.response.failed":
+      return [
+        payload.from,
+        payload.eventCreationKey.id,
+        payload.eventResponse?.response,
+      ]
     case "engine.event":
       return [
         payload.event,
