@@ -23,6 +23,8 @@ export const WAHAEvents = [
     "label.deleted",
     "label.chat.added",
     "label.chat.deleted",
+    "event.response",
+    "event.response.failed",
     "engine.event",
 ]
 export const WAHAEventColor = {
