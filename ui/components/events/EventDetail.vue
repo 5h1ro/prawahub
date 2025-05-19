@@ -45,9 +45,8 @@ const values = computed(() => {
     case "event.response":
     case "event.response.failed":
       return [
-        payload.from,
-        payload.eventCreationKey.id,
         payload.eventResponse?.response,
+        payload.eventCreationKey.id,
       ]
     case "engine.event":
       return [
