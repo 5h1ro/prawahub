@@ -19,8 +19,20 @@ const values = computed(() => {
         payload.id,
         payload.body,
         event === "message.ack" ? payload.ackName : null,
-        event === "message.ack" ? null: payload.reaction?.text,
+        event === "message.ack" ? null : payload.reaction?.text,
         payload.media?.url ? "🖼" : null,
+      ]
+    case "message.revoked":
+      return [
+        payload.after.id,
+        payload.revokedMessageId,
+        "DELETED"
+      ]
+    case "message.edited":
+      return [
+        payload.message.id,
+        payload.originalMessageId,
+        payload.body,
       ]
     case "group.v2.join":
       return [
