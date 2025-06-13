@@ -20,6 +20,8 @@ const tagEmojis = {
   "message": "message ✉️",
   "message.any": "message.any ✉️",
   "message.ack": "message.ack 👀",
+  "message.revoked": "message.revoked ❌",
+  "message.edited": "message.edited ✏️",
 };
 
 const value = computed(() => {

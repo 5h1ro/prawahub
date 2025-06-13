@@ -26,7 +26,6 @@ const values = computed(() => {
       return [
         payload.after.id,
         payload.revokedMessageId,
-        "DELETED"
       ]
     case "message.edited":
       return [
