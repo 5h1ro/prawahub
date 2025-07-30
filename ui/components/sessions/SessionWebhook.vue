@@ -136,6 +136,7 @@ watch(customHeadersEnabled, (value, oldValue) => {
           <div class="field">
             <label for="retries-delay-policy">
               {{ t('sessions.webhooks.retryPolicy') }}
+              &nbsp;
               <i
                   v-tooltip="retryPolicyTooltip"
                   class="pi pi-info-circle"

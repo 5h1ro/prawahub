@@ -247,7 +247,7 @@ async function copyRequest(event) {
 
     <div>
       <div>
-        <h5>📝 {{ t('sessions.metadata') }}
+        <h5>📝 {{ t('sessions.metadata') }}&nbsp;
           <i
               v-tooltip="t('sessions.metadataTooltip')"
               class="pi pi-info-circle"></i>

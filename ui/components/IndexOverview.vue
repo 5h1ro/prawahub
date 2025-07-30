@@ -111,7 +111,7 @@ onBeforeMount(() => {
 
       <div class="text-500 font-medium mt-1">
         <a href="https://waha.devlike.pro/docs/overview/changelog/" target="_blank">
-          {{ t('dashboard.changelog') }}
+          {{ t('dashboard.changelog') }}&nbsp;
           <i class="pi pi-external-link"></i>
         </a>
       </div>

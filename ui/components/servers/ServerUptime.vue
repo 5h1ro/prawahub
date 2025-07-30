@@ -23,7 +23,7 @@ const startTime = computed(() => {
 </script>
 
 <template>
-  {{ uptime }} {{ t('servers.uptimeStatus') }}
+  {{ uptime }} {{ t('servers.uptimeStatus') }}&nbsp;
   <i
       v-tooltip='`${t("servers.startTime")}: ${startTime?.toLocaleString()}`'
       class="pi pi-info-circle"
