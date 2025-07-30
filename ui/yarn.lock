@@ -8304,41 +8304,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sakai-nuxt@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "sakai-nuxt@workspace:."
-  dependencies:
-    "@babel/eslint-parser": "npm:^7.18.9"
-    "@fortawesome/fontawesome-svg-core": "npm:^6.5.2"
-    "@fortawesome/free-solid-svg-icons": "npm:^6.5.2"
-    "@fortawesome/vue-fontawesome": "npm:^3.0.6"
-    "@nuxtjs/i18n": "npm:9.1.1"
-    "@pinia/nuxt": "npm:^0.5.1"
-    "@types/lodash": "npm:^4.17.0"
-    axios: "npm:^1.9.0"
-    chart.js: "npm:3.3.2"
-    downloadjs: "npm:^1.4.7"
-    eslint: "npm:^8.30.0"
-    eslint-config-prettier: "npm:^8.5.0"
-    eslint-plugin-nuxt: "npm:^4.0.0"
-    eslint-plugin-prettier: "npm:^4.2.1"
-    eslint-plugin-vue: "npm:^9.4.0"
-    eventemitter3: "npm:^5.0.1"
-    lodash: "npm:^4.17.21"
-    nuxt: "npm:^3.9.0"
-    nuxt-primevue: "npm:^0.3.1"
-    pinia: "npm:^2.1.7"
-    prettier: "npm:2.7.1"
-    primeflex: "npm:^3.3.0"
-    primeicons: "npm:^6.0.1"
-    primevue: "npm:^3.49.1"
-    sass: "npm:^1.60.0"
-    sass-loader: "npm:^10.4.1"
-    vue: "npm:^3.4.37"
-    vue-json-pretty: "npm:^2.4.0"
-  languageName: unknown
-  linkType: soft
-
 "sass-loader@npm:^10.4.1":
   version: 10.5.2
   resolution: "sass-loader@npm:10.5.2"
@@ -10004,6 +9969,41 @@ __metadata:
   checksum: 10c0/af17bfe4014c9b6c1ee53f39a2968a9dc50e36322c91a5b098f7b4b8e549f995a92af390fdd1f88d8e8fa8662775840ef77c01a163cea41b7d8bfbb6e9f7a539
   languageName: node
   linkType: hard
+
+"waha-dashboard@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "waha-dashboard@workspace:."
+  dependencies:
+    "@babel/eslint-parser": "npm:^7.18.9"
+    "@fortawesome/fontawesome-svg-core": "npm:^6.5.2"
+    "@fortawesome/free-solid-svg-icons": "npm:^6.5.2"
+    "@fortawesome/vue-fontawesome": "npm:^3.0.6"
+    "@nuxtjs/i18n": "npm:9.1.1"
+    "@pinia/nuxt": "npm:^0.5.1"
+    "@types/lodash": "npm:^4.17.0"
+    axios: "npm:^1.9.0"
+    chart.js: "npm:3.3.2"
+    downloadjs: "npm:^1.4.7"
+    eslint: "npm:^8.30.0"
+    eslint-config-prettier: "npm:^8.5.0"
+    eslint-plugin-nuxt: "npm:^4.0.0"
+    eslint-plugin-prettier: "npm:^4.2.1"
+    eslint-plugin-vue: "npm:^9.4.0"
+    eventemitter3: "npm:^5.0.1"
+    lodash: "npm:^4.17.21"
+    nuxt: "npm:^3.9.0"
+    nuxt-primevue: "npm:^0.3.1"
+    pinia: "npm:^2.1.7"
+    prettier: "npm:2.7.1"
+    primeflex: "npm:^3.3.0"
+    primeicons: "npm:^6.0.1"
+    primevue: "npm:^3.49.1"
+    sass: "npm:^1.60.0"
+    sass-loader: "npm:^10.4.1"
+    vue: "npm:^3.4.37"
+    vue-json-pretty: "npm:^2.4.0"
+  languageName: unknown
+  linkType: soft
 
 "webidl-conversions@npm:^3.0.0":
   version: 3.0.1
