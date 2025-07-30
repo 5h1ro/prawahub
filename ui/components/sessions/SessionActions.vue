@@ -1,4 +1,7 @@
 <script setup>
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const props = defineProps([
     'session',
     "disabled"
@@ -26,8 +29,8 @@ async function startSession() {
   starting.value = true
   await req(
       store.startSession(session.server.id, session.name),
-      `Started`,
-      `Failed to start session`,
+      t('sessions.started'),
+      t('sessions.failedToStartSession'),
       session.name,
       session.name
   ).finally(
@@ -40,8 +43,8 @@ async function restartSession() {
   restarting.value = true
   await req(
       store.restartSession(session.server.id, session.name),
-      `Restarted`,
-      `Failed to restart session`,
+      t('sessions.restarted'),
+      t('sessions.failedToRestartSession'),
       session.name,
       session.name
   ).finally(
@@ -54,8 +57,8 @@ async function stopSession() {
   stopping.value = true
   await req(
       store.stopSession(session.server.id, session.name),
-      `Stopped`,
-      `Failed to stop session`,
+      t('sessions.stopped'),
+      t('sessions.failedToStopSession'),
       session.name,
       session.name
   ).finally(
@@ -68,8 +71,8 @@ async function logoutSession() {
   loggingOut.value = true
   await req(
       store.logoutSession(session.server.id, session.name),
-      `Logged out`,
-      `Failed to logout session`,
+      t('sessions.loggedOut'),
+      t('sessions.failedToLogoutSession'),
       session.name,
       session.name
   ).finally(
@@ -82,8 +85,8 @@ async function deleteSession() {
   removing.value = true
   await req(
       store.deleteSession(session.server.id, session.name),
-      `Deleted`,
-      `Failed to delete session`,
+      t('sessions.deleted'),
+      t('sessions.failedToDeleteSession'),
       session.name,
       session.name
   ).finally(
@@ -105,7 +108,7 @@ defineExpose({
   <div class="flex flex-row gap-2 justify-content-end">
     <SessionActionButtons
         group="popup"
-        :name="`'${session.name}' session`"
+        :name="`'${session.name}' ${t('sessions.session')}`"
         @view="$emit('view', session)"
         @apps="$emit('apps', session)"
         @start="startSession"
