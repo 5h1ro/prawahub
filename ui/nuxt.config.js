@@ -80,6 +80,7 @@ export default defineNuxtConfig({
             { code: 'tr', name: '🇹🇷 Türkçe (Turkish)', file: 'tr.json' },
             { code: 'uk', name: '🇺🇦 Українська (Ukrainian)', file: 'uk.json' },
             { code: 'ur', name: '🇵🇰 اردو (Urdu)', file: 'ur.json' },
+            { code: 'zh', name: '🇨🇳 简体中文 (Chinese)', file: 'zh.json' },
         ],
         skipSettingLocaleOnNavigate: true,
         locale: 'en',
