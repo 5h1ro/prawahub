@@ -168,6 +168,7 @@ function openNew() {
           fullSync: false
         },
       },
+      ignore: null,
       proxy: {},
     },
   };

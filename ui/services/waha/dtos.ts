@@ -27,11 +27,18 @@ export interface NowebConfig {
     store?: NowebStoreConfig
 }
 
+export interface IgnoreConfig {
+    status?: boolean,
+    groups?: boolean,
+    channels?: boolean,
+}
+
 export interface SessionConfig {
     metadata: any,
     webhooks: Webhook[];
     proxy: any;
     noweb?: NowebConfig;
+    ignore?: IgnoreConfig;
 }
 
 export type SessionStatus = "STOPPED" | "STARTING" | "SCAN_QR_CODE" | "WORKING" | "FAILED";

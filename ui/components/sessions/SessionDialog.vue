@@ -9,7 +9,7 @@ import useShowToastOnResult from "../composables/useShowToastOnResult";
 import {useToast} from "primevue/usetoast";
 import {convertKeyValueToList} from "../../utils/objects";
 
-const { t } = useI18n();
+const {t} = useI18n();
 
 const visible = defineModel("visible");
 const session = defineModel("session");
@@ -35,9 +35,18 @@ const isWEBJS = computed(() => server.value?.version?.engine === 'WEBJS')
 const metadataKeyValue = ref([])
 
 const proxyEnabled = ref(!!session.value.config?.proxy?.server)
+const chatsFilterEnabled = ref(session.value.config?.ignore != null)
+const includeStatus = ref(!session.value.config?.ignore?.status)
+const includeGroups = ref(!session.value.config?.ignore?.groups)
+const includeChannels = ref(!session.value.config?.ignore?.channels)
+
 watch(session, async (newSession, _) => {
   proxyEnabled.value = newSession?.config?.proxy?.server
   metadataKeyValue.value = convertKeyValueToList(newSession.config?.metadata)
+  chatsFilterEnabled.value = newSession?.config?.ignore != null
+  includeStatus.value = !newSession?.config?.ignore?.status
+  includeGroups.value = !newSession?.config?.ignore?.groups
+  includeChannels.value = !newSession?.config?.ignore?.channels
 })
 const submitted = ref(false);
 const loading = ref(false);
@@ -46,6 +55,15 @@ const sessionConfig = computed(
       const config = lodash.cloneDeep(session.value.config)
       if (!proxyEnabled.value) {
         config.proxy = undefined
+      }
+      if (chatsFilterEnabled.value){
+        config.ignore = {
+          status: !includeStatus.value,
+          groups: !includeGroups.value,
+          channels: !includeChannels.value,
+        }
+      } else {
+        config.ignore = undefined
       }
       config.metadata = convertListToKeyValue(metadataKeyValue.value)
       return config
@@ -193,7 +211,9 @@ async function copyRequest(event) {
           <!-- Store -->
           <div class="flex flex-column gap-2">
             <div>
-              <a href="https://waha.devlike.pro/docs/engines/noweb" target="_blank">{{ t('sessions.readMoreAboutNOWEB') }}</a>
+              <a href="https://waha.devlike.pro/docs/engines/noweb" target="_blank">{{
+                  t('sessions.readMoreAboutNOWEB')
+                }}</a>
             </div>
 
             <div>
@@ -269,6 +289,54 @@ async function copyRequest(event) {
     <div>
       <div class="field flex justify-content-between align-items-center">
         <div>
+          <h5>
+            <label for="chats-filter">{{ t('sessions.config.ignore.title') }}</label>&nbsp;
+            <i v-tooltip="t('sessions.config.ignore.tooltip')" class="pi pi-info-circle"></i>
+          </h5>
+        </div>
+        <ToggleButton
+            v-model="chatsFilterEnabled"
+            id="ignore"
+            :onLabel="t('sessions.config.ignore.filterOn')"
+            :offLabel="t('sessions.config.ignore.filterOff')"
+        >
+          <template #icon>
+            <font-awesome-icon icon="fa-solid fa-filter" class="mr-2"/>
+          </template>
+        </ToggleButton>
+      </div>
+
+      <div v-if="chatsFilterEnabled" class="card mb-4">
+        <div class="flex gap-2">
+          <ToggleButton
+              v-model="includeStatus"
+              id="include-status"
+              :onLabel="'' + t('sessions.config.ignore.status.title') + ': ' + t('sessions.config.ignore.on')"
+              :offLabel="'' + t('sessions.config.ignore.status.title') + ': ' + t('sessions.config.ignore.off')"
+          >
+          </ToggleButton>
+          <ToggleButton
+              v-model="includeGroups"
+              id="include-groups"
+              :onLabel="'' + t('sessions.config.ignore.groups.title') + ': ' + t('sessions.config.ignore.on')"
+              :offLabel="'' + t('sessions.config.ignore.groups.title') + ': ' + t('sessions.config.ignore.off')"
+          >
+          </ToggleButton>
+          <ToggleButton
+              v-model="includeChannels"
+              id="include-channels"
+              :onLabel="'' + t('sessions.config.ignore.channels.title') + ': ' + t('sessions.config.ignore.on')"
+              :offLabel="'' + t('sessions.config.ignore.channels.title') + ': ' + t('sessions.config.ignore.off')"
+          >
+          </ToggleButton>
+        </div>
+      </div>
+    </div>
+
+
+    <div>
+      <div class="field flex justify-content-between align-items-center">
+        <div>
           <h5><label for="proxy">🌐 {{ t('sessions.proxy') }}</label></h5>
         </div>
         <ToggleButton
@@ -293,7 +361,9 @@ async function copyRequest(event) {
               :invalid="submitted && !session.config.proxy.server"
               :placeholder="t('sessions.hostPort')"
           />
-          <small class="p-invalid" v-if="submitted && !session.config.proxy.server">{{ t('sessions.serverRequired') }}</small>
+          <small class="p-invalid" v-if="submitted && !session.config.proxy.server">{{
+              t('sessions.serverRequired')
+            }}</small>
         </div>
         <div class="flex gap-3">
           <div class="field w-full">
@@ -337,7 +407,7 @@ async function copyRequest(event) {
       <div class="w-full flex flex-column gap-2">
         <div>
           <InlineMessage severity="warn" v-if="modeUpdate && !isStopped">
-            {{ t('sessions.sessionRestartWarning', { status: session.status }) }}
+            {{ t('sessions.sessionRestartWarning', {status: session.status}) }}
           </InlineMessage>
         </div>
         <div class="flex justify-content-end">

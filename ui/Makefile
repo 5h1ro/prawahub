@@ -7,3 +7,5 @@ copy-waha:
 
 copy-waha-src:
 	cp -Rv .output/public/* ../../whatsapp-http-api/src/dashboard/
+
+dev: build copy-waha copy-waha-src

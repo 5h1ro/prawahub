@@ -46,6 +46,7 @@ export class WahaAPI {
                 webhooks: [],
                 proxy: {},
                 metadata: {},
+                ignore: null,
             }
         }
         if (!session.config.webhooks) {
