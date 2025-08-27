@@ -15,6 +15,7 @@ function hide() {
       v-model:visible="visible"
       :modal="true"
       maximizable
+      style="max-width:100%"
   >
     <template #header>
       <SessionHeader
