@@ -165,7 +165,7 @@ function openNew() {
         markOnline: true,
         store: {
           enabled: true,
-          fullSync: false
+          fullSync: true
         },
       },
       webjs: {
