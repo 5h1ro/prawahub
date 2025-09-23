@@ -285,9 +285,9 @@ function refreshServers() {
 
   <OverlayLinks ref="linksOverlayPanel" :title="t('servers.links')">
     <OverlayLink
-        :href="`${linksOverlayPanel.currentItem?.connection.url}/dashboard`"
-        icon="pi-home"
-        :name="t('servers.dashboard')"
+        :href="linksOverlayPanel.currentItem?.connection.url"
+        icon="pi-code"
+        :name="t('servers.swagger')"
     />
     <OverlayLink
         :href="`${linksOverlayPanel.currentItem?.connection.url}/jobs`"
@@ -295,9 +295,9 @@ function refreshServers() {
         :name="t('servers.jobs')"
     />
     <OverlayLink
-        :href="linksOverlayPanel.currentItem?.connection.url"
-        icon="pi-code"
-        :name="t('servers.swagger')"
+        :href="`${linksOverlayPanel.currentItem?.connection.url}/dashboard`"
+        icon="pi-home"
+        :name="t('servers.dashboard')"
     />
   </OverlayLinks>
 </template>
