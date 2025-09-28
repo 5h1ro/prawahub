@@ -104,6 +104,8 @@ export interface ChatWootAppConfig {
     commands?: ChatWootCommandsConfig;
     // Optional set of message templates
     templates?: Record<string, string>;
+    // Optional conversations configuration
+    conversations?: ChatWootConversationsConfig;
 }
 
 export interface Locale {
@@ -114,4 +116,20 @@ export interface Locale {
 // App-level commands configuration
 export interface ChatWootCommandsConfig {
     server: boolean;
+}
+
+// Conversations configuration for ChatWoot app
+export type ConversationSort =
+    | 'activity_newest'
+    | 'created_newest'
+    | 'created_oldest'
+    | 'activity_oldest';
+
+export type ConversationStatus = 'open' | 'pending' | 'snoozed' | 'resolved';
+
+export interface ChatWootConversationsConfig {
+    // required
+    sort: ConversationSort;
+    // optional: null means filter is off
+    status?: ConversationStatus[] | null;
 }

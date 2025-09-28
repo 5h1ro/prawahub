@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import {ref, onMounted, reactive, watch} from 'vue';
+import {ref, onMounted, reactive, watch, computed} from 'vue';
 import {useServerStore} from '../../stores/useServerStore';
-import {ChatWootAppConfig, Locale, LinkPreview} from '../../services/waha/dtos';
+import {
+  ChatWootAppConfig,
+  Locale,
+  LinkPreview,
+  ConversationSort,
+  ConversationStatus,
+  ChatWootConversationsConfig
+} from '../../services/waha/dtos';
 import useShowToastOnResult from '../../composables/useShowToastOnResult';
 import {useI18n} from 'vue-i18n';
 import InlineMessage from 'primevue/inlinemessage';
@@ -41,6 +48,10 @@ const defaults: ChatWootAppConfig = {
   templates: {},
   commands: {
     server: true,
+  },
+  conversations: {
+    sort: 'activity_newest' as ConversationSort,
+    status: null,
   }
 };
 
@@ -61,10 +72,49 @@ const locales = ref<Locale[]>([]);
 const loading = ref(false);
 
 const linkPreviewOptions = [
-  { label: t('apps.chatwoot.linkPreview.off'), value: LinkPreview.OFF },
-  { label: t('apps.chatwoot.linkPreview.lq'), value: LinkPreview.LQ },
-  { label: t('apps.chatwoot.linkPreview.hq'), value: LinkPreview.HQ },
+  {label: t('apps.chatwoot.linkPreview.off'), value: LinkPreview.OFF},
+  {label: t('apps.chatwoot.linkPreview.lq'), value: LinkPreview.LQ},
+  {label: t('apps.chatwoot.linkPreview.hq'), value: LinkPreview.HQ},
 ];
+
+// Conversations config
+const conversationSortOptions = [
+  {label: t('apps.chatwoot.conversations.sort.activityNewest'), value: 'activity_newest' as ConversationSort},
+  {label: t('apps.chatwoot.conversations.sort.createdNewest'), value: 'created_newest' as ConversationSort},
+  {label: t('apps.chatwoot.conversations.sort.activityOldest'), value: 'activity_oldest' as ConversationSort},
+  {label: t('apps.chatwoot.conversations.sort.createdOldest'), value: 'created_oldest' as ConversationSort},
+];
+
+const conversationStatusOptions = [
+  {label: t('apps.chatwoot.conversations.status.open'), value: 'open' as ConversationStatus},
+  {label: t('apps.chatwoot.conversations.status.pending'), value: 'pending' as ConversationStatus},
+  {label: t('apps.chatwoot.conversations.status.snoozed'), value: 'snoozed' as ConversationStatus},
+  {label: t('apps.chatwoot.conversations.status.resolved'), value: 'resolved' as ConversationStatus},
+];
+
+// true when filtering by specific statuses; false means "use any status"
+const statusFilterOn = ref<boolean>(!!config.conversations?.status);
+
+// Bind toggle to the inverse: ON => use any status; OFF => show filter multiselect
+const useAnyStatus = computed({
+  get: () => !statusFilterOn.value,
+  set: (val: boolean) => {
+    statusFilterOn.value = !val;
+  }
+});
+
+watch(statusFilterOn, (on) => {
+  if (on) {
+    // when enabling, select default statuses (exclude 'resolved')
+    config.conversations.status = conversationStatusOptions
+        .filter(o => o.value !== 'resolved')
+        .map(o => o.value) as ConversationStatus[];
+  } else {
+    // when disabling, set to null (off)
+    config.conversations.status = null;
+  }
+});
+
 
 onMounted(async () => {
   await loadLocales();
@@ -205,6 +255,56 @@ async function loadLocales() {
     </div>
 
     <div class="field">
+      <label for="conversations-sort">
+        {{ t('apps.chatwoot.conversations.sort.label') }}
+        <i
+            class="pi pi-info-circle"
+            v-tooltip="t('apps.chatwoot.conversations.sort.tooltip')"
+        />
+      </label>
+      <Dropdown
+          id="conversations-sort"
+          v-model="config.conversations.sort"
+          :options="conversationSortOptions"
+          optionLabel="label"
+          optionValue="value"
+          :class="{'p-invalid': submitted && !config.conversations?.sort}"
+      />
+      <small class="p-error"
+             v-if="submitted && !config.conversations?.sort">{{ t('apps.chatwoot.conversations.sortRequired') }}</small>
+    </div>
+
+    <div class="field">
+      <label class="block mb-2">
+        {{ t('apps.chatwoot.conversations.statusFilter.label') }}
+        <i
+            class="pi pi-info-circle"
+            v-tooltip="t('apps.chatwoot.conversations.statusFilter.tooltip')"
+        />
+      </label>
+      <div class="flex align-items-center gap-2">
+        <ToggleButton
+            v-model="useAnyStatus"
+            onIcon="pi pi-check"
+            offIcon="pi pi-times"
+            :onLabel="t('apps.chatwoot.conversations.statusFilter.on')"
+            :offLabel="t('apps.chatwoot.conversations.statusFilter.off')"
+        />
+        <MultiSelect
+            v-if="!useAnyStatus"
+            v-model="config.conversations.status"
+            :options="conversationStatusOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="t('apps.chatwoot.conversations.status.selectPlaceholder')"
+            :max-selected-labels="4"
+            class="flex-1 w-full"
+            :style="{ minWidth: '12rem' }"
+        />
+      </div>
+    </div>
+
+    <div class="field">
       <label>
         {{ t('apps.chatwoot.commands.title') }}
         <i
@@ -254,7 +354,7 @@ async function loadLocales() {
         />
       </label>
       <div>
-        <AppConfigChatWootTemplates v-model="config.templates" />
+        <AppConfigChatWootTemplates v-model="config.templates"/>
       </div>
     </div>
   </div>
