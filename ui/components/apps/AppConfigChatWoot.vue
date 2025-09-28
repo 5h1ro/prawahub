@@ -50,7 +50,7 @@ const defaults: ChatWootAppConfig = {
     server: true,
   },
   conversations: {
-    sort: 'activity_newest' as ConversationSort,
+    sort: 'created_newest' as ConversationSort,
     status: null,
   }
 };
@@ -79,8 +79,8 @@ const linkPreviewOptions = [
 
 // Conversations config
 const conversationSortOptions = [
-  {label: t('apps.chatwoot.conversations.sort.activityNewest'), value: 'activity_newest' as ConversationSort},
   {label: t('apps.chatwoot.conversations.sort.createdNewest'), value: 'created_newest' as ConversationSort},
+  {label: t('apps.chatwoot.conversations.sort.activityNewest'), value: 'activity_newest' as ConversationSort},
   {label: t('apps.chatwoot.conversations.sort.activityOldest'), value: 'activity_oldest' as ConversationSort},
   {label: t('apps.chatwoot.conversations.sort.createdOldest'), value: 'created_oldest' as ConversationSort},
 ];
