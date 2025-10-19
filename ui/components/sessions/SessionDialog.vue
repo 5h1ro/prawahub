@@ -42,7 +42,7 @@ const includeChannels = ref(!session.value.config?.ignore?.channels)
 const includeBroadcast = ref(!session.value.config?.ignore?.broadcast)
 
 watch(session, async (newSession, _) => {
-  proxyEnabled.value = newSession?.config?.proxy?.server
+  proxyEnabled.value = !!newSession?.config?.proxy?.server
   metadataKeyValue.value = convertKeyValueToList(newSession.config?.metadata)
   chatsFilterEnabled.value = newSession?.config?.ignore != null
   includeStatus.value = !newSession?.config?.ignore?.status
