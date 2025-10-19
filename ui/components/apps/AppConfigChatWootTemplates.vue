@@ -177,6 +177,13 @@ async function copyYaml() {
       </div>
     </div>
 
+    <label>
+      {{ t('apps.chatwoot.templates.title') }}
+      <i
+          class="pi pi-info-circle"
+          v-tooltip="t('apps.chatwoot.templates.tooltip')"
+      />
+    </label>
     <Textarea
         v-model="value"
         spellcheck="false"
@@ -185,7 +192,7 @@ async function copyYaml() {
         cols="30"
         :disabled="!editing"
         :class="{ 'p-invalid': isInvalid }"
-        class="w-full"
+        class="w-full mt-1"
         placeholder="Put your templates here in YAML format..."
     />
     <small v-if="isInvalid" class="p-error">{{ error }}</small>

@@ -157,6 +157,8 @@ async function loadLocales() {
         </a>
       </InlineMessage>
     </div>
+
+    <h4 class="text-center">{{ t('apps.chatwoot.section.connection.title') }}</h4>
     <div class="field">
       <label for="url">{{ t('apps.chatwoot.url') }}</label>
       <InputText
@@ -237,23 +239,8 @@ async function loadLocales() {
       </div>
     </div>
 
-    <div class="field">
-      <label for="linkPreview">
-        {{ t('apps.chatwoot.linkPreview.label') }}
-        <i
-            class="pi pi-info-circle"
-            v-tooltip="t('apps.chatwoot.linkPreview.tooltip')"
-        />
-      </label>
-      <Dropdown
-          id="linkPreview"
-          v-model="config.linkPreview"
-          :options="linkPreviewOptions"
-          optionLabel="label"
-          optionValue="value"
-      />
-    </div>
-
+    <hr/>
+    <h4 class="text-center">{{ t('apps.chatwoot.section.conversations.title') }}</h4>
     <div class="field">
       <label for="conversations-sort">
         {{ t('apps.chatwoot.conversations.sort.label') }}
@@ -304,14 +291,16 @@ async function loadLocales() {
       </div>
     </div>
 
+    <hr/>
+    <h4 class="text-center">
+      {{ t('apps.chatwoot.section.commands.title') }}
+      <i
+          class="pi pi-info-circle"
+          v-tooltip="t('apps.chatwoot.commands.tooltip')"
+      />
+    </h4>
+
     <div class="field">
-      <label>
-        {{ t('apps.chatwoot.commands.title') }}
-        <i
-            class="pi pi-info-circle"
-            v-tooltip="t('apps.chatwoot.commands.tooltip')"
-        />
-      </label>
       <div>
         <ToggleButton
             v-model="config.commands.server"
@@ -322,6 +311,9 @@ async function loadLocales() {
         />
       </div>
     </div>
+    <hr/>
+
+    <h4 class="text-center">{{ t('apps.chatwoot.section.messages.title') }}</h4>
 
     <div class="field">
       <label for="locale">
@@ -345,17 +337,25 @@ async function loadLocales() {
       <small class="p-error" v-if="submitted && !config.locale">{{ t('apps.chatwoot.languageRequired') }}</small>
     </div>
 
-    <hr/>
     <div class="field">
-      <div class="text-center">
-        <h4>
-          {{ t('apps.chatwoot.templates.title') }}
-          <i
-              class="pi pi-info-circle"
-              v-tooltip="t('apps.chatwoot.templates.tooltip')"
-          />
-        </h4>
-      </div>
+      <label for="linkPreview">
+        {{ t('apps.chatwoot.linkPreview.label') }}
+        <i
+            class="pi pi-info-circle"
+            v-tooltip="t('apps.chatwoot.linkPreview.tooltip')"
+        />
+      </label>
+      <Dropdown
+          id="linkPreview"
+          v-model="config.linkPreview"
+          :options="linkPreviewOptions"
+          optionLabel="label"
+          optionValue="value"
+      />
+    </div>
+
+
+    <div class="field">
       <div>
         <AppConfigChatWootTemplates v-model="config.templates"/>
       </div>
