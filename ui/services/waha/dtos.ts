@@ -133,6 +133,8 @@ export interface ChatWootConversationsConfig {
     sort: ConversationSort;
     // optional: null means filter is off
     status?: ConversationStatus[] | null;
+    // process message.ack events to mark ChatWoot conversations as read
+    markAsRead?: boolean;
 }
 
 export interface CallsAppChannelConfig {

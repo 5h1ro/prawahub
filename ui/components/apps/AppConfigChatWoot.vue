@@ -53,6 +53,7 @@ const defaults: ChatWootAppConfig = {
   conversations: {
     sort: 'created_newest' as ConversationSort,
     status: null,
+    markAsRead: true,
   }
 };
 
@@ -290,6 +291,23 @@ async function loadLocales() {
             :style="{ minWidth: '12rem' }"
         />
       </div>
+    </div>
+
+    <div class="field">
+      <label class="block mb-2">
+        {{ t('apps.chatwoot.conversations.markAsRead.label') }}
+        <i
+            class="pi pi-info-circle"
+            v-tooltip="t('apps.chatwoot.conversations.markAsRead.tooltip')"
+        />
+      </label>
+      <ToggleButton
+          v-model="config.conversations.markAsRead"
+          onIcon="pi pi-check"
+          offIcon="pi pi-times"
+          :onLabel="t('apps.chatwoot.conversations.markAsRead.on')"
+          :offLabel="t('apps.chatwoot.conversations.markAsRead.off')"
+      />
     </div>
 
     <hr/>
