@@ -35,6 +35,7 @@ export const WAHAEventColor = {
     "message.any": "#dfaef0",
     "message.reaction": "#99b6c1",
     "message.ack": "#55ccb3",
+    "message.ack.group": "#55ccb3",
     "message.waiting": "#ff9dff",
     "message.revoked": "#d3a91d",
     "message.edited": "#e6a23c",
