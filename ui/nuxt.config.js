@@ -74,6 +74,7 @@ export default defineNuxtConfig({
             { code: 'he', name: '🇮🇱 עברית (Hebrew)', file: 'he.json' },
             { code: 'hi', name: '🇮🇳 हिंदी (Hindi)', file: 'hi.json' },
             { code: 'id', name: '🇮🇩 Bahasa Indonesia (Indonesian)', file: 'id.json' },
+            { code: 'it', name: '🇮🇹 Italiano (Italian)', file: 'it.json' },
             { code: 'pa', name: '🇵🇰 ਪੰਜਾਬੀ (Punjabi)', file: 'pa.json' },
             { code: 'pt', name: '🇧🇷🇵🇹 Português (Portuguese)', file: 'pt.json' },
             { code: 'ru', name: '🇷🇺 Русский (Russian)', file: 'ru.json' },
