@@ -4,6 +4,7 @@ export const WAHAEvents = [
     "message.any",
     "message.reaction",
     "message.ack",
+    "message.ack.group",
     "message.waiting",
     "message.revoked",
     "message.edited",
