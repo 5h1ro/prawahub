@@ -14,9 +14,6 @@ const isStopped = computed(() => {
   return session.value.status === "STOPPED"
 });
 
-function hide() {
-  visible.value = false;
-}
 </script>
 
 <template>
@@ -41,15 +38,6 @@ function hide() {
           <InlineMessage severity="warn">
             <span v-html="t('apps.sessionStatusWarning', { status: session.status })"></span>
           </InlineMessage>
-        </div>
-        <div class="flex justify-content-end">
-          <Button
-            :label="t('apps.close')"
-            icon="pi pi-times"
-            text=""
-            @click="hide"
-            severity="secondary"
-          />
         </div>
       </div>
     </template>

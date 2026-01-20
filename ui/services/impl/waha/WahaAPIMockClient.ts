@@ -7,6 +7,7 @@ import {HTTPRequest} from "../../waha/HTTPRequest";
 
 export class WahaAPIMockClient implements IWahaAPIClient {
     private sessions = new Map<ServerId, Session[]>()
+    private apiKeys = new Map<ServerId, any[]>()
 
     constructor() {
         this.fakeData()
@@ -32,6 +33,16 @@ export class WahaAPIMockClient implements IWahaAPIClient {
             return this.getVersion(serverId);
         } else if (request.uri === '/api/server/status' && request.method === 'GET') {
             return this.getServerStatus(serverId)
+        } else if (request.uri === '/api/keys' && request.method === 'GET') {
+            return this.getApiKeys(serverId)
+        } else if (request.uri === '/api/keys' && request.method === 'POST') {
+            return this.createApiKey(serverId, request.body)
+        } else if (request.uri.startsWith('/api/keys/') && request.method === 'PUT') {
+            const id = request.uri.replace('/api/keys/', '')
+            return this.updateApiKey(serverId, id, request.body)
+        } else if (request.uri.startsWith('/api/keys/') && request.method === 'DELETE') {
+            const id = request.uri.replace('/api/keys/', '')
+            return this.deleteApiKey(serverId, id)
         } else {
             throw new Error(`Unknown request ${request.method} ${request.uri}`)
         }
@@ -154,6 +165,46 @@ export class WahaAPIMockClient implements IWahaAPIClient {
         return {
             "startTimestamp": 1723788847247,
             "uptime": 3600000
+        }
+    }
+
+    async getApiKeys(id: ServerId): Promise<any[]> {
+        if (!this.apiKeys.has(id)) {
+            this.apiKeys.set(id, [])
+        }
+        return this.apiKeys.get(id)
+    }
+
+    async createApiKey(id: ServerId, body: any): Promise<any> {
+        const keys = await this.getApiKeys(id)
+        const newKey = {
+            id: `key_${Date.now()}`,
+            key: `apikey_${Math.random().toString(36).slice(2, 24)}`,
+            isActive: body?.isActive ?? true,
+            isAdmin: body?.isAdmin ?? false,
+            session: body?.session ?? null,
+        }
+        keys.push(newKey)
+        return newKey
+    }
+
+    async updateApiKey(id: ServerId, keyId: string, body: any): Promise<any> {
+        const keys = await this.getApiKeys(id)
+        const key = keys.find(item => item.id === keyId)
+        if (!key) {
+            throw new Error(`Api key ${keyId} not found`)
+        }
+        key.isActive = body?.isActive ?? key.isActive
+        key.isAdmin = body?.isAdmin ?? key.isAdmin
+        key.session = body?.session ?? key.session
+        return key
+    }
+
+    async deleteApiKey(id: ServerId, keyId: string): Promise<void> {
+        const keys = await this.getApiKeys(id)
+        const index = keys.findIndex(item => item.id === keyId)
+        if (index >= 0) {
+            keys.splice(index, 1)
         }
     }
 

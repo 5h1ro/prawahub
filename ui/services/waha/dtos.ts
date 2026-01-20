@@ -92,6 +92,20 @@ export interface App {
     enabled?: boolean;
 }
 
+export interface ApiKeyRequest {
+    isAdmin: boolean;
+    session: string | null;
+    isActive: boolean;
+}
+
+export interface ApiKeyDTO {
+    id: string;
+    key: string;
+    isActive: boolean;
+    isAdmin: boolean;
+    session?: string | null;
+}
+
 export enum LinkPreview {
     OFF = 'OFF',
     LQ = 'LG',

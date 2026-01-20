@@ -8,6 +8,7 @@ import {dashboard} from "../../services/utils";
 import OverlayLinks from "../common/OverlayLinks.vue";
 import OverlayLink from "../common/OverlayLink.vue";
 import WorkerNoApiKeyWarning from "./WorkerNoApiKeyWarning.vue";
+import ApiKeysDialog from "../apikeys/ApiKeysDialog.vue";
 import {useI18n} from 'vue-i18n';
 
 
@@ -21,6 +22,7 @@ const server = ref({connection: {}}
 );
 const serverDialog = ref(false)
 const serverControlDialog = ref(false)
+const apikeyDialog = ref(false)
 const forceRestart = ref(false)
 const linksOverlayPanel = ref(null)
 
@@ -53,6 +55,11 @@ function openNew() {
 function openServerControl(selected) {
   server.value = lodash.cloneDeep(selected);
   serverControlDialog.value = true;
+}
+
+function openApiKeyDialog(selected) {
+  server.value = lodash.cloneDeep(selected);
+  apikeyDialog.value = true;
 }
 
 function editServer(selected) {
@@ -228,6 +235,11 @@ function refreshServers() {
           />
           <Button
               :disabled="!data.connected"
+              v-tooltip.top="t('servers.apikey.button.tooltip')"
+              icon="pi pi-key" severity="warning" rounded outlined @click="openApiKeyDialog(data)"
+          />
+          <Button
+              :disabled="!data.connected"
               v-tooltip.top="t('servers.workerInfo')"
               icon="pi pi-info" severity="help" rounded outlined @click="openServerControl(data)"
           />
@@ -257,6 +269,10 @@ function refreshServers() {
       v-model:server="server"
   >
   </ServerControlDialog>
+  <ApiKeysDialog
+      v-model:visible="apikeyDialog"
+      v-model:server="server"
+  />
   <ConfirmPopup group="popup"></ConfirmPopup>
   <ConfirmDialog group="restart">
     <template #message="slotProps">

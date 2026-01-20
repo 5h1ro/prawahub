@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import {watchEffect} from '@vue/runtime-core';
 import {reactive, ref} from "vue"
 import type {IHubServerAPI, ServerId, ServerInfo} from "../services/hub/IHubServerAPI";
-import type {Session, SessionConfig, SessionStartRequest} from "../services/waha/dtos";
+import type {ApiKeyRequest, Session, SessionConfig, SessionStartRequest} from "../services/waha/dtos";
 import {computed} from "../.nuxt/imports";
 // @ts-ignore
 import lodash from "lodash";
@@ -327,6 +327,23 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.getAppChatWootLocales(serverId)
     }
 
+    // API Keys
+    async function getApiKeys(serverId: ServerId) {
+        return wahaAPI.getApiKeys(serverId)
+    }
+
+    async function createApiKey(serverId: ServerId, body: ApiKeyRequest) {
+        return wahaAPI.createApiKey(serverId, body)
+    }
+
+    async function updateApiKey(serverId: ServerId, id: string, body: ApiKeyRequest) {
+        return wahaAPI.updateApiKey(serverId, id, body)
+    }
+
+    async function deleteApiKey(serverId: ServerId, id: string) {
+        return wahaAPI.deleteApiKey(serverId, id)
+    }
+
     const allSessions = computed(() => {
             const result = new Array<Session>()
             sessions.forEach((value, key) => {
@@ -387,6 +404,11 @@ export const useServerStore = defineStore('serverStore', () => {
         updateApp,
         deleteApp,
         getAppChatWootLocales,
+        // API Keys
+        getApiKeys,
+        createApiKey,
+        updateApiKey,
+        deleteApiKey,
         // Version
         latestVersion,
         hideDuplicatedSessions,

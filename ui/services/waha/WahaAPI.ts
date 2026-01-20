@@ -1,5 +1,5 @@
 import {ServerId} from "../hub/IHubServerAPI";
-import {App, Locale, Session, SessionConfig, SessionStartRequest} from "./dtos";
+import {ApiKeyDTO, ApiKeyRequest, App, Locale, Session, SessionConfig, SessionStartRequest} from "./dtos";
 import {IWahaAPIClient} from "./IWahaAPIClient";
 import {HTTPRequest} from "./HTTPRequest";
 
@@ -315,6 +315,44 @@ export class WahaAPI {
         return this.api.call(serverId, {
             method: 'GET',
             uri: `/api/apps/chatwoot/locales`,
+            params: {},
+        });
+    }
+
+    //
+    // API Keys
+    //
+
+    getApiKeys(serverId: ServerId): Promise<ApiKeyDTO[]> {
+        return this.api.call(serverId, {
+            method: 'GET',
+            uri: `/api/keys`,
+            params: {},
+        });
+    }
+
+    createApiKey(serverId: ServerId, body: ApiKeyRequest): Promise<ApiKeyDTO> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/keys`,
+            params: {},
+            body: body,
+        });
+    }
+
+    updateApiKey(serverId: ServerId, id: string, body: ApiKeyRequest): Promise<ApiKeyDTO> {
+        return this.api.call(serverId, {
+            method: 'PUT',
+            uri: `/api/keys/${id}`,
+            params: {},
+            body: body,
+        });
+    }
+
+    deleteApiKey(serverId: ServerId, id: string): Promise<void> {
+        return this.api.call(serverId, {
+            method: 'DELETE',
+            uri: `/api/keys/${id}`,
             params: {},
         });
     }
