@@ -189,7 +189,7 @@
   "apiKeys.save": "Save",
   "apiKeys.copied": "Copied",
   "apiKeys.copiedDetail": "API key copied to clipboard",
-  "apiKeys.adminLabel": "Admin",
+  "apiKeys.adminLabel": "*",
   "apiKeys.showKey": "Show key",
   "apiKeys.hideKey": "Hide key",
   "whatsapp.MoreOptions": "More Options",
