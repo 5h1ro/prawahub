@@ -244,15 +244,15 @@ function refreshServers() {
               icon="pi pi-info" severity="help" rounded outlined @click="openServerControl(data)"
           />
           <Button
-              v-tooltip.top="t('servers.editWorker')"
-              icon="pi pi-pencil" severity="success" rounded outlined @click="editServer(data)"/>
-          <Button
               icon="pi pi-replay"
               v-tooltip.top="t('servers.restartWorker')"
               severity="warning"
               rounded outlined
               @click="confirmRestart(data)"
           />
+          <Button
+              v-tooltip.top="t('servers.editWorker')"
+              icon="pi pi-pencil" severity="success" rounded outlined @click="editServer(data)"/>
           <Button
               v-tooltip.top="t('servers.disconnectWorker')"
               icon="pi pi-times" severity="danger" rounded outlined @click="confirmDeleteServer($event, data)"/>
