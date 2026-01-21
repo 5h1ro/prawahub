@@ -21,7 +21,9 @@ const apiKeys = ref<ApiKeyDTO[]>([]);
 const loading = ref(false);
 const apiKeyDialog = ref(false);
 const selectedApiKey = ref<ApiKeyDTO | null>(null);
+const selectedApiKeys = ref<ApiKeyDTO[]>([]);
 const isNewApiKey = ref(false);
+const isBatchRemoving = ref(false);
 const filters = ref({
   id: { value: null, matchMode: FilterMatchMode.CONTAINS },
   key: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -70,6 +72,7 @@ watch(() => props.server, async () => {
 async function loadApiKeys() {
   if (!props.server || !props.server.id) {
     apiKeys.value = [];
+    selectedApiKeys.value = [];
     return;
   }
 
@@ -80,6 +83,7 @@ async function loadApiKeys() {
       undefined,
       t('apiKeys.failedToLoad')
     );
+    selectedApiKeys.value = [];
   } catch (error) {
     console.error('Error loading API keys:', error);
   } finally {
@@ -107,6 +111,7 @@ function editApiKey(apiKey: ApiKeyDTO) {
 
 function confirmDeleteApiKey(apiKey: ApiKeyDTO, event: Event) {
   confirm.require({
+    group: 'popup',
     target: event.currentTarget,
     message: t('apiKeys.deleteConfirm', { id: apiKey.id }),
     icon: 'pi pi-exclamation-triangle',
@@ -121,6 +126,58 @@ function confirmDeleteApiKey(apiKey: ApiKeyDTO, event: Event) {
       // No-op
     }
   });
+}
+
+function confirmDeleteSelected(event: Event) {
+  if (!selectedApiKeys.value.length) {
+    return;
+  }
+  confirm.require({
+    group: 'dialog',
+    target: event.currentTarget,
+    message: t('apiKeys.deleteConfirm', { id: selectedApiKeys.value.length }),
+    icon: 'pi pi-exclamation-triangle',
+    rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+    acceptClass: 'p-button-danger p-button-sm',
+    rejectLabel: t('apiKeys.no'),
+    acceptLabel: t('apiKeys.yesDelete'),
+    accept: async () => {
+      await deleteSelectedApiKeys();
+      confirm.close();
+    },
+    reject: () => {
+      // No-op
+    }
+  });
+}
+
+async function deleteSelectedApiKeys() {
+  if (!props.server?.id || !selectedApiKeys.value.length) {
+    return;
+  }
+  const ids = selectedApiKeys.value.map((apiKey) => apiKey.id);
+  try {
+    isBatchRemoving.value = true;
+    for (const id of ids) {
+      await req(
+        store.deleteApiKey(props.server.id, id),
+        undefined,
+        t('apiKeys.failedToDelete')
+      );
+    }
+    toast.add({
+      severity: 'success',
+      summary: t('apiKeys.deleted'),
+      detail: `${ids.length}`,
+      life: 3000
+    });
+    selectedApiKeys.value = [];
+    await loadApiKeys();
+  } catch (error) {
+    console.error('Error deleting API keys:', error);
+  } finally {
+    isBatchRemoving.value = false;
+  }
 }
 
 async function deleteApiKey(apiKey: ApiKeyDTO) {
@@ -228,7 +285,7 @@ function isKeyRevealed(id: string) {
     <div class="flex justify-content-between align-items-center w-full mb-2">
       <div>
       </div>
-      <div>
+      <div class="flex align-items-center gap-2">
         <Button
           :label="t('apiKeys.createKey')"
           icon="pi pi-plus"
@@ -247,6 +304,7 @@ function isKeyRevealed(id: string) {
       :rows="5"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       v-model:filters="filters"
+      v-model:selection="selectedApiKeys"
       filterDisplay="row"
       showGridlines
     >
@@ -262,6 +320,8 @@ function isKeyRevealed(id: string) {
           />
         </div>
       </template>
+
+      <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
       <Column field="id" :showFilterMenu="false">
         <template #header>
@@ -379,7 +439,21 @@ function isKeyRevealed(id: string) {
         </template>
       </Column>
 
-      <Column style="width: 10rem; text-align: right;">
+      <Column :showFilterMenu="false" style="width: 10rem; text-align: right;">
+        <template #filter>
+          <div class="flex justify-content-end">
+            <Button
+              icon="pi pi-trash"
+              v-tooltip.top="t('apiKeys.deleteKey')"
+              severity="danger"
+              rounded
+              outlined
+              :disabled="selectedApiKeys.length === 0 || isBatchRemoving"
+              :loading="isBatchRemoving"
+              @click="confirmDeleteSelected($event)"
+            />
+          </div>
+        </template>
         <template #body="{ data }">
           <div class="flex gap-2 justify-content-end">
             <Button
@@ -403,7 +477,8 @@ function isKeyRevealed(id: string) {
       </Column>
     </DataTable>
 
-    <ConfirmPopup></ConfirmPopup>
+    <ConfirmPopup group="popup"></ConfirmPopup>
+    <ConfirmDialog group="dialog"></ConfirmDialog>
 
     <ApiKeyEdit
       v-if="selectedApiKey"
