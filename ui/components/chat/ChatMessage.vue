@@ -94,7 +94,6 @@ function view() {
         <div v-if="showDetails" class="my-2">
           <hr/>
           <JsonDataViewer :data="message"></JsonDataViewer>
-          <hr/>
         </div>
       </div>
     </Chip>
