@@ -11,6 +11,8 @@
   "chat.header": "Header",
   "chat.last20Chats": "20 Obrolan Terakhir",
   "chat.aboutChatUI": "ℹ️ Tentang UI Obrolan",
+  "chat.message.media": "Pesan media, buka aplikasi WhatsApp untuk melihat pesannya.",
+  "chat.message.not-supported": "Pesan tidak didukung, buka aplikasi WhatsApp untuk melihatnya.",
   "chat.promo.exampleChatsUI": "Ini adalah contoh UI Obrolan.",
   "chat.promo.implementFeatures": "Anda dapat mengimplementasikan Obrolan Langsung, Beberapa Agen, dan fitur lainnya menggunakan",
   "chat.promo.wahaAPI": "WAHA API",

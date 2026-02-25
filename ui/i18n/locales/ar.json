@@ -11,6 +11,8 @@
   "chat.header": "الترويسة",
   "chat.last20Chats": "آخر 20 محادثة",
   "chat.aboutChatUI": "ℹ️ حول واجهة المحادثة",
+  "chat.message.media": "رسالة وسائط، افتح تطبيق واتساب لعرض الرسالة.",
+  "chat.message.not-supported": "الرسالة غير مدعومة، افتح تطبيق واتساب لعرضها.",
   "chat.promo.exampleChatsUI": "هذا مثال لواجهة المحادثات.",
   "chat.promo.implementFeatures": "يمكنك تنفيذ الدردشة المباشرة، وكلاء متعددين، والمزيد من الميزات باستخدام",
   "chat.promo.wahaAPI": "WAHA API",

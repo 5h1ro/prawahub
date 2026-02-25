@@ -11,6 +11,8 @@
   "chat.header": "Cabeçalho",
   "chat.last20Chats": "Últimas 20 Conversas",
   "chat.aboutChatUI": "ℹ️ Sobre a Interface de Chat",
+  "chat.message.media": "Mensagem de mídia, abra o app do WhatsApp para ver a mensagem.",
+  "chat.message.not-supported": "Mensagem não suportada, abra o app do WhatsApp para vê-la.",
   "chat.promo.exampleChatsUI": "É um exemplo de Interface de Conversas.",
   "chat.promo.implementFeatures": "Você pode implementar Chat ao Vivo, Múltiplos Agentes e mais recursos usando",
   "chat.promo.wahaAPI": "API WAHA",

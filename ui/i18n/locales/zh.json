@@ -11,6 +11,8 @@
   "chat.header": "标题",
   "chat.last20Chats": "最近 20 个聊天",
   "chat.aboutChatUI": "ℹ️ 关于聊天界面",
+  "chat.message.media": "媒体消息，请打开 WhatsApp 应用查看该消息。",
+  "chat.message.not-supported": "消息不受支持，请打开 WhatsApp 应用查看。",
   "chat.promo.exampleChatsUI": "这是一个聊天界面的示例。",
   "chat.promo.implementFeatures": "你可以使用",
   "chat.promo.wahaAPI": "WAHA API",

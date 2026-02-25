@@ -11,6 +11,8 @@
   "chat.header": "হেডার",
   "chat.last20Chats": "শেষ ২০টি চ্যাট",
   "chat.aboutChatUI": "ℹ️ চ্যাট UI সম্পর্কে",
+  "chat.message.media": "মিডিয়া বার্তা, বার্তাটি দেখতে হোয়াটসঅ্যাপ অ্যাপ খুলুন।",
+  "chat.message.not-supported": "বার্তাটি সমর্থিত নয়, এটি দেখতে হোয়াটসঅ্যাপ অ্যাপ খুলুন।",
   "chat.promo.exampleChatsUI": "এটি একটি উদাহরণ চ্যাট UI।",
   "chat.promo.implementFeatures": "আপনি লাইভ চ্যাট, একাধিক এজেন্ট এবং আরও বৈশিষ্ট্য বাস্তবায়ন করতে পারেন",
   "chat.promo.wahaAPI": "WAHA API",

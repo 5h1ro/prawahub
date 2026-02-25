@@ -358,7 +358,7 @@ const globalFilterFields = computed(
         :header="t('sessions.me')"
     >
       <template #body="{ data }">
-        <div class="text-center">
+        <div class="flex justify-content-center">
           <SessionChip :session="data"></SessionChip>
         </div>
       </template>

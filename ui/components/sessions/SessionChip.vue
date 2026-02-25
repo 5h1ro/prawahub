@@ -22,6 +22,7 @@ onMounted(() => {
 <template>
   <ContactChip
       :id="props.session?.me?.id"
+      :id2="props.session?.me?.lid"
       :name="props.session?.me?.pushName"
       :image="profilePicture"
   />

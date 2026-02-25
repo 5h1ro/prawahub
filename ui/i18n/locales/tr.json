@@ -11,6 +11,8 @@
   "chat.header": "Başlık",
   "chat.last20Chats": "Son 20 Sohbet",
   "chat.aboutChatUI": "ℹ️ Sohbet Arayüzü Hakkında",
+  "chat.message.media": "Medya mesajı, mesajı görmek için WhatsApp uygulamasını açın.",
+  "chat.message.not-supported": "Mesaj desteklenmiyor, onu görmek için WhatsApp uygulamasını açın.",
   "chat.promo.exampleChatsUI": "Bu bir örnek Sohbet Arayüzüdür.",
   "chat.promo.implementFeatures": "Canlı Sohbet, Çoklu Ajanlar ve daha fazla özelliği şunları kullanarak uygulayabilirsiniz",
   "chat.promo.wahaAPI": "WAHA API",

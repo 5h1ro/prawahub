@@ -11,6 +11,8 @@
   "chat.header": "כותרת",
   "chat.last20Chats": "20 הצ'אטים האחרונים",
   "chat.aboutChatUI": "ℹ️ אודות ממשק הצ'אט",
+  "chat.message.media": "הודעת מדיה, פתח את אפליקציית WhatsApp כדי לראות את ההודעה.",
+  "chat.message.not-supported": "ההודעה אינה נתמכת, פתח את אפליקציית WhatsApp כדי לראות אותה.",
   "chat.promo.exampleChatsUI": "זהו ממשק צ'אט לדוגמה.",
   "chat.promo.implementFeatures": "אתה יכול ליישם צ'אט חי, סוכנים מרובים, ועוד תכונות באמצעות",
   "chat.promo.wahaAPI": "WAHA API",

@@ -11,6 +11,8 @@
   "chat.header": "Intestazione",
   "chat.last20Chats": "Ultime 20 chat",
   "chat.aboutChatUI": "ℹ️ Informazioni sulla Chat UI",
+  "chat.message.media": "Messaggio multimediale, apri l'app WhatsApp per vedere il messaggio.",
+  "chat.message.not-supported": "Messaggio non supportato, apri l'app WhatsApp per vederlo.",
   "chat.promo.exampleChatsUI": "È un esempio di Chat UI.",
   "chat.promo.implementFeatures": "Puoi implementare chat dal vivo, più agenti e altre funzionalità usando",
   "chat.promo.wahaAPI": "API WAHA",

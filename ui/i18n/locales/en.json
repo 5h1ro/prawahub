@@ -11,6 +11,8 @@
   "chat.header": "Header",
   "chat.last20Chats": "Last 20 Chats",
   "chat.aboutChatUI": "ℹ️ About Chat UI",
+  "chat.message.media": "Media Message, open WhatsApp App to see message.",
+  "chat.message.not-supported": "Message not supported, open WhatsApp App to see the message.",
   "chat.promo.exampleChatsUI": "It's an example Chats UI.",
   "chat.promo.implementFeatures": "You can implement Live Chat, Multiple Agents, and more features using",
   "chat.promo.wahaAPI": "WAHA API",

@@ -14,7 +14,8 @@ import ContactChip from "../sessions/ContactChip.vue";
   <div class="flex justify-content-between gap-2 my-2">
     <div class="flex gap-2 align-items-center">
       <ContactChip
-          :id="chat.name || chat.id"
+          :id="chat.id"
+          :name="chat.name"
           :image="chat.picture"
       />
     </div>
@@ -24,7 +25,7 @@ import ContactChip from "../sessions/ContactChip.vue";
     ></RefreshButton>
 
     <ContactChip
-        :id="me?.pushName"
+        :name="me?.pushName"
         :image="mePicture"
     />
   </div>

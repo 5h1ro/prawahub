@@ -11,6 +11,8 @@
   "chat.header": "En-tête",
   "chat.last20Chats": "20 dernières discussions",
   "chat.aboutChatUI": "ℹ️ À propos de l'interface de chat",
+  "chat.message.media": "Message multimédia, ouvrez l’application WhatsApp pour voir le message.",
+  "chat.message.not-supported": "Message non pris en charge, ouvrez l’application WhatsApp pour le voir.",
   "chat.promo.exampleChatsUI": "C'est un exemple d'interface de discussions.",
   "chat.promo.implementFeatures": "Vous pouvez implémenter le chat en direct, plusieurs agents et d'autres fonctionnalités en utilisant",
   "chat.promo.wahaAPI": "API WAHA",

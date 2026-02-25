@@ -20,7 +20,7 @@ watch(() => props.messages, scrollToBottom)
   <div class="my-2 pb-3" style="width: 100%; height: 100%; overflow: auto;" ref="scroll">
     <div class="flex flex-column gap-2">
       <template v-for="message in messages">
-        <div :class="{'flex justify-content-end': message.fromMe}" v-if="message.body">
+        <div>
           <ChatMessage :key="message.key" :message="message"/>
         </div>
       </template>

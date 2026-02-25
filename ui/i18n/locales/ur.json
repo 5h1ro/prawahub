@@ -11,6 +11,8 @@
   "chat.header": "ہیڈر",
   "chat.last20Chats": "آخری 20 چیٹس",
   "chat.aboutChatUI": "ℹ️ چیٹ یو آئی کے بارے میں",
+  "chat.message.media": "میڈیا پیغام، پیغام دیکھنے کے لیے واٹس ایپ ایپ کھولیں۔",
+  "chat.message.not-supported": "پیغام معاونت یافتہ نہیں، اسے دیکھنے کے لیے واٹس ایپ ایپ کھولیں۔",
   "chat.promo.exampleChatsUI": "یہ ایک مثالی چیٹس یو آئی ہے۔",
   "chat.promo.implementFeatures": "آپ لائیو چیٹ، متعدد ایجنٹس، اور مزید خصوصیات استعمال کر سکتے ہیں",
   "chat.promo.wahaAPI": "واہا اے پی آئی",

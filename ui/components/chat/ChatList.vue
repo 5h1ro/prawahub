@@ -14,6 +14,7 @@ const emit = defineEmits(['clickOnChat',
   <DataTable
       :value="chats"
       :loading="pending"
+      style="width: 100%"
       class="p-datatable--clickable"
       @row-click="emit('clickOnChat', $event.data)"
       scrollable

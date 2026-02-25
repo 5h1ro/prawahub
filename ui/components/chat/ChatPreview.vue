@@ -20,7 +20,8 @@ const textPreview = computed(() => {
 
 <template>
   <ContactChip
-      :id="props.name || props.id"
+      :id="props.id"
+      :name="props.name"
       :image="props.picture"
   />
   <div class="flex gap-1 mt-1">

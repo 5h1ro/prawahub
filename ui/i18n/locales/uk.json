@@ -11,6 +11,8 @@
   "chat.header": "Заголовок",
   "chat.last20Chats": "Останні 20 чатів",
   "chat.aboutChatUI": "ℹ️ Про інтерфейс чату",
+  "chat.message.media": "Медійне повідомлення, відкрийте застосунок WhatsApp, щоб переглянути повідомлення.",
+  "chat.message.not-supported": "Повідомлення не підтримується, відкрийте застосунок WhatsApp, щоб його переглянути.",
   "chat.promo.exampleChatsUI": "Це приклад інтерфейсу чатів.",
   "chat.promo.implementFeatures": "Ви можете реалізувати Живий чат, Кілька агентів та інші функції за допомогою",
   "chat.promo.wahaAPI": "WAHA API",

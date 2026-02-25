@@ -11,7 +11,7 @@ const props = defineProps({
   },
   suffix: {
     type: String,
-    required: true,
+    required: false,
   },
 })
 
