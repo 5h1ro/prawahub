@@ -10,8 +10,6 @@ const languages = {}
 for (const l of locales.value) {
   languages[l.code] = l.name
 }
-console.log(locales.value)
-console.log(languages)
 
 // Function to toggle the overlay panel
 const toggle = (event) => {
