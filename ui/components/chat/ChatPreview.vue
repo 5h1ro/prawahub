@@ -25,7 +25,7 @@ const textPreview = computed(() => {
       :image="props.picture"
   />
   <div class="flex gap-1 mt-1">
-    <MessageAck v-if="textPreview" :ack="message.ack" class="pb-2"/>
+    <MessageAck v-if="textPreview && message.fromMe" :ack="message.ack" class="pb-2"/>
     {{ textPreview }}
   </div>
 </template>
