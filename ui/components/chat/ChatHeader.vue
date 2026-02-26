@@ -24,10 +24,10 @@ import ContactChip from "../sessions/ContactChip.vue";
         :refreshing="fetching"
     ></RefreshButton>
 
-<!--    <ContactChip-->
-<!--        :name="me?.pushName || me?.id"-->
-<!--        :image="mePicture"-->
-<!--    />-->
+    <ContactChip
+        :name="me?.pushName || me?.id"
+        :image="mePicture"
+    />
   </div>
 
 </template>

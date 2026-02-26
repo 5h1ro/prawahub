@@ -141,10 +141,27 @@ function clickOnChat(chat) {
   selectedChat.value = chat
 }
 
-function sendText(text) {
-  return store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text).then(() => {
-    sleep(100)
-  })
+async function sendText(text) {
+  if (!selectedChat.value) {
+    return
+  }
+  try {
+    await store.readChatMessages(
+        session.value.server.id,
+        session.value.name,
+        selectedChat.value.id,
+    )
+  } catch (e) {
+    console.warn('Failed to mark chat as read before sending text', e)
+    toast.add({
+      severity: 'warn',
+      summary: $t('chat.readFailedTitle'),
+      detail: $t('chat.readFailedDescription'),
+      life: 4000,
+    })
+  }
+  await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text)
+  await sleep(100)
 }
 
 const showPromo = ref(false)

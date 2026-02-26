@@ -74,7 +74,7 @@ function clickOnChat(chat) {
 
 const sendingText = ref(false)
 
-function sendText() {
+async function sendText() {
   if (!text.value) {
     toast.add({
       severity: "warn",
@@ -85,14 +85,29 @@ function sendText() {
     return
   }
   sendingText.value = true
-  // send text
-  store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text.value).then(async () => {
+  try {
+    await store.readChatMessages(
+        session.value.server.id,
+        session.value.name,
+        selectedChat.value.id,
+    )
+  } catch (e) {
+    console.warn('Failed to mark chat as read before sending text', e)
+    toast.add({
+      severity: 'warn',
+      summary: $t('chat.readFailedTitle'),
+      detail: $t('chat.readFailedDescription'),
+      life: 4000
+    })
+  }
+  try {
+    await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text.value)
     text.value = ""
     await sleep(1000)
     fetchMessages()
-  }).finally(() => {
+  } finally {
     sendingText.value = false
-  })
+  }
 }
 </script>
 

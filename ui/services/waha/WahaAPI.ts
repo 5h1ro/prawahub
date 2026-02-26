@@ -211,6 +211,15 @@ export class WahaAPI {
         });
     }
 
+    readChatMessages(serverId: ServerId, sessionName: string, chatId: string, body?: { messages?: number, days?: number }): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/chats/${chatId}/messages/read`,
+            params: {},
+            body: body || {},
+        });
+    }
+
     sendText(serverId: ServerId, sessionName: string, chatId: string, text: string): Promise<any> {
         const body = {
             session: sessionName,

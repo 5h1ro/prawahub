@@ -12,6 +12,8 @@
   "chat.last20Chats": "Last 20 Chats",
   "chat.mergeToggleLabel": "Merge",
   "chat.mergeToggleTooltip": "Merge lid and c.us chats referencing the same contact.",
+  "chat.readFailedTitle": "Couldn't mark chat as read",
+  "chat.readFailedDescription": "We'll still send your reply.",
   "chat.aboutChatUI": "ℹ️ About Chat UI",
   "chat.message.media": "Media Message, open WhatsApp App to see message.",
   "chat.message.not-supported": "Message not supported, open WhatsApp App to see the message.",
