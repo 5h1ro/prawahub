@@ -84,7 +84,7 @@ function view() {
                 @click.prevent="view">
               <i
                   class="pi"
-                  :class="showDetails? 'pi-eye-slash' : 'pi-eye'"
+                  :class="showDetails? 'pi-code' : 'pi-code'"
               > </i>
             </a>
           </div>
