@@ -2,3 +2,4 @@
   - You can find source code and docs in `~/git/primevue` - `v3` branch
 - Try to use "custom" styles and custom components as less possible - primevue style are great
 - Check `openapi.json` for API references we have and dto
+- When asked to touch i18n, run `node scripts/check-i18n.js`, prune unused keys only after confirming they are not referenced in unusual ways (log it if you have to keep them), and translate/add/remove keys in the specific target locale rather than copying English.
