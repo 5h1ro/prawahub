@@ -11,14 +11,6 @@ import WebSocketStatus from "../events/WebSocketStatus.vue";
 
 const visible = defineModel("visible");
 const session = defineModel("session");
-// reset values on visible
-watch(visible, () => {
-  if (!visible.value) {
-    selectedChat.value = null
-    messages.value = []
-    stopClient()
-  }
-})
 
 const toast = useToast();
 const store = useServerStore()
@@ -38,6 +30,9 @@ const {
           undefined,
           mergeOverview.value,
       )
+    },
+    {
+      immediate: false,
     })
 
 const selectedChat = ref(null)
@@ -123,8 +118,8 @@ function onMergeToggle(value) {
   refreshChats()
 }
 
-watch(session, () => {
-  if (!session.value?.me?.id) {
+function initializeDialog() {
+  if (!session.value?.server?.id || !session.value?.name) {
     return;
   }
   mergeOverview.value = true
@@ -132,10 +127,34 @@ watch(session, () => {
   startClient()
   refreshChats()
 
+  if (!session.value?.me?.id) {
+    profilePicture.value = null
+    return
+  }
   store.getProfilePicture(session.value.server.id, session.value.name, session.value.me.id).then((data) => {
     profilePicture.value = data.profilePictureURL
   })
-})
+}
+
+watch(
+    () => [visible.value, session.value?.server?.id, session.value?.name],
+    ([isVisible, serverId, sessionName], [wasVisible, previousServerId, previousSessionName] = []) => {
+      if (!isVisible) {
+        selectedChat.value = null
+        messages.value = []
+        stopClient()
+        return
+      }
+
+      const becameVisible = !wasVisible && isVisible
+      const sessionChangedWhileOpen =
+          wasVisible && isVisible && (serverId !== previousServerId || sessionName !== previousSessionName)
+
+      if (becameVisible || sessionChangedWhileOpen) {
+        initializeDialog()
+      }
+    }
+)
 
 function clickOnChat(chat) {
   selectedChat.value = chat
