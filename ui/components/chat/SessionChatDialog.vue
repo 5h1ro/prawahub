@@ -15,25 +15,48 @@ const session = defineModel("session");
 const toast = useToast();
 const store = useServerStore()
 const mergeOverview = ref(true)
-const {
-  data: chats,
-  pending,
-  error,
-  refresh: refreshChats
-} = useAsyncData(
-    `session-${session.value.name}-chats`,
-    async () => {
-      return await store.getChatsOverview(
-          session.value.server.id,
-          session.value.name,
-          20,
-          undefined,
-          mergeOverview.value,
-      )
-    },
-    {
-      immediate: false,
-    })
+const chats = ref([])
+const pending = ref(false)
+const chatsOffset = ref(0)
+const loadingMoreChats = ref(false)
+
+async function refreshChats() {
+  chatsOffset.value = 0
+  pending.value = true
+  try {
+    const data = await store.getChatsOverview(
+        session.value.server.id,
+        session.value.name,
+        10,
+        undefined,
+        mergeOverview.value,
+    )
+    chats.value = data || []
+  } finally {
+    pending.value = false
+  }
+}
+
+async function loadMoreChats() {
+  if (loadingMoreChats.value) return
+  loadingMoreChats.value = true
+  try {
+    const nextOffset = chatsOffset.value + 10
+    const data = await store.getChatsOverview(
+        session.value.server.id,
+        session.value.name,
+        10,
+        nextOffset,
+        mergeOverview.value,
+    )
+    if (data && data.length > 0) {
+      chatsOffset.value = nextOffset
+      chats.value = [...chats.value, ...data]
+    }
+  } finally {
+    loadingMoreChats.value = false
+  }
+}
 
 const selectedChat = ref(null)
 const messages = ref([])
@@ -259,6 +282,8 @@ const showPromo = ref(false)
             :chats="chats"
             :pending="pending"
             :merge="mergeOverview"
+            :loadMoreChats="loadMoreChats"
+            :loadingMoreChats="loadingMoreChats"
             @click-on-chat="clickOnChat"
             @refresh-chats="refreshChats"
             @update:merge="onMergeToggle"

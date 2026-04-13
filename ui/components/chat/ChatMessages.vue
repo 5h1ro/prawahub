@@ -42,8 +42,8 @@ async function handleLoadEarlier() {
     <div class="flex flex-column gap-2">
       <div class="flex justify-content-center py-2">
         <Button
-            v-tooltip.bottom="!hasEarlierMessages ? $t('chat.noEarlierMessages') : undefined"
-            :label="$t('chat.loadEarlierMessages')"
+            v-tooltip.bottom="!hasEarlierMessages ? $t('chat.noMoreMessages') : undefined"
+            :label="$t('chat.loadMoreMessages')"
             icon="pi pi-arrow-up"
             size="small"
             outlined

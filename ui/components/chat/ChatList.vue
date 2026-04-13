@@ -5,7 +5,9 @@ const props = defineProps({
       merge: {
         type: Boolean,
         default: true,
-      }
+      },
+      loadMoreChats: Function,
+      loadingMoreChats: Boolean,
     }
 )
 const emit = defineEmits(['clickOnChat',
@@ -51,15 +53,23 @@ const emit = defineEmits(['clickOnChat',
           </div>
         </div>
       </template>
-      <template #body="{ data }">
+      <template #body="{ data, index }">
         <ChatPreview
             :id="data.id"
             :name="data.name"
             :picture="data.picture"
             :message="data.lastMessage"
-        >
-
-        </ChatPreview>
+        />
+        <div v-if="index === chats.length - 1" class="flex justify-content-center py-2" @click.stop>
+          <Button
+              :label="$t('chat.showMoreChats')"
+              icon="pi pi-arrow-down"
+              size="small"
+              outlined
+              :loading="loadingMoreChats"
+              @click="loadMoreChats"
+          />
+        </div>
       </template>
     </Column>
   </DataTable>
