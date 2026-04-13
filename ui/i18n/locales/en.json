@@ -14,6 +14,8 @@
   "chat.mergeToggleTooltip": "Merge lid and c.us chats referencing the same contact.",
   "chat.readFailedTitle": "Couldn't mark chat as read",
   "chat.readFailedDescription": "We'll still send your reply.",
+  "chat.loadEarlierMessages": "Load Earlier Messages",
+  "chat.noEarlierMessages": "No earlier messages",
   "chat.aboutChatUI": "ℹ️ About Chat UI",
   "chat.message.media": "Media Message, open WhatsApp App to see message.",
   "chat.message.not-supported": "Message not supported, open WhatsApp App to see the message.",

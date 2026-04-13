@@ -46,6 +46,8 @@ watch(selectedChat, () => {
   fetchMessages()
 })
 const fetchingMessages = ref(false)
+const loadingEarly = ref(false)
+const hasEarlierMessages = ref(true)
 const limit = ref(20)
 const offset = ref(0)
 
@@ -95,22 +97,48 @@ function stopClient() {
 
 
 function fetchMessages() {
+  offset.value = 0
+  hasEarlierMessages.value = true
   fetchingMessages.value = true
   store.getChatsMessages(
       session.value.server.id,
       session.value.name,
       selectedChat.value.id,
       limit.value,
-      offset.value,
+      0,
       false,
       mergeOverview.value,
   ).then((data) => {
-    // revert
     messages.value = data.reverse()
   }).finally(() => {
         fetchingMessages.value = false
       }
   )
+}
+
+async function loadEarlyMessages() {
+  if (loadingEarly.value) return
+  loadingEarly.value = true
+  try {
+    const nextOffset = offset.value + limit.value
+    const data = await store.getChatsMessages(
+        session.value.server.id,
+        session.value.name,
+        selectedChat.value.id,
+        limit.value,
+        nextOffset,
+        false,
+        mergeOverview.value,
+    )
+    if (data.length > 0) {
+      offset.value = nextOffset
+      messages.value = [...data.reverse(), ...messages.value]
+    } else {
+      hasEarlierMessages.value = false
+    }
+  } finally {
+    loadingEarly.value = false
+  }
 }
 
 function onMergeToggle(value) {
@@ -249,7 +277,12 @@ const showPromo = ref(false)
             </ChatHeader>
             <hr>
 
-            <ChatMessages :messages="messages"></ChatMessages>
+            <ChatMessages
+                :messages="messages"
+                :loadEarlier="loadEarlyMessages"
+                :loadingEarlier="loadingEarly"
+                :hasEarlierMessages="hasEarlierMessages"
+            ></ChatMessages>
 
             <ChatInputFooter
                 :disabled="!selectedChat || fetchingMessages"
