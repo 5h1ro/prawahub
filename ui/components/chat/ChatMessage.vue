@@ -56,14 +56,40 @@ const isFile = computed(() => !!(mediaFilename.value || props.message?.media?.fi
 
 function initThumbnail() {
   if (!props.message?.hasMedia) return
-  // Show _data thumbnail instantly without any API call.
-  // _data.body is always a JPEG thumbnail for image/video types (WEBJS only).
+  // WEBJS: _data.body is always a JPEG thumbnail for image/video types.
   const dataBody = props.message._data?.body
   const dataMime = props.message._data?.mimetype
   const dataType = props.message._data?.type
   if (dataBody && (dataType === 'image' || dataType === 'video')) {
     mediaMimetype.value = dataMime || (dataType === 'image' ? 'image/jpeg' : 'video/mp4')
     mediaThumbnailUrl.value = `data:image/jpeg;base64,${dataBody}`
+    return
+  }
+  // GOWS: _data.Message contains the raw proto message structure.
+  const rawMsg = props.message._data?.Message
+  if (!rawMsg) return
+  const imgMsg = rawMsg.imageMessage
+  const vidMsg = rawMsg.videoMessage
+  const docMsg = rawMsg.documentMessage
+  const audMsg = rawMsg.audioMessage
+  if (imgMsg) {
+    mediaMimetype.value = imgMsg.mimetype || 'image/jpeg'
+    if (imgMsg.JPEGThumbnail) {
+      mediaThumbnailUrl.value = `data:image/jpeg;base64,${imgMsg.JPEGThumbnail}`
+    }
+  } else if (vidMsg) {
+    mediaMimetype.value = vidMsg.mimetype || 'video/mp4'
+    if (vidMsg.JPEGThumbnail) {
+      mediaThumbnailUrl.value = `data:image/jpeg;base64,${vidMsg.JPEGThumbnail}`
+    }
+  } else if (docMsg) {
+    mediaMimetype.value = docMsg.mimetype || 'application/octet-stream'
+    if (docMsg.fileName) mediaFilename.value = docMsg.fileName
+    if (docMsg.JPEGThumbnail) {
+      mediaThumbnailUrl.value = `data:image/jpeg;base64,${docMsg.JPEGThumbnail}`
+    }
+  } else if (audMsg) {
+    mediaMimetype.value = audMsg.mimetype || 'audio/ogg'
   }
 }
 
