@@ -53,14 +53,16 @@ const emit = defineEmits(['clickOnChat',
           </div>
         </div>
       </template>
-      <template #body="{ data, index }">
+      <template #body="{ data }">
         <ChatPreview
             :id="data.id"
             :name="data.name"
             :picture="data.picture"
             :message="data.lastMessage"
         />
-        <div v-if="index === chats.length - 1" class="flex justify-content-center py-2" @click.stop>
+      </template>
+      <template #footer>
+        <div class="flex justify-content-center py-2">
           <Button
               :label="$t('chat.showMoreChats')"
               icon="pi pi-arrow-down"
