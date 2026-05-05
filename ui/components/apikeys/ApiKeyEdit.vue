@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { ApiKeyDTO } from '../../services/waha/dtos';
+import type { ApiKeyDTO, SessionActions } from '../../services/waha/dtos';
+import ApiKeyPermissions from './ApiKeyPermissions.vue';
 
 const { t } = useI18n();
 
@@ -56,8 +57,16 @@ const isAdmin = computed({
     apiKey.value = {
       ...apiKey.value,
       isAdmin: val,
-      session: val ? null : apiKey.value?.session
+      session: val ? null : apiKey.value?.session,
+      actions: val ? null : apiKey.value?.actions,
     } as ApiKeyDTO;
+  }
+});
+
+const actionsModel = computed<SessionActions | null>({
+  get: () => apiKey.value?.actions ?? null,
+  set: (val) => {
+    apiKey.value = { ...apiKey.value, actions: val } as ApiKeyDTO;
   }
 });
 
@@ -137,6 +146,11 @@ function cancel() {
         <small class="p-error" v-if="submitted && !apiKey.session">
           {{ t('apiKeys.sessionRequired') }}
         </small>
+      </div>
+
+      <div class="field" v-if="!isAdmin">
+        <label><b>{{ t('apiKeys.actions') }}</b></label>
+        <ApiKeyPermissions v-model="actionsModel" />
       </div>
     </div>
 

@@ -205,6 +205,7 @@ function toRequest(apiKey: ApiKeyDTO): ApiKeyRequest {
     isAdmin: isAdmin,
     session: isAdmin ? null : apiKey.session || null,
     isActive: apiKey.isActive,
+    actions: isAdmin ? null : apiKey.actions ?? null,
   };
 }
 

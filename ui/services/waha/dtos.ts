@@ -104,10 +104,20 @@ export interface App {
     enabled?: boolean;
 }
 
+export interface SessionActions {
+    read?: boolean;
+    send?: boolean;
+    control?: boolean;
+    setting?: boolean;
+    app?: boolean;
+    delete?: boolean;
+}
+
 export interface ApiKeyRequest {
     isAdmin: boolean;
     session: string | null;
     isActive: boolean;
+    actions?: SessionActions | null;
 }
 
 export interface ApiKeyDTO {
@@ -116,6 +126,7 @@ export interface ApiKeyDTO {
     isActive: boolean;
     isAdmin: boolean;
     session?: string | null;
+    actions?: SessionActions | null;
 }
 
 export enum LinkPreview {
