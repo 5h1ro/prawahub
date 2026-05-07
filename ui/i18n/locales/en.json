@@ -230,6 +230,8 @@
   "apiKeys.showKey": "Show key",
   "apiKeys.hideKey": "Hide key",
   "apiKeys.actions": "Permissions",
+  "apiKeys.actions_media": "WhatsApp Media",
+  "apiKeys.actions_media_desc": "Download files from WhatsApp session (all API keys have media access for direct links)",
   "apiKeys.actions_read": "WhatsApp Read",
   "apiKeys.actions_read_desc": "Read WhatsApp data: messages, contacts, chats, groups",
   "apiKeys.actions_send": "WhatsApp Send",

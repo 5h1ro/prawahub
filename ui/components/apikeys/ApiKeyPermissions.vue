@@ -40,6 +40,18 @@ function setAction(key: keyof SessionActions, val: boolean) {
 <template>
   <div class="permissions-grid">
     <div class="permissions-col">
+      <div class="permission-row">
+        <Checkbox
+          inputId="perm-media"
+          :modelValue="true"
+          :binary="true"
+          :disabled="true"
+        />
+        <label for="perm-media" class="permission-label permission-label--disabled">
+          <span class="permission-name">{{ t('apiKeys.actions_media') }}</span>
+          <span class="permission-desc">{{ t('apiKeys.actions_media_desc') }}</span>
+        </label>
+      </div>
       <div v-for="action in ['read', 'send']" :key="action" class="permission-row">
         <Checkbox
           :inputId="`perm-${action}`"
@@ -95,6 +107,11 @@ function setAction(key: keyof SessionActions, val: boolean) {
   flex-direction: column;
   cursor: pointer;
   line-height: 1.3;
+
+  &--disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
 
   .permission-name {
     font-weight: 500;
