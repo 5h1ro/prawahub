@@ -1,5 +1,21 @@
 <script setup>
-const props = defineProps(["data"])
+const props = defineProps(["data", "apiKey"])
+
+const mediaUrl = computed(() => {
+  const event = props.data.event
+  const payload = props.data.payload
+  if (!["message", "message.any", "message.ack", "message.reaction"].includes(event)) {
+    return null
+  }
+  return payload.media?.url || null
+})
+
+const mediaUrlWithKey = computed(() => {
+  if (!mediaUrl.value) return null
+  if (!props.apiKey) return mediaUrl.value
+  return `${mediaUrl.value}?x-api-key=${props.apiKey}`
+})
+
 const values = computed(() => {
   const payload = props.data.payload
   const data = props.data
@@ -20,7 +36,6 @@ const values = computed(() => {
         payload.body,
         event === "message.ack" ? payload.ackName : null,
         event === "message.ack" ? null : payload.reaction?.text,
-        payload.media?.url ? "🖼" : null,
       ]
     case "poll.vote":
       return [
@@ -87,9 +102,17 @@ const text = computed(() => {
 </script>
 
 <template>
-  <!--  key: value of values, one line for all -->
   <div class="truncate">
     <code>{{ text }}</code>
+    🖼️
+    <a
+        v-if="mediaUrlWithKey"
+        :href="mediaUrlWithKey"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="media-link"
+        title="Open media"
+    > <i class="pi pi-download"></i></a>
   </div>
 
 </template>
@@ -102,4 +125,12 @@ const text = computed(() => {
   text-overflow: ellipsis;
 }
 
+.media-link {
+  margin-left: 0.4rem;
+  text-decoration: none;
+  font-size: 1rem;
+  &:hover {
+    opacity: 0.7;
+  }
+}
 </style>

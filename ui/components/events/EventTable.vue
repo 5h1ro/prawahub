@@ -17,6 +17,10 @@ const toast = useToast();
 const store = useServerStore()
 const {servers} = storeToRefs(store)
 const selectedServer = ref(null)
+const currentApiKey = computed(() => {
+  if (!selectedServer.value) return null
+  return store.getServer(selectedServer.value)?.connection?.key || null
+})
 const { t } = useI18n();
 
 
@@ -327,7 +331,7 @@ function download(event) {
         :show-filter-menu="false"
     >
       <template #body="{data}">
-        <EventDetail :data="data"></EventDetail>
+        <EventDetail :data="data" :api-key="currentApiKey"></EventDetail>
       </template>
     </Column>
 
