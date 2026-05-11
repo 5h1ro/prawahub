@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ 关于聊天界面",
   "chat.message.media": "在手机上打开以查看完整媒体。",
   "chat.message.not-supported": "消息不受支持，请打开 WhatsApp 应用查看。",
+  "chat.message.e2e-notification": "端对端加密设置已更改。 https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "阅后即焚消息设置已更新。 https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "这是一个聊天界面的示例。",
   "chat.promo.implementFeatures": "你可以使用",
   "chat.promo.wahaAPI": "WAHA API",

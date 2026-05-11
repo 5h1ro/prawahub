@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Sohbet Arayüzü Hakkında",
   "chat.message.media": "Tam medyayı görmek için telefonda açın.",
   "chat.message.not-supported": "Mesaj desteklenmiyor, onu görmek için WhatsApp uygulamasını açın.",
+  "chat.message.e2e-notification": "Uçtan uca şifreleme ayarları değişti. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "Kaybolan mesajlar ayarı güncellendi. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "Bu bir örnek Sohbet Arayüzüdür.",
   "chat.promo.implementFeatures": "Canlı Sohbet, Çoklu Ajanlar ve daha fazla özelliği şunları kullanarak uygulayabilirsiniz",
   "chat.promo.wahaAPI": "WAHA API",

@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ À propos de l'interface de chat",
   "chat.message.media": "Ouvrir sur le téléphone pour voir le média complet.",
   "chat.message.not-supported": "Message non pris en charge, ouvrez l’application WhatsApp pour le voir.",
+  "chat.message.e2e-notification": "Les paramètres de chiffrement de bout en bout ont changé. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "Le paramètre des messages éphémères a été mis à jour. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "C'est un exemple d'interface de discussions.",
   "chat.promo.implementFeatures": "Vous pouvez implémenter le chat en direct, plusieurs agents et d'autres fonctionnalités en utilisant",
   "chat.promo.wahaAPI": "API WAHA",

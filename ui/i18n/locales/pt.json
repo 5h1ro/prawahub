@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Sobre a Interface de Chat",
   "chat.message.media": "Abrir no telefone para ver a mídia completa.",
   "chat.message.not-supported": "Mensagem não suportada, abra o app do WhatsApp para vê-la.",
+  "chat.message.e2e-notification": "As configurações de criptografia de ponta a ponta foram alteradas. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "A configuração de mensagens temporárias foi atualizada. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "É um exemplo de Interface de Conversas.",
   "chat.promo.implementFeatures": "Você pode implementar Chat ao Vivo, Múltiplos Agentes e mais recursos usando",
   "chat.promo.wahaAPI": "API WAHA",

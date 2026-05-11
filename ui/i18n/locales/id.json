@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Tentang UI Obrolan",
   "chat.message.media": "Buka di ponsel untuk melihat media lengkap.",
   "chat.message.not-supported": "Pesan tidak didukung, buka aplikasi WhatsApp untuk melihatnya.",
+  "chat.message.e2e-notification": "Pengaturan enkripsi ujung ke ujung telah berubah. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "Pengaturan pesan menghilang telah diperbarui. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "Ini adalah contoh UI Obrolan.",
   "chat.promo.implementFeatures": "Anda dapat mengimplementasikan Obrolan Langsung, Beberapa Agen, dan fitur lainnya menggunakan",
   "chat.promo.wahaAPI": "WAHA API",

@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ אודות ממשק הצ'אט",
   "chat.message.media": "פתח בטלפון לצפייה במדיה המלאה.",
   "chat.message.not-supported": "ההודעה אינה נתמכת, פתח את אפליקציית WhatsApp כדי לראות אותה.",
+  "chat.message.e2e-notification": "הגדרות ההצפנה מקצה לקצה השתנו. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "הגדרת ההודעות הנעלמות עודכנה. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "זהו ממשק צ'אט לדוגמה.",
   "chat.promo.implementFeatures": "אתה יכול ליישם צ'אט חי, סוכנים מרובים, ועוד תכונות באמצעות",
   "chat.promo.wahaAPI": "WAHA API",

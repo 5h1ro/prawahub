@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ চ্যাট UI সম্পর্কে",
   "chat.message.media": "পূর্ণ মিডিয়া দেখতে ফোনে খুলুন।",
   "chat.message.not-supported": "বার্তাটি সমর্থিত নয়, এটি দেখতে হোয়াটসঅ্যাপ অ্যাপ খুলুন।",
+  "chat.message.e2e-notification": "এন্ড-টু-এন্ড এনক্রিপশন সেটিংস পরিবর্তিত হয়েছে। https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "অদৃশ্য বার্তা সেটিং আপডেট হয়েছে। https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "এটি একটি উদাহরণ চ্যাট UI।",
   "chat.promo.implementFeatures": "আপনি লাইভ চ্যাট, একাধিক এজেন্ট এবং আরও বৈশিষ্ট্য বাস্তবায়ন করতে পারেন",
   "chat.promo.wahaAPI": "WAHA API",

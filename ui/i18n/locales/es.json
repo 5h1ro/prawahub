@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Acerca de la interfaz de chat",
   "chat.message.media": "Abrir en el teléfono para ver el contenido completo.",
   "chat.message.not-supported": "Mensaje no compatible, abre la app de WhatsApp para verlo.",
+  "chat.message.e2e-notification": "La configuración de cifrado de extremo a extremo ha cambiado. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "La configuración de mensajes temporales se ha actualizado. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "Es un ejemplo de interfaz de chats.",
   "chat.promo.implementFeatures": "Puedes implementar Chat en vivo, múltiples agentes y más funciones usando",
   "chat.promo.wahaAPI": "API de WAHA",

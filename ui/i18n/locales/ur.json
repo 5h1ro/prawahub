@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ چیٹ یو آئی کے بارے میں",
   "chat.message.media": "مکمل میڈیا دیکھنے کے لیے فون پر کھولیں۔",
   "chat.message.not-supported": "پیغام معاونت یافتہ نہیں، اسے دیکھنے کے لیے واٹس ایپ ایپ کھولیں۔",
+  "chat.message.e2e-notification": "اینڈ ٹو اینڈ انکرپشن سیٹنگ تبدیل ہو گئی۔ https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "غائب ہونے والے پیغامات کی سیٹنگ اپ ڈیٹ ہوئی۔ https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "یہ ایک مثالی چیٹس یو آئی ہے۔",
   "chat.promo.implementFeatures": "آپ لائیو چیٹ، متعدد ایجنٹس، اور مزید خصوصیات استعمال کر سکتے ہیں",
   "chat.promo.wahaAPI": "واہا اے پی آئی",

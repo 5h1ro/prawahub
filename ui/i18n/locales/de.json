@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Über Chat-UI",
   "chat.message.media": "Auf dem Telefon öffnen, um das vollständige Medium zu sehen.",
   "chat.message.not-supported": "Nachricht wird nicht unterstützt, öffne die WhatsApp-App, um sie anzusehen.",
+  "chat.message.e2e-notification": "Ende-zu-Ende-Verschlüsselungseinstellungen wurden geändert. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "Einstellung für verschwindende Nachrichten aktualisiert. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "Dies ist eine Beispiel-Chat-UI.",
   "chat.promo.implementFeatures": "Sie können Live-Chat, mehrere Agenten und weitere Funktionen implementieren mit",
   "chat.promo.wahaAPI": "WAHA API",

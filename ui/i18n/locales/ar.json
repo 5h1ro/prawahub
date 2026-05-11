@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ حول واجهة المحادثة",
   "chat.message.media": "افتح على الهاتف لعرض الوسائط كاملة.",
   "chat.message.not-supported": "الرسالة غير مدعومة، افتح تطبيق واتساب لعرضها.",
+  "chat.message.e2e-notification": "تم تغيير إعدادات التشفير التام بين الطرفين. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "تم تحديث إعداد الرسائل المختفية. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "هذا مثال لواجهة المحادثات.",
   "chat.promo.implementFeatures": "يمكنك تنفيذ الدردشة المباشرة، وكلاء متعددين، والمزيد من الميزات باستخدام",
   "chat.promo.wahaAPI": "WAHA API",

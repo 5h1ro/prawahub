@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ درباره رابط کاربری گفتگو",
   "chat.message.media": "برای مشاهده رسانه کامل در گوشی باز کنید.",
   "chat.message.not-supported": "پیام پشتیبانی نمی‌شود، برای دیدن آن برنامه واتساپ را باز کنید.",
+  "chat.message.e2e-notification": "تنظیمات رمزنگاری سرتاسری تغییر کرد. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "تنظیمات پیام‌های ناپدیدشونده به‌روز شد. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "این یک نمونه رابط کاربری گفتگو است.",
   "chat.promo.implementFeatures": "شما می‌توانید گفتگوی زنده، چندین نماینده و ویژگی‌های بیشتری را با استفاده از",
   "chat.promo.wahaAPI": "API واها",

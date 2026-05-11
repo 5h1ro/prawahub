@@ -20,6 +20,8 @@
   "chat.aboutChatUI": "ℹ️ Про інтерфейс чату",
   "chat.message.media": "Відкрийте на телефоні, щоб переглянути повне медіа.",
   "chat.message.not-supported": "Повідомлення не підтримується, відкрийте застосунок WhatsApp, щоб його переглянути.",
+  "chat.message.e2e-notification": "Налаштування наскрізного шифрування змінено. https://faq.whatsapp.com/1460487824884467",
+  "chat.message.disappearing-mode-update": "Налаштування зникаючих повідомлень оновлено. https://faq.whatsapp.com/673193694148537",
   "chat.promo.exampleChatsUI": "Це приклад інтерфейсу чатів.",
   "chat.promo.implementFeatures": "Ви можете реалізувати Живий чат, Кілька агентів та інші функції за допомогою",
   "chat.promo.wahaAPI": "WAHA API",
