@@ -1,7 +1,5 @@
-// Browser side of the native audio call: captures the mic as 16 kHz PCM and
-// sends it over a WebRTC data channel to the WAHA server (which encodes it with
-// MLow and injects it into the WhatsApp call), and plays the peer audio the
-// server sends back. Mirrors the WaCalls browser bridge.
+// Browser side of a native audio call: streams the microphone as 16 kHz PCM to
+// the WAHA server over a WebRTC data channel and plays the peer audio it returns.
 
 const SAMPLE_RATE = 16000;
 const PCM_CHANNEL_LABEL = "pcm";
@@ -26,6 +24,14 @@ function int16LEToFloat32(buf: ArrayBuffer): Float32Array {
     const out = new Float32Array(n);
     for (let i = 0; i < n; i += 1) out[i] = view.getInt16(i * 2, true) / 32768;
     return out;
+}
+
+function safeClose(release: () => void): void {
+    try {
+        release();
+    } catch {
+        // resource already released
+    }
 }
 
 export interface CallAudio {
@@ -89,21 +95,9 @@ export async function openCallAudio(
     return {
         remoteStream: streamDest.stream,
         close: () => {
-            try {
-                ctx.close();
-            } catch (e) {
-                // ignore
-            }
-            try {
-                micStream.getTracks().forEach((t) => t.stop());
-            } catch (e) {
-                // ignore
-            }
-            try {
-                pc.close();
-            } catch (e) {
-                // ignore
-            }
+            safeClose(() => ctx.close());
+            safeClose(() => micStream.getTracks().forEach((t) => t.stop()));
+            safeClose(() => pc.close());
         },
     };
 }
