@@ -17,6 +17,7 @@
   "chat.sendFailedTitle": "Failed to send message",
   "chat.callStartedTitle": "Call started",
   "chat.callFailedTitle": "Call action failed",
+  "chat.callEndedTitle": "Call ended",
   "chat.loadMoreMessages": "Load More Messages",
   "chat.noMoreMessages": "No more messages",
   "chat.showMoreChats": "Show More Chats",

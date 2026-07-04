@@ -342,6 +342,10 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.endCall(serverId, sessionName, id)
     }
 
+    async function rejectCall(serverId: ServerId, sessionName: string, from: string, id: string): Promise<void> {
+        return wahaAPI.rejectCall(serverId, sessionName, from, id)
+    }
+
     async function getServerEnvironment(serverId: ServerId, all: boolean): Promise<any> {
         return wahaAPI.getServerEnvironment(serverId, all)
     }
@@ -452,6 +456,7 @@ export const useServerStore = defineStore('serverStore', () => {
         startCall,
         acceptCall,
         endCall,
+        rejectCall,
         getProfilePicture,
         getServerEnvironment,
         callServerAPI,

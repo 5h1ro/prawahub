@@ -5,6 +5,8 @@ import ChatMessages from "./ChatMessages.vue";
 import ChatHeader from "./ChatHeader.vue";
 import ChatList from "./ChatList.vue";
 import ChatInputFooter from "./ChatInputFooter.vue";
+import Dialer from "./Dialer.vue";
+import IncomingCallDialog from "./IncomingCallDialog.vue";
 import {ClientStatus, WebSocketClient} from "../../services/WebSocketService";
 import {ref} from "vue";
 import WebSocketStatus from "../events/WebSocketStatus.vue";
@@ -82,7 +84,7 @@ const clientStatus = ref(ClientStatus.DISCONNECTED)
 
 function startClient() {
   const server = store.getServer(session.value.server.id)
-  const listenEvents = ['message.any']
+  const listenEvents = ['message.any', 'call.received', 'call.accepted', 'call.rejected']
   client = new WebSocketClient(server, listenEvents, session.value.name)
   client.connect()
   clientStatus.value = ClientStatus.CONNECTING
@@ -101,6 +103,11 @@ function startClient() {
 }
 
 async function handleEvent(event) {
+  const name = event?.event
+  if (name === 'call.received' || name === 'call.accepted' || name === 'call.rejected') {
+    onCallEvent(name, event.payload)
+    return
+  }
   await sleep(1000)
   const chatId = selectedChat.value?.id
   if (!chatId) {
@@ -197,6 +204,9 @@ watch(
         selectedChat.value = null
         messages.value = []
         stopClient()
+        resetCall()
+        dialerVisible.value = false
+        incoming.value = {visible: false, from: '', id: ''}
         return
       }
 
@@ -276,31 +286,59 @@ async function sendText(text) {
 
 const showPromo = ref(false)
 
-const activeCallId = ref(null)
+//
+// Native audio calls
+//
+const dialerVisible = ref(false)
 const callBusy = ref(false)
+const callState = ref('idle') // idle | calling | active
+const activeCallId = ref(null)
+const activePeer = ref('')
+const callDuration = ref(0)
+let callTimer = null
+const incoming = ref({visible: false, from: '', id: ''})
 
-watch(selectedChat, () => {
-  activeCallId.value = null
-})
-
-async function startCall() {
-  if (!selectedChat.value) {
-    return
+function ensureChatId(number) {
+  const value = String(number).trim()
+  if (value.includes('@')) {
+    return value
   }
+  return `${value.replace(/[^0-9]/g, '')}@c.us`
+}
+
+function startCallTimer() {
+  stopCallTimer()
+  callDuration.value = 0
+  callTimer = setInterval(() => {
+    callDuration.value += 1
+  }, 1000)
+}
+
+function stopCallTimer() {
+  if (callTimer) {
+    clearInterval(callTimer)
+    callTimer = null
+  }
+}
+
+function resetCall() {
+  stopCallTimer()
+  callState.value = 'idle'
+  activeCallId.value = null
+  activePeer.value = ''
+  callDuration.value = 0
+  callBusy.value = false
+}
+
+async function placeCall(target) {
+  const chatId = ensureChatId(target)
   callBusy.value = true
   try {
-    const response = await store.startCall(
-        session.value.server.id,
-        session.value.name,
-        selectedChat.value.id,
-    )
+    const response = await store.startCall(session.value.server.id, session.value.name, chatId)
     activeCallId.value = response?.id || null
-    toast.add({
-      severity: 'success',
-      summary: t('chat.callStartedTitle'),
-      detail: activeCallId.value,
-      life: 4000,
-    })
+    activePeer.value = chatId
+    callState.value = 'calling'
+    dialerVisible.value = true
   } catch (e) {
     toast.add({
       severity: 'error',
@@ -313,18 +351,54 @@ async function startCall() {
   }
 }
 
-async function endCall() {
+// From the dialer keypad
+function onDialerCall(number) {
+  placeCall(number)
+}
+
+// From the ChatHeader phone button (calls the open chat)
+function startCall() {
+  if (!selectedChat.value) {
+    return
+  }
+  placeCall(selectedChat.value.id)
+}
+
+async function hangup() {
   if (!activeCallId.value) {
+    resetCall()
     return
   }
   callBusy.value = true
   try {
-    await store.endCall(
-        session.value.server.id,
-        session.value.name,
-        activeCallId.value,
-    )
-    activeCallId.value = null
+    await store.endCall(session.value.server.id, session.value.name, activeCallId.value)
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.callFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+  } finally {
+    resetCall()
+  }
+}
+
+// Backward-compatible alias for the ChatHeader end button
+function endCall() {
+  hangup()
+}
+
+async function acceptIncoming() {
+  callBusy.value = true
+  try {
+    await store.acceptCall(session.value.server.id, session.value.name, incoming.value.id)
+    activeCallId.value = incoming.value.id
+    activePeer.value = incoming.value.from
+    callState.value = 'active'
+    startCallTimer()
+    dialerVisible.value = true
+    incoming.value = {visible: false, from: '', id: ''}
   } catch (e) {
     toast.add({
       severity: 'error',
@@ -334,6 +408,50 @@ async function endCall() {
     })
   } finally {
     callBusy.value = false
+  }
+}
+
+async function rejectIncoming() {
+  callBusy.value = true
+  try {
+    await store.rejectCall(session.value.server.id, session.value.name, incoming.value.from, incoming.value.id)
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.callFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+  } finally {
+    incoming.value = {visible: false, from: '', id: ''}
+    callBusy.value = false
+  }
+}
+
+function onCallEvent(name, payload) {
+  if (name === 'call.received') {
+    if (payload?.isGroup) {
+      return
+    }
+    incoming.value = {visible: true, from: payload?.from || '', id: payload?.id || ''}
+    return
+  }
+  if (name === 'call.accepted') {
+    if (!activeCallId.value || payload?.id === activeCallId.value) {
+      callState.value = 'active'
+      startCallTimer()
+      dialerVisible.value = true
+    }
+    return
+  }
+  if (name === 'call.rejected') {
+    if (activeCallId.value && payload?.id === activeCallId.value) {
+      toast.add({severity: 'info', summary: t('chat.callEndedTitle'), life: 3000})
+      resetCall()
+    }
+    if (incoming.value.id && payload?.id === incoming.value.id) {
+      incoming.value = {visible: false, from: '', id: ''}
+    }
   }
 }
 
@@ -363,6 +481,15 @@ async function endCall() {
         >
         </SessionChip>
         <WebSocketStatus :status="clientStatus"></WebSocketStatus>
+        <Button
+            icon="pi pi-phone"
+            label="Discador"
+            size="small"
+            severity="success"
+            text
+            v-tooltip.bottom="'Abrir discador'"
+            @click="dialerVisible = true"
+        />
       </div>
       <div class="m-auto pb-2">
         <div class="text-center">
@@ -426,6 +553,23 @@ async function endCall() {
         </div>
       </SplitterPanel>
     </Splitter>
+
+    <Dialer
+        v-model:visible="dialerVisible"
+        :callState="callState"
+        :peer="activePeer"
+        :busy="callBusy"
+        :durationSecs="callDuration"
+        @call="onDialerCall"
+        @hangup="hangup"
+    />
+    <IncomingCallDialog
+        v-model:visible="incoming.visible"
+        :from="incoming.from"
+        :busy="callBusy"
+        @accept="acceptIncoming"
+        @reject="rejectIncoming"
+    />
   </Dialog>
 
 </template>

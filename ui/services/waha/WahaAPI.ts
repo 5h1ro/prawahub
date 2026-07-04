@@ -332,6 +332,15 @@ export class WahaAPI {
         });
     }
 
+    rejectCall(serverId: ServerId, sessionName: string, from: string, id: string): Promise<void> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/calls/reject`,
+            params: {},
+            body: {from: from, id: id},
+        });
+    }
+
     getServerVersion(serverId: ServerId): Promise<any> {
         return this.api.call(serverId, {
             method: 'GET',
