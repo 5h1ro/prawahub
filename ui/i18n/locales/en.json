@@ -15,6 +15,8 @@
   "chat.readFailedTitle": "Couldn't mark chat as read",
   "chat.readFailedDescription": "We'll still send your reply.",
   "chat.sendFailedTitle": "Failed to send message",
+  "chat.callStartedTitle": "Call started",
+  "chat.callFailedTitle": "Call action failed",
   "chat.loadMoreMessages": "Load More Messages",
   "chat.noMoreMessages": "No more messages",
   "chat.showMoreChats": "Show More Chats",

@@ -275,6 +275,68 @@ async function sendText(text) {
 }
 
 const showPromo = ref(false)
+
+const activeCallId = ref(null)
+const callBusy = ref(false)
+
+watch(selectedChat, () => {
+  activeCallId.value = null
+})
+
+async function startCall() {
+  if (!selectedChat.value) {
+    return
+  }
+  callBusy.value = true
+  try {
+    const response = await store.startCall(
+        session.value.server.id,
+        session.value.name,
+        selectedChat.value.id,
+    )
+    activeCallId.value = response?.id || null
+    toast.add({
+      severity: 'success',
+      summary: t('chat.callStartedTitle'),
+      detail: activeCallId.value,
+      life: 4000,
+    })
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.callFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+  } finally {
+    callBusy.value = false
+  }
+}
+
+async function endCall() {
+  if (!activeCallId.value) {
+    return
+  }
+  callBusy.value = true
+  try {
+    await store.endCall(
+        session.value.server.id,
+        session.value.name,
+        activeCallId.value,
+    )
+    activeCallId.value = null
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.callFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+  } finally {
+    callBusy.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -338,6 +400,10 @@ const showPromo = ref(false)
                 :mePicture="profilePicture"
                 :fetch="fetchMessages"
                 :fetching="fetchingMessages"
+                :callActive="!!activeCallId"
+                :callBusy="callBusy"
+                @start-call="startCall"
+                @end-call="endCall"
             >
             </ChatHeader>
             <hr>

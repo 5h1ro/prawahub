@@ -330,6 +330,18 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.getPairingCode(serverId, sessionName, phone)
     }
 
+    async function startCall(serverId: ServerId, sessionName: string, to: string, audioIn?: string, audioOut?: string): Promise<{ id: string }> {
+        return wahaAPI.startCall(serverId, sessionName, to, audioIn, audioOut)
+    }
+
+    async function acceptCall(serverId: ServerId, sessionName: string, id: string, audioIn?: string, audioOut?: string): Promise<void> {
+        return wahaAPI.acceptCall(serverId, sessionName, id, audioIn, audioOut)
+    }
+
+    async function endCall(serverId: ServerId, sessionName: string, id: string): Promise<void> {
+        return wahaAPI.endCall(serverId, sessionName, id)
+    }
+
     async function getServerEnvironment(serverId: ServerId, all: boolean): Promise<any> {
         return wahaAPI.getServerEnvironment(serverId, all)
     }
@@ -437,6 +449,9 @@ export const useServerStore = defineStore('serverStore', () => {
         sendFile,
         sendText,
         getPairingCode,
+        startCall,
+        acceptCall,
+        endCall,
         getProfilePicture,
         getServerEnvironment,
         callServerAPI,

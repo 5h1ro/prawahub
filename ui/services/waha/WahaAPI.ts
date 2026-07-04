@@ -301,6 +301,37 @@ export class WahaAPI {
         });
     }
 
+    //
+    // Native audio calls
+    //
+
+    startCall(serverId: ServerId, sessionName: string, to: string, audioIn?: string, audioOut?: string): Promise<{ id: string }> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/calls/start`,
+            params: {},
+            body: {to: to, audioIn: audioIn, audioOut: audioOut},
+        });
+    }
+
+    acceptCall(serverId: ServerId, sessionName: string, id: string, audioIn?: string, audioOut?: string): Promise<void> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/calls/accept`,
+            params: {},
+            body: {id: id, audioIn: audioIn, audioOut: audioOut},
+        });
+    }
+
+    endCall(serverId: ServerId, sessionName: string, id: string): Promise<void> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/calls/end`,
+            params: {},
+            body: {id: id},
+        });
+    }
+
     getServerVersion(serverId: ServerId): Promise<any> {
         return this.api.call(serverId, {
             method: 'GET',
