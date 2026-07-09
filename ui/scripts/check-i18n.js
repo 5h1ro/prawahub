@@ -17,6 +17,7 @@ const colorize = (text, color) => `${color}${text}${colors.reset}`;
 const projectRoot = path.resolve(__dirname, '..');
 const localesDir = path.join(projectRoot, 'i18n', 'locales');
 const primaryLocale = 'en';
+const supportedLocales = new Set(['en', 'id']);
 const primaryFile = path.join(localesDir, `${primaryLocale}.json`);
 
 if (!fs.existsSync(localesDir)) {
@@ -172,6 +173,7 @@ const localeFiles = fs
     name: path.basename(file, '.json'),
     path: path.join(localesDir, file)
   }))
+  .filter((locale) => supportedLocales.has(locale.name))
   .filter((locale) => locale.name !== primaryLocale);
 
 if (localeFiles.length === 0) {

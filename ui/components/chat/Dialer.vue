@@ -1,5 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
+import {useI18n} from "vue-i18n";
 
 const visible = defineModel("visible");
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
   durationSecs: {type: Number, default: 0},
 });
 const emit = defineEmits(["call", "hangup"]);
+const {t} = useI18n();
 
 const number = ref("");
 const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
@@ -46,7 +48,7 @@ function displayPeer(value) {
   <Dialog
       v-model:visible="visible"
       modal
-      header="📞 Discador"
+      :header="t('chat.dialer.title')"
       :closable="!inCall"
       :style="{ width: '340px' }"
   >
@@ -54,7 +56,7 @@ function displayPeer(value) {
       <InputText
           v-model="number"
           class="dialer-display"
-          placeholder="Número (ex: 5511999999999)"
+          :placeholder="t('chat.dialer.placeholder')"
           @keyup.enter="onCall"
       />
       <div class="keypad">
@@ -72,12 +74,12 @@ function displayPeer(value) {
             icon="pi pi-delete-left"
             text
             severity="secondary"
-            aria-label="Apagar"
+            :aria-label="t('chat.dialer.clear')"
             @click="backspace"
         />
         <Button
             icon="pi pi-phone"
-            label="Ligar"
+            :label="t('chat.dialer.call')"
             severity="success"
             rounded
             :loading="busy"
@@ -92,12 +94,12 @@ function displayPeer(value) {
       <i class="pi pi-phone active-icon"></i>
       <div class="peer">{{ displayPeer(peer || number) }}</div>
       <div class="status">
-        <span v-if="callState === 'calling'">Chamando…</span>
-        <span v-else>Em chamada · {{ formatDuration(durationSecs) }}</span>
+        <span v-if="callState === 'calling'">{{ t('chat.dialer.calling') }}</span>
+        <span v-else>{{ t('chat.dialer.inCall') }} · {{ formatDuration(durationSecs) }}</span>
       </div>
       <Button
           icon="pi pi-phone"
-          label="Desligar"
+          :label="t('chat.dialer.hangup')"
           severity="danger"
           rounded
           :loading="busy"
