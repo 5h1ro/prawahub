@@ -248,6 +248,33 @@ export class WahaAPI {
         })
     }
 
+    sendAIRichMarkdown(serverId: ServerId, sessionName: string, chatId: string, text: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: '/api/send/ai-rich/markdown',
+            params: {},
+            body: { session: sessionName, chatId: chatId, text: text },
+        })
+    }
+
+    sendAIRichCodeBlock(serverId: ServerId, sessionName: string, chatId: string, code: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: '/api/send/ai-rich/code-block',
+            params: {},
+            body: { session: sessionName, chatId: chatId, code: code, language: 'javascript' },
+        })
+    }
+
+    sendAIRichMessage(serverId: ServerId, sessionName: string, chatId: string, blocks: any[]): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: '/api/send/ai-rich',
+            params: {},
+            body: { session: sessionName, chatId: chatId, blocks: blocks },
+        })
+    }
+
     sendImage(serverId: ServerId, sessionName: string, chatId: string, file: MediaFile, caption?: string): Promise<any> {
         return this.api.call(serverId, {
             method: 'POST',

@@ -326,6 +326,33 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.sendText(serverId, sessionName, chatId, text)
     }
 
+    async function sendAIRichMarkdown(
+        serverId: ServerId,
+        sessionName: string,
+        chatId: string,
+        text: string,
+    ): Promise<string> {
+        return wahaAPI.sendAIRichMarkdown(serverId, sessionName, chatId, text)
+    }
+
+    async function sendAIRichCodeBlock(
+        serverId: ServerId,
+        sessionName: string,
+        chatId: string,
+        code: string,
+    ): Promise<string> {
+        return wahaAPI.sendAIRichCodeBlock(serverId, sessionName, chatId, code)
+    }
+
+    async function sendAIRichMessage(
+        serverId: ServerId,
+        sessionName: string,
+        chatId: string,
+        blocks: any[],
+    ): Promise<string> {
+        return wahaAPI.sendAIRichMessage(serverId, sessionName, chatId, blocks)
+    }
+
     async function getPairingCode(serverId: ServerId, sessionName: string, phone): Promise<string> {
         return wahaAPI.getPairingCode(serverId, sessionName, phone)
     }
@@ -456,6 +483,9 @@ export const useServerStore = defineStore('serverStore', () => {
         sendVoice,
         sendFile,
         sendText,
+        sendAIRichMarkdown,
+        sendAIRichCodeBlock,
+        sendAIRichMessage,
         getPairingCode,
         startCall,
         acceptCall,

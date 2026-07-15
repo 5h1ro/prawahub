@@ -1,5 +1,6 @@
 <script setup>
 import ChatMediaAttachment from "./ChatMediaAttachment.vue"
+import AIRichComposer from "./AIRichComposer.vue"
 import {useI18n} from "vue-i18n"
 
 const {t} = useI18n()
@@ -7,6 +8,8 @@ const {t} = useI18n()
 const props = defineProps({
   disabled: Boolean,
   sendText: Function,
+  sendAiRich: Function,
+  sendAiRichBlocks: Function,
   sendMedia: Function,
 })
 
@@ -15,12 +18,25 @@ const text = ref('')
 const attachments = ref([]) // { type, file, previewUrl }
 const sendProgress = ref(null) // { current, total }
 
+// AI rich composer
+const composerVisible = ref(false)
+const stagedBlocks = ref([]) // blocks staged from the composer, sent as one message
+const hasStagedBlocks = computed(() => stagedBlocks.value.length > 0)
+
+function onComposerSubmit(blocks) {
+  stagedBlocks.value = blocks
+}
+
+function clearStagedBlocks() {
+  stagedBlocks.value = []
+}
+
 const hasAttachments = computed(() => attachments.value.length > 0)
 const allAudio = computed(() => hasAttachments.value && attachments.value.every(a => a.type === 'audio'))
 const captionDisabled = computed(() => allAudio.value)
 
 const sendDisabled = computed(() =>
-    props.disabled || loading.value || (!hasAttachments.value && !text.value)
+    props.disabled || loading.value || (!hasAttachments.value && !text.value && !hasStagedBlocks.value)
 )
 
 //
@@ -52,7 +68,6 @@ const menuItems = computed(() => [
     command: () => openPicker('file', '*/*'),
   },
 ])
-
 function openPicker(type, accept) {
   pickerType.value = type
   fileInputRef.value.accept = accept
@@ -87,7 +102,9 @@ function fileToBase64(file) {
 }
 
 async function send() {
-  if (hasAttachments.value) {
+  if (hasStagedBlocks.value) {
+    await sendStagedRich()
+  } else if (hasAttachments.value) {
     await sendAttachments()
   } else {
     await sendTextMessage()
@@ -99,6 +116,25 @@ async function sendTextMessage() {
   try {
     await props.sendText(text.value)
     text.value = ''
+  } finally {
+    loading.value = false
+  }
+}
+
+async function sendStagedRich() {
+  if (!props.sendAiRichBlocks) return
+  // A single message: the typed text (if any) becomes a leading text block,
+  // followed by the blocks composed in the popup.
+  const blocks = []
+  if (text.value.trim()) {
+    blocks.push({ type: 'text', text: text.value })
+  }
+  blocks.push(...stagedBlocks.value)
+  loading.value = true
+  try {
+    await props.sendAiRichBlocks(blocks)
+    text.value = ''
+    stagedBlocks.value = []
   } finally {
     loading.value = false
   }
@@ -137,6 +173,15 @@ async function sendAttachments() {
       />
     </div>
 
+    <!-- Staged rich blocks indicator -->
+    <div v-if="hasStagedBlocks" class="flex align-items-center gap-2 mb-2">
+      <Chip removable @remove="clearStagedBlocks">
+        <font-awesome-icon icon="wand-magic-sparkles" class="mr-2"/>
+        <span>Rich message · {{ stagedBlocks.length }} block(s) staged</span>
+      </Chip>
+      <Button label="Edit" text size="small" icon="pi pi-pencil" @click="composerVisible = true"/>
+    </div>
+
     <div class="flex align-items-center" style="width: 100%; gap: 0.5rem">
       <!-- Text / caption input with clip button overlaid inside on the right -->
       <div style="flex: 1; position: relative">
@@ -146,7 +191,7 @@ async function sendAttachments() {
             :disabled="captionDisabled"
             :placeholder="captionDisabled ? t('chat.send.placeholder.noAudioCaption') : (hasAttachments ? t('chat.send.placeholder.caption') : '')"
             @keydown.enter.ctrl="send"
-            style="width: 100%; padding-right: 2.5rem"
+            style="width: 100%; padding-right: 5rem"
         />
         <Button
             icon="pi pi-paperclip"
@@ -155,9 +200,20 @@ async function sendAttachments() {
             size="small"
             :disabled="disabled || loading"
             @click="menuRef.toggle($event)"
-            style="position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%)"
+            style="position: absolute; right: 2.55rem; top: 50%; transform: translateY(-50%)"
         />
         <Menu ref="menuRef" :model="menuItems" popup/>
+        <Button
+            text
+            rounded
+            size="small"
+            aria-label="Compose rich message"
+            :disabled="disabled || loading || hasAttachments"
+            @click="composerVisible = true"
+            style="position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%)"
+        >
+          <font-awesome-icon icon="wand-magic-sparkles"/>
+        </Button>
         <input ref="fileInputRef" type="file" multiple style="display: none" @change="onFilesChanged"/>
       </div>
 
@@ -175,6 +231,8 @@ async function sendAttachments() {
         </small>
       </div>
     </div>
+
+    <AIRichComposer v-model:visible="composerVisible" @submit="onComposerSubmit"/>
   </div>
 </template>
 

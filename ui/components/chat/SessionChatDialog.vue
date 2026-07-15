@@ -285,6 +285,48 @@ async function sendText(text) {
   }
 }
 
+async function sendAiRich(type, text) {
+  if (!selectedChat.value) {
+    return
+  }
+  try {
+    if (type === 'code') {
+      await store.sendAIRichCodeBlock(session.value.server.id, session.value.name, selectedChat.value.id, text)
+    } else {
+      await store.sendAIRichMarkdown(session.value.server.id, session.value.name, selectedChat.value.id, text)
+    }
+    await sleep(1000)
+    fetchMessages()
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.sendFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+    throw e
+  }
+}
+
+async function sendAiRichBlocks(blocks) {
+  if (!selectedChat.value || !blocks || blocks.length === 0) {
+    return
+  }
+  try {
+    await store.sendAIRichMessage(session.value.server.id, session.value.name, selectedChat.value.id, blocks)
+    await sleep(1000)
+    fetchMessages()
+  } catch (e) {
+    toast.add({
+      severity: 'error',
+      summary: t('chat.sendFailedTitle'),
+      detail: e?.message || String(e),
+      life: 5000,
+    })
+    throw e
+  }
+}
+
 const showPromo = ref(false)
 
 //
@@ -593,6 +635,8 @@ function onCallEvent(name, payload) {
             <ChatInputFooter
                 :disabled="!selectedChat || fetchingMessages"
                 :sendText="sendText"
+                :sendAiRich="sendAiRich"
+                :sendAiRichBlocks="sendAiRichBlocks"
                 :sendMedia="sendMedia"
             />
           </template>
