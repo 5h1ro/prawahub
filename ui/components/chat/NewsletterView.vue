@@ -5,7 +5,7 @@ const props = defineProps({
   items: {type: Array, default: () => []},
   pending: Boolean,
 })
-const emit = defineEmits(["refresh"]);
+const emit = defineEmits(["refresh", "open"]);
 const {t} = useI18n();
 
 function preview(chat) {
@@ -32,7 +32,8 @@ function preview(chat) {
       <div
           v-for="c in items"
           :key="c.id"
-          class="wa-news__item"
+          class="wa-news__item wa-news__item--clickable"
+          @click="emit('open', c)"
       >
         <div class="wa-news__avatar">
           <img v-if="c.picture" :src="c.picture" alt=""/>
@@ -87,6 +88,10 @@ function preview(chat) {
   padding: 0.6rem 0.5rem;
   border-radius: 8px;
   cursor: default;
+}
+
+.wa-news__item--clickable {
+  cursor: pointer;
 }
 
 .wa-news__item:hover {

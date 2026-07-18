@@ -58,6 +58,7 @@ const emit = defineEmits(['clickOnChat',
               :name="data.name"
               :picture="data.picture"
               :message="data.lastMessage"
+              :pinned="!!(data.pinned || data._chat?.pinned || data.isPinned)"
           />
         </template>
       </Column>

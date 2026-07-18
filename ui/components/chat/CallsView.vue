@@ -55,10 +55,14 @@ const rows = computed(() => {
     if (seen.has(id)) continue;
     seen.add(id);
     const r = resolveContact(props.contactIndex, id);
+    const contactName = c.name || c.pushname || c.shortName || "";
+    const number = r.number || (c.number ? `+${String(c.number).split("@")[0]}` : "");
+    // Skip unknown contacts: no real name and no phone number
+    if (!contactName && !number) continue;
     out.push({
       id,
-      name: c.name || c.pushname || c.shortName || r.name,
-      number: r.number || (c.number ? `+${String(c.number).split("@")[0]}` : ""),
+      name: contactName || number,
+      number,
     });
   }
   out.sort((a, b) => a.name.localeCompare(b.name));

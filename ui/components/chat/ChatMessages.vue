@@ -9,6 +9,7 @@ const props = defineProps({
   serverId: String,
   sessionName: String,
 })
+const emit = defineEmits(['reply', 'react', 'forward', 'delete'])
 const scroll = ref(null)
 const isLoadingEarlier = ref(false)
 
@@ -60,6 +61,10 @@ async function handleLoadEarlier() {
               :message="message"
               :serverId="serverId"
               :sessionName="sessionName"
+              @reply="emit('reply', $event)"
+              @react="emit('react', $event)"
+              @forward="emit('forward', $event)"
+              @delete="emit('delete', $event)"
           />
         </div>
       </template>

@@ -322,8 +322,21 @@ export const useServerStore = defineStore('serverStore', () => {
         sessionName: string,
         chatId: string,
         text: string,
+        replyTo?: string,
     ): Promise<string> {
-        return wahaAPI.sendText(serverId, sessionName, chatId, text)
+        return wahaAPI.sendText(serverId, sessionName, chatId, text, replyTo)
+    }
+
+    async function setReaction(serverId: ServerId, sessionName: string, messageId: string, reaction: string): Promise<any> {
+        return wahaAPI.setReaction(serverId, sessionName, messageId, reaction)
+    }
+
+    async function forwardMessage(serverId: ServerId, sessionName: string, chatId: string, messageId: string): Promise<any> {
+        return wahaAPI.forwardMessage(serverId, sessionName, chatId, messageId)
+    }
+
+    async function deleteMessage(serverId: ServerId, sessionName: string, chatId: string, messageId: string): Promise<any> {
+        return wahaAPI.deleteMessage(serverId, sessionName, chatId, messageId)
     }
 
     async function sendAIRichMarkdown(
@@ -515,6 +528,9 @@ export const useServerStore = defineStore('serverStore', () => {
         sendVoice,
         sendFile,
         sendText,
+        setReaction,
+        forwardMessage,
+        deleteMessage,
         sendAIRichMarkdown,
         sendAIRichCodeBlock,
         sendAIRichMessage,

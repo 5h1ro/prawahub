@@ -605,5 +605,17 @@
   "chat.snap.recentUpdates": "Recent updates",
   "chat.newsletter.title": "Newsletter",
   "chat.newsletter.empty": "No newsletters",
-  "chat.calls.keypad": "Dial pad"
+  "chat.calls.keypad": "Dial pad",
+  "chat.actions.menu": "Message actions",
+  "chat.actions.reply": "Reply",
+  "chat.actions.copy": "Copy",
+  "chat.actions.forward": "Forward",
+  "chat.actions.delete": "Delete",
+  "chat.actions.copied": "Copied",
+  "chat.actions.copyFailed": "Copy failed",
+  "chat.reply.replyingTo": "Replying to",
+  "chat.forward.title": "Forward to",
+  "chat.newsletter.readOnly": "This is a newsletter channel (read-only)",
+  "chat.actionFailed": "Action failed",
+  "chat.forwarded": "Message forwarded"
 }

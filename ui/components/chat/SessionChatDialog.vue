@@ -45,17 +45,25 @@ async function fetchContacts() {
   }
 }
 
-// Real conversations: drop newsletters and the status broadcast pseudo-chat
+function isPinned(c) {
+  return !!(c?.pinned || c?._chat?.pinned || c?.isPinned)
+}
+
+// Real conversations: drop newsletters and the status broadcast pseudo-chat,
+// pinned chats float to the top (like WhatsApp)
 const chatItems = computed(() =>
-    chats.value.filter(c => !isNewsletter(c.id) && !isStatusBroadcast(c.id))
+    chats.value
+        .filter(c => !isNewsletter(c.id) && !isStatusBroadcast(c.id))
+        .slice()
+        .sort((a, b) => (isPinned(b) ? 1 : 0) - (isPinned(a) ? 1 : 0))
 )
 const newsletterItems = computed(() =>
     chats.value.filter(c => isNewsletter(c.id))
 )
 
-async function refreshChats() {
+async function refreshChats(silent = false) {
   chatsOffset.value = 0
-  pending.value = true
+  if (!silent) pending.value = true
   try {
     const data = await store.getChatsOverview(
         session.value.server.id,
@@ -66,7 +74,7 @@ async function refreshChats() {
     )
     chats.value = data || []
   } finally {
-    pending.value = false
+    if (!silent) pending.value = false
   }
 }
 
@@ -131,21 +139,33 @@ function startClient() {
   client.on("event", handleEvent)
 }
 
+function sameChat(a, b) {
+  if (!a || !b) return false
+  if (a === b) return true
+  const ua = String(a).split('@')[0].split(':')[0]
+  const ub = String(b).split('@')[0].split(':')[0]
+  return !!ua && ua === ub
+}
+
 async function handleEvent(event) {
   const name = event?.event
   if (name === 'call.received' || name === 'call.accepted' || name === 'call.rejected') {
     onCallEvent(name, event.payload)
     return
   }
-  await sleep(1000)
+  // Keep the chat list fresh without flashing the big loading spinner
+  refreshChats(true)
+
   const chatId = selectedChat.value?.id
   if (!chatId) {
     return
   }
-  if (event.payload.from === chatId || event.payload.to === chatId) {
-    fetchMessages()
+  const from = event?.payload?.from
+  const to = event?.payload?.to
+  if (sameChat(from, chatId) || sameChat(to, chatId)) {
+    // Refetch the open thread silently so new messages appear instantly on the right
+    fetchMessages(true)
   }
-  refreshChats()
 }
 
 function restartClient() {
@@ -158,10 +178,10 @@ function stopClient() {
 }
 
 
-function fetchMessages() {
+function fetchMessages(silent = false) {
   offset.value = 0
   hasEarlierMessages.value = true
-  fetchingMessages.value = true
+  if (!silent) fetchingMessages.value = true
   store.getChatsMessages(
       session.value.server.id,
       session.value.name,
@@ -173,7 +193,7 @@ function fetchMessages() {
   ).then((data) => {
     messages.value = data.reverse()
   }).finally(() => {
-        fetchingMessages.value = false
+        if (!silent) fetchingMessages.value = false
       }
   )
 }
@@ -253,6 +273,15 @@ watch(
 
 function clickOnChat(chat) {
   selectedChat.value = chat
+  replyingTo.value = null
+}
+
+const selectedIsReadOnly = computed(() => isNewsletter(selectedChat.value?.id))
+
+function openNewsletter(item) {
+  selectedChat.value = item
+  replyingTo.value = null
+  activeView.value = 'chats'
 }
 
 async function sendMedia(type, file, base64, caption) {
@@ -301,9 +330,11 @@ async function sendText(text) {
     })
   }
   try {
-    await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text)
-    await sleep(1000)
-    fetchMessages()
+    const replyTo = replyingTo.value?.id || undefined
+    await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, text, replyTo)
+    replyingTo.value = null
+    await sleep(800)
+    fetchMessages(true)
   } catch (e) {
     toast.add({
       severity: 'error',
@@ -312,6 +343,56 @@ async function sendText(text) {
       life: 5000,
     })
     throw e
+  }
+}
+
+//
+// Message actions (reply / react / forward / delete)
+//
+const replyingTo = ref(null)
+const forwardDialog = ref({visible: false, message: null})
+
+function onReplyMessage(message) {
+  replyingTo.value = message
+}
+
+function cancelReply() {
+  replyingTo.value = null
+}
+
+async function onReactMessage({message, reaction}) {
+  try {
+    await store.setReaction(session.value.server.id, session.value.name, message.id, reaction)
+    await sleep(600)
+    fetchMessages(true)
+  } catch (e) {
+    toast.add({severity: 'error', summary: t('chat.actionFailed'), detail: e?.message || String(e), life: 5000})
+  }
+}
+
+function openForward(message) {
+  forwardDialog.value = {visible: true, message}
+}
+
+async function doForward(targetChatId) {
+  const message = forwardDialog.value.message
+  forwardDialog.value = {visible: false, message: null}
+  if (!message || !targetChatId) return
+  try {
+    await store.forwardMessage(session.value.server.id, session.value.name, targetChatId, message.id)
+    toast.add({severity: 'success', summary: t('chat.forwarded'), life: 3000})
+  } catch (e) {
+    toast.add({severity: 'error', summary: t('chat.actionFailed'), detail: e?.message || String(e), life: 5000})
+  }
+}
+
+async function onDeleteMessage(message) {
+  const chatId = message?._data?.id?.remote || selectedChat.value?.id
+  try {
+    await store.deleteMessage(session.value.server.id, session.value.name, chatId, message.id)
+    messages.value = messages.value.filter(m => m.id !== message.id)
+  } catch (e) {
+    toast.add({severity: 'error', summary: t('chat.actionFailed'), detail: e?.message || String(e), life: 5000})
   }
 }
 
@@ -653,15 +734,33 @@ function onCallEvent(name, payload) {
                     :hasEarlierMessages="hasEarlierMessages"
                     :serverId="session.server.id"
                     :sessionName="session.name"
+                    @reply="onReplyMessage"
+                    @react="onReactMessage"
+                    @forward="openForward"
+                    @delete="onDeleteMessage"
                 ></ChatMessages>
 
-                <ChatInputFooter
-                    :disabled="!selectedChat || fetchingMessages"
-                    :sendText="sendText"
-                    :sendAiRich="sendAiRich"
-                    :sendAiRichBlocks="sendAiRichBlocks"
-                    :sendMedia="sendMedia"
-                />
+                <div v-if="selectedIsReadOnly" class="wa-readonly">
+                  <i class="pi pi-megaphone"></i>
+                  <span>{{ t('chat.newsletter.readOnly') }}</span>
+                </div>
+                <template v-else>
+                  <div v-if="replyingTo" class="wa-reply-banner">
+                    <div class="wa-reply-banner__bar"></div>
+                    <div class="wa-reply-banner__body">
+                      <div class="wa-reply-banner__title">{{ t('chat.reply.replyingTo') }}</div>
+                      <div class="wa-reply-banner__text">{{ (replyingTo.body || t('chat.snap.mediaStatus')).slice(0, 120) }}</div>
+                    </div>
+                    <Button icon="pi pi-times" text rounded size="small" @click="cancelReply"/>
+                  </div>
+                  <ChatInputFooter
+                      :disabled="!selectedChat || fetchingMessages"
+                      :sendText="sendText"
+                      :sendAiRich="sendAiRich"
+                      :sendAiRichBlocks="sendAiRichBlocks"
+                      :sendMedia="sendMedia"
+                  />
+                </template>
               </template>
               <div v-else class="wa-shell__placeholder">
                 <i class="pi pi-comments"></i>
@@ -699,6 +798,7 @@ function onCallEvent(name, payload) {
             :items="newsletterItems"
             :pending="pending"
             @refresh="refreshChats"
+            @open="openNewsletter"
         />
 
         <!-- Profile -->
@@ -730,6 +830,28 @@ function onCallEvent(name, payload) {
         @reject="rejectIncoming"
     />
     <audio ref="audioEl" autoplay playsinline style="display:none"></audio>
+
+    <Dialog
+        v-model:visible="forwardDialog.visible"
+        modal
+        :header="t('chat.forward.title')"
+        :style="{ width: '360px' }"
+    >
+      <div class="wa-forward">
+        <div
+            v-for="c in chatItems"
+            :key="c.id"
+            class="wa-forward__item"
+            @click="doForward(c.id)"
+        >
+          <div class="wa-forward__avatar">
+            <img v-if="c.picture" :src="c.picture" alt=""/>
+            <i v-else class="pi pi-user"></i>
+          </div>
+          <span>{{ c.name || c.id }}</span>
+        </div>
+      </div>
+    </Dialog>
   </Dialog>
 
 </template>
@@ -743,6 +865,87 @@ function onCallEvent(name, payload) {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--surface-border);
+}
+
+.wa-reply-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-hover);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.wa-reply-banner__bar {
+  width: 3px;
+  align-self: stretch;
+  background: #00a884;
+  border-radius: 3px;
+}
+
+.wa-reply-banner__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wa-reply-banner__title {
+  font-size: 0.75rem;
+  color: #00a884;
+  font-weight: 600;
+}
+
+.wa-reply-banner__text {
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-readonly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  color: var(--text-color-secondary);
+  background: var(--surface-hover);
+  border-radius: 8px;
+}
+
+.wa-forward__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.wa-forward__item:hover {
+  background: rgba(0, 168, 132, 0.08);
+}
+
+.wa-forward__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #dfe5e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  i {
+    color: #8696a0;
+  }
 }
 
 .wa-shell__content {

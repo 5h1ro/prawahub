@@ -27,6 +27,15 @@ const isMedia = computed(() => {
   return c.hasMedia || (c.type && c.type !== "text" && c.type !== "chat");
 });
 
+const isVideo = computed(() => {
+  const m = mediaMime.value || "";
+  if (m.startsWith("video")) return true;
+  if (m.startsWith("image")) return false;
+  const c = current.value;
+  const t = String(c?.type || "");
+  return t.includes("video") || t.includes("ptv");
+});
+
 function clearTimer() {
   if (timer) {
     clearInterval(timer);
@@ -180,18 +189,20 @@ function fmtTime(ts) {
           <ProgressSpinner style="width:2.5rem;height:2.5rem"/>
         </div>
         <img
-            v-else-if="mediaUrl && !mediaMime?.startsWith('video')"
+            v-else-if="mediaUrl && !isVideo"
             :src="mediaUrl"
             class="story__media"
             alt="status"
         />
         <video
-            v-else-if="mediaUrl && mediaMime?.startsWith('video')"
+            v-else-if="mediaUrl && isVideo"
             :src="mediaUrl"
             class="story__media"
             autoplay
+            muted
             playsinline
             controls
+            @ended="next"
         />
         <div v-else-if="failed" class="story__failed">
           <i class="pi pi-exclamation-triangle"></i>

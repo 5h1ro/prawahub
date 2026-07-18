@@ -234,17 +234,46 @@ export class WahaAPI {
         });
     }
 
-    sendText(serverId: ServerId, sessionName: string, chatId: string, text: string): Promise<any> {
-        const body = {
+    sendText(serverId: ServerId, sessionName: string, chatId: string, text: string, replyTo?: string): Promise<any> {
+        const body: any = {
             session: sessionName,
             chatId: chatId,
             text: text,
+        }
+        if (replyTo) {
+            body.reply_to = replyTo
         }
         return this.api.call(serverId, {
             method: 'POST',
             uri: '/api/sendText',
             params: {},
             body: body,
+        })
+    }
+
+    setReaction(serverId: ServerId, sessionName: string, messageId: string, reaction: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'PUT',
+            uri: '/api/reaction',
+            params: {},
+            body: { session: sessionName, messageId: messageId, reaction: reaction },
+        })
+    }
+
+    forwardMessage(serverId: ServerId, sessionName: string, chatId: string, messageId: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: '/api/forwardMessage',
+            params: {},
+            body: { session: sessionName, chatId: chatId, messageId: messageId },
+        })
+    }
+
+    deleteMessage(serverId: ServerId, sessionName: string, chatId: string, messageId: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'DELETE',
+            uri: `/api/${sessionName}/chats/${chatId}/messages/${messageId}`,
+            params: {},
         })
     }
 

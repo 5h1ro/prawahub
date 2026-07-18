@@ -13,6 +13,50 @@ const props = defineProps({
   serverId: String,
   sessionName: String,
 })
+const emit = defineEmits(['reply', 'react', 'forward', 'delete'])
+
+const toast = useToast()
+const actionPanel = ref(null)
+const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏']
+
+function toggleActions(event) {
+  actionPanel.value?.toggle(event)
+}
+
+function hideActions() {
+  actionPanel.value?.hide()
+}
+
+function react(emoji) {
+  emit('react', {message: props.message, reaction: emoji})
+  hideActions()
+}
+
+function doReply() {
+  emit('reply', props.message)
+  hideActions()
+}
+
+function doForward() {
+  emit('forward', props.message)
+  hideActions()
+}
+
+function doDelete() {
+  emit('delete', props.message)
+  hideActions()
+}
+
+async function doCopy() {
+  const text = props.message?.body || ''
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.add({severity: 'success', summary: t('chat.actions.copied'), life: 2000})
+  } catch (e) {
+    toast.add({severity: 'warn', summary: t('chat.actions.copyFailed'), life: 3000})
+  }
+  hideActions()
+}
 
 const Ack = {
   ERROR: -1,
@@ -189,7 +233,16 @@ onUnmounted(() => {
 
 <template>
   <div :class="messageAlignClass">
-    <Chip
+    <div class="wa-msg" :class="{ 'wa-msg--me': message.fromMe }">
+      <button
+          v-if="!isCenterMessage"
+          class="wa-msg__arrow"
+          :aria-label="t('chat.actions.menu')"
+          @click.stop="toggleActions"
+      >
+        <i class="pi pi-chevron-down"></i>
+      </button>
+      <Chip
         :class="[showDetails ? 'chip-100' : 'chip-70', message.fromMe ? 'wa-bubble wa-bubble--me' : 'wa-bubble']"
         class="py-1 px-3">
       <div>
@@ -348,12 +401,132 @@ onUnmounted(() => {
         </div>
       </div>
     </Chip>
+
+      <OverlayPanel ref="actionPanel" :pt="{ content: { style: 'padding:0.4rem' } }">
+        <div class="wa-msg-actions">
+          <div class="wa-msg-react">
+            <button
+                v-for="e in quickReactions"
+                :key="e"
+                class="wa-msg-react__btn"
+                @click="react(e)"
+            >{{ e }}</button>
+          </div>
+          <button class="wa-msg-act" @click="doReply">
+            <i class="pi pi-reply"></i> {{ t('chat.actions.reply') }}
+          </button>
+          <button v-if="message.body" class="wa-msg-act" @click="doCopy">
+            <i class="pi pi-copy"></i> {{ t('chat.actions.copy') }}
+          </button>
+          <button class="wa-msg-act" @click="doForward">
+            <i class="pi pi-share-alt"></i> {{ t('chat.actions.forward') }}
+          </button>
+          <button class="wa-msg-act wa-msg-act--danger" @click="doDelete">
+            <i class="pi pi-trash"></i> {{ t('chat.actions.delete') }}
+          </button>
+        </div>
+      </OverlayPanel>
+    </div>
   </div>
 
 </template>
 
 
 <style scoped lang="scss">
+.wa-msg {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.wa-msg__arrow {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  width: 26px;
+  height: 22px;
+  border: none;
+  border-radius: 0 10px 0 8px;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4));
+  color: #54656f;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-msg--me .wa-msg__arrow {
+  background: linear-gradient(to left, rgba(217, 253, 211, 0.98), rgba(217, 253, 211, 0.4));
+}
+
+.wa-msg:hover .wa-msg__arrow {
+  opacity: 1;
+}
+
+.wa-msg-actions {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.wa-msg-react {
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.15rem 0.25rem 0.4rem;
+  border-bottom: 1px solid var(--surface-border);
+  margin-bottom: 0.25rem;
+}
+
+.wa-msg-react__btn {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  transition: transform 0.1s, background 0.1s;
+}
+
+.wa-msg-react__btn:hover {
+  transform: scale(1.25);
+  background: var(--surface-hover);
+}
+
+.wa-msg-act {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text-color);
+
+  i {
+    color: var(--text-color-secondary);
+    width: 1rem;
+  }
+}
+
+.wa-msg-act:hover {
+  background: var(--surface-hover);
+}
+
+.wa-msg-act--danger {
+  color: #e11d48;
+
+  i {
+    color: #e11d48;
+  }
+}
+
 .wa-bubble :deep(.p-chip),
 .wa-bubble.p-chip {
   background: #ffffff;

@@ -605,5 +605,17 @@
   "chat.snap.recentUpdates": "Pembaruan terbaru",
   "chat.newsletter.title": "Newsletter",
   "chat.newsletter.empty": "Tidak ada newsletter",
-  "chat.calls.keypad": "Papan tombol"
+  "chat.calls.keypad": "Papan tombol",
+  "chat.actions.menu": "Aksi pesan",
+  "chat.actions.reply": "Balas",
+  "chat.actions.copy": "Salin",
+  "chat.actions.forward": "Teruskan",
+  "chat.actions.delete": "Hapus",
+  "chat.actions.copied": "Tersalin",
+  "chat.actions.copyFailed": "Gagal menyalin",
+  "chat.reply.replyingTo": "Membalas",
+  "chat.forward.title": "Teruskan ke",
+  "chat.newsletter.readOnly": "Ini saluran newsletter (hanya baca)",
+  "chat.actionFailed": "Aksi gagal",
+  "chat.forwarded": "Pesan diteruskan"
 }
