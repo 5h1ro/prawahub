@@ -329,6 +329,88 @@ export class WahaAPI {
     }
 
     //
+    // Profile
+    //
+
+    getProfile(serverId: ServerId, sessionName: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'GET',
+            uri: `/api/${sessionName}/profile`,
+            params: {},
+        });
+    }
+
+    setProfileName(serverId: ServerId, sessionName: string, name: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'PUT',
+            uri: `/api/${sessionName}/profile/name`,
+            params: {},
+            body: {name},
+        });
+    }
+
+    setProfileStatus(serverId: ServerId, sessionName: string, status: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'PUT',
+            uri: `/api/${sessionName}/profile/status`,
+            params: {},
+            body: {status},
+        });
+    }
+
+    //
+    // Contacts
+    //
+
+    getContacts(serverId: ServerId, sessionName: string): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'GET',
+            uri: `/api/contacts/all?`,
+            params: {session: sessionName},
+        });
+    }
+
+    //
+    // Status (Snap / Stories)
+    //
+
+    sendStatusText(serverId: ServerId, sessionName: string, text: string, backgroundColor?: string, font?: number, contacts?: string[]): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/status/text`,
+            params: {},
+            body: {text, backgroundColor, font, contacts},
+        });
+    }
+
+    sendStatusImage(serverId: ServerId, sessionName: string, file: MediaFile, caption?: string, contacts?: string[]): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/status/image`,
+            params: {},
+            body: {file, caption, contacts},
+        });
+    }
+
+    sendStatusVideo(serverId: ServerId, sessionName: string, file: MediaFile, caption?: string, contacts?: string[]): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/status/video`,
+            params: {},
+            body: {file, caption, contacts},
+        });
+    }
+
+    deleteStatus(serverId: ServerId, sessionName: string, id: string, contacts?: string[]): Promise<any> {
+        return this.api.call(serverId, {
+            method: 'POST',
+            uri: `/api/${sessionName}/status/delete`,
+            params: {},
+            body: {id, contacts},
+        });
+    }
+
+    //
     // Native audio calls
     //
 

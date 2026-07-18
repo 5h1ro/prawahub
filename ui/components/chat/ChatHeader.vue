@@ -65,5 +65,19 @@ import ContactChip from "../sessions/ContactChip.vue";
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0.5rem;
+  background: #008069;
+  color: #fff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+}
+
+.chat-header :deep(.p-chip) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.chat-header :deep(.contact-chip__id),
+.chat-header :deep(.p-text-secondary) {
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 </style>

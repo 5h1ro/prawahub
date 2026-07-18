@@ -189,7 +189,9 @@ onUnmounted(() => {
 
 <template>
   <div :class="messageAlignClass">
-    <Chip :class="showDetails? 'chip-100' :'chip-70'" class="py-1 px-3">
+    <Chip
+        :class="[showDetails ? 'chip-100' : 'chip-70', message.fromMe ? 'wa-bubble wa-bubble--me' : 'wa-bubble']"
+        class="py-1 px-3">
       <div>
         <!-- From -->
         <div v-if="!message.fromMe && message.participant">
@@ -352,6 +354,19 @@ onUnmounted(() => {
 
 
 <style scoped lang="scss">
+.wa-bubble :deep(.p-chip),
+.wa-bubble.p-chip {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  align-items: flex-start;
+}
+
+.wa-bubble--me :deep(.p-chip),
+.wa-bubble--me.p-chip {
+  background: #d9fdd3;
+}
+
 .chip-70 {
   max-width: 70%;
 }

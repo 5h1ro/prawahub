@@ -40,7 +40,7 @@ async function handleLoadEarlier() {
 </script>
 
 <template>
-  <div class="my-2 pb-3" style="width: 100%; height: 100%; overflow: auto;" ref="scroll">
+  <div class="wa-messages my-2 pb-3" style="width: 100%; height: 100%; overflow: auto;" ref="scroll">
     <div class="flex flex-column gap-2">
       <div class="flex justify-content-center py-2">
         <Button
@@ -68,5 +68,21 @@ async function handleLoadEarlier() {
 </template>
 
 <style scoped lang="scss">
+.wa-messages {
+  background-color: #efeae2;
+  background-image:
+      radial-gradient(rgba(11, 20, 26, 0.04) 1px, transparent 1px),
+      radial-gradient(rgba(11, 20, 26, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
 
+:global(.p-dark) .wa-messages {
+  background-color: #0b141a;
+  background-image:
+      radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
 </style>

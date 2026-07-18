@@ -385,6 +385,38 @@ export const useServerStore = defineStore('serverStore', () => {
         return wahaAPI.getProfilePicture(serverId, sessionName, contactId)
     }
 
+    async function getProfile(serverId: ServerId, sessionName: string): Promise<any> {
+        return wahaAPI.getProfile(serverId, sessionName)
+    }
+
+    async function setProfileName(serverId: ServerId, sessionName: string, name: string): Promise<any> {
+        return wahaAPI.setProfileName(serverId, sessionName, name)
+    }
+
+    async function setProfileStatus(serverId: ServerId, sessionName: string, status: string): Promise<any> {
+        return wahaAPI.setProfileStatus(serverId, sessionName, status)
+    }
+
+    async function getContacts(serverId: ServerId, sessionName: string): Promise<any> {
+        return wahaAPI.getContacts(serverId, sessionName)
+    }
+
+    async function sendStatusText(serverId: ServerId, sessionName: string, text: string, backgroundColor?: string, font?: number, contacts?: string[]): Promise<any> {
+        return wahaAPI.sendStatusText(serverId, sessionName, text, backgroundColor, font, contacts)
+    }
+
+    async function sendStatusImage(serverId: ServerId, sessionName: string, file: MediaFile, caption?: string, contacts?: string[]): Promise<any> {
+        return wahaAPI.sendStatusImage(serverId, sessionName, file, caption, contacts)
+    }
+
+    async function sendStatusVideo(serverId: ServerId, sessionName: string, file: MediaFile, caption?: string, contacts?: string[]): Promise<any> {
+        return wahaAPI.sendStatusVideo(serverId, sessionName, file, caption, contacts)
+    }
+
+    async function deleteStatus(serverId: ServerId, sessionName: string, id: string, contacts?: string[]): Promise<any> {
+        return wahaAPI.deleteStatus(serverId, sessionName, id, contacts)
+    }
+
     async function callServerAPI(serverId: ServerId, request: any) {
         return wahaAPI.call(serverId, request)
     }
@@ -493,6 +525,14 @@ export const useServerStore = defineStore('serverStore', () => {
         rejectCall,
         webrtcCall,
         getProfilePicture,
+        getProfile,
+        setProfileName,
+        setProfileStatus,
+        getContacts,
+        sendStatusText,
+        sendStatusImage,
+        sendStatusVideo,
+        deleteStatus,
         getServerEnvironment,
         callServerAPI,
         // Apps API

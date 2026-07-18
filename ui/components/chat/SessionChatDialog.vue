@@ -7,6 +7,10 @@ import ChatList from "./ChatList.vue";
 import ChatInputFooter from "./ChatInputFooter.vue";
 import Dialer from "./Dialer.vue";
 import IncomingCallDialog from "./IncomingCallDialog.vue";
+import NavRail from "./NavRail.vue";
+import SnapView from "./SnapView.vue";
+import CallsView from "./CallsView.vue";
+import ProfileView from "./ProfileView.vue";
 import {openCallAudio} from "../../services/callAudio";
 import {ClientStatus, WebSocketClient} from "../../services/WebSocketService";
 import {ref} from "vue";
@@ -64,6 +68,7 @@ async function loadMoreChats() {
   }
 }
 
+const activeView = ref('chats') // chats | snap | calls | profile
 const selectedChat = ref(null)
 const messages = ref([])
 
@@ -185,6 +190,7 @@ function initializeDialog() {
     return;
   }
   mergeOverview.value = true
+  activeView.value = 'chats'
   stopClient()
   startClient()
   refreshChats()
@@ -551,6 +557,7 @@ function onCallEvent(name, payload) {
       :modal="true"
       maximizable
       style="width: 90%; height: 90%;"
+      :pt="{ content: { style: 'display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden;' } }"
   >
     <template #header>
       <div>
@@ -560,89 +567,115 @@ function onCallEvent(name, payload) {
         ></SessionHeader>
       </div>
     </template>
-    <div class="pb-3 flex">
-      <div class="flex align-items-center gap-1">
-        <SessionChip
-            v-if="session.me"
-            :session="session"
-            :image="profilePicture"
-        >
-        </SessionChip>
-        <WebSocketStatus :status="clientStatus"></WebSocketStatus>
-        <Button
-            icon="pi pi-phone"
-            label="Discador"
-            size="small"
-            severity="success"
-            text
-            v-tooltip.bottom="'Abrir discador'"
-            @click="dialerVisible = true"
+    <div class="wa-shell">
+      <NavRail v-model:active="activeView" :mePicture="profilePicture"/>
+
+      <div class="wa-shell__content">
+        <div class="wa-shell__topbar">
+          <SessionChip
+              v-if="session.me"
+              :session="session"
+              :image="profilePicture"
+          >
+          </SessionChip>
+          <WebSocketStatus :status="clientStatus"></WebSocketStatus>
+          <div class="ml-auto flex align-items-center gap-2">
+            <a href="#" class="wa-shell__promo-link" @click.prevent="showPromo = true">
+              <b>{{ t('chat.aboutChatUI') }}</b>
+            </a>
+          </div>
+          <ChatPromo
+              style="max-width:50em"
+              v-if="showPromo"
+              @close="showPromo = false"
+          ></ChatPromo>
+        </div>
+
+        <!-- Chats -->
+        <Splitter v-if="activeView === 'chats'" class="wa-shell__view">
+          <SplitterPanel :size=30 class="flex items-center justify-center">
+            <ChatList
+                :chats="chats"
+                :pending="pending"
+                :merge="mergeOverview"
+                :loadMoreChats="loadMoreChats"
+                :loadingMoreChats="loadingMoreChats"
+                @click-on-chat="clickOnChat"
+                @refresh-chats="refreshChats"
+                @update:merge="onMergeToggle"
+            ></ChatList>
+          </SplitterPanel>
+          <SplitterPanel :size=70 class="flex flex-column gap-2 justify-content-between p-2">
+            <div class="flex flex-column justify-content-between" style="height: 100%">
+              <template v-if="selectedChat">
+                <ChatHeader
+                    :chat="selectedChat"
+                    :me="session.me"
+                    :mePicture="profilePicture"
+                    :fetch="fetchMessages"
+                    :fetching="fetchingMessages"
+                    :callActive="!!activeCallId"
+                    :callBusy="callBusy"
+                    @start-call="startCall"
+                    @end-call="endCall"
+                >
+                </ChatHeader>
+                <hr>
+
+                <ChatMessages
+                    :messages="messages"
+                    :loadEarlier="loadEarlyMessages"
+                    :loadingEarlier="loadingEarly"
+                    :hasEarlierMessages="hasEarlierMessages"
+                    :serverId="session.server.id"
+                    :sessionName="session.name"
+                ></ChatMessages>
+
+                <ChatInputFooter
+                    :disabled="!selectedChat || fetchingMessages"
+                    :sendText="sendText"
+                    :sendAiRich="sendAiRich"
+                    :sendAiRichBlocks="sendAiRichBlocks"
+                    :sendMedia="sendMedia"
+                />
+              </template>
+              <div v-else class="wa-shell__placeholder">
+                <i class="pi pi-comments"></i>
+                <span>{{ t('chat.selectChat') }}</span>
+              </div>
+            </div>
+          </SplitterPanel>
+        </Splitter>
+
+        <!-- Snap -->
+        <SnapView
+            v-else-if="activeView === 'snap'"
+            class="wa-shell__view"
+            :serverId="session.server.id"
+            :sessionName="session.name"
+        />
+
+        <!-- Calls -->
+        <CallsView
+            v-else-if="activeView === 'calls'"
+            class="wa-shell__view"
+            :serverId="session.server.id"
+            :sessionName="session.name"
+            :busy="callBusy"
+            @call="onDialerCall"
+        />
+
+        <!-- Profile -->
+        <ProfileView
+            v-else-if="activeView === 'profile'"
+            class="wa-shell__view"
+            :serverId="session.server.id"
+            :sessionName="session.name"
+            :me="session.me"
+            :mePicture="profilePicture"
         />
       </div>
-      <div class="m-auto pb-2">
-        <div class="text-center">
-          <a href="#" @click="showPromo = true">
-            <b>{{ t('chat.aboutChatUI') }}</b>
-          </a>
-        </div>
-        <ChatPromo
-            style="max-width:50em"
-            v-if="showPromo"
-            @close="showPromo = false"
-        ></ChatPromo>
-      </div>
     </div>
-
-    <Splitter style="max-height: 90%">
-      <SplitterPanel :size=30 class="flex items-center justify-center">
-        <ChatList
-            :chats="chats"
-            :pending="pending"
-            :merge="mergeOverview"
-            :loadMoreChats="loadMoreChats"
-            :loadingMoreChats="loadingMoreChats"
-            @click-on-chat="clickOnChat"
-            @refresh-chats="refreshChats"
-            @update:merge="onMergeToggle"
-        ></ChatList>
-      </SplitterPanel>
-      <SplitterPanel :size=70 class="flex flex-column gap-2 justify-content-between p-2">
-        <div class="flex flex-column justify-content-between" style="height: 100%">
-          <template v-if="selectedChat">
-            <ChatHeader
-                :chat="selectedChat"
-                :me="session.me"
-                :mePicture="profilePicture"
-                :fetch="fetchMessages"
-                :fetching="fetchingMessages"
-                :callActive="!!activeCallId"
-                :callBusy="callBusy"
-                @start-call="startCall"
-                @end-call="endCall"
-            >
-            </ChatHeader>
-            <hr>
-
-            <ChatMessages
-                :messages="messages"
-                :loadEarlier="loadEarlyMessages"
-                :loadingEarlier="loadingEarly"
-                :hasEarlierMessages="hasEarlierMessages"
-                :serverId="session.server.id"
-                :sessionName="session.name"
-            ></ChatMessages>
-
-            <ChatInputFooter
-                :disabled="!selectedChat || fetchingMessages"
-                :sendText="sendText"
-                :sendAiRich="sendAiRich"
-                :sendAiRichBlocks="sendAiRichBlocks"
-                :sendMedia="sendMedia"
-            />
-          </template>
-        </div>
-      </SplitterPanel>
-    </Splitter>
 
     <Dialer
         v-model:visible="dialerVisible"
@@ -666,5 +699,58 @@ function onCallEvent(name, payload) {
 </template>
 
 <style scoped lang="scss">
+.wa-shell {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--surface-border);
+}
 
+.wa-shell__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+}
+
+.wa-shell__topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #008069;
+  color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wa-shell__topbar :deep(a),
+.wa-shell__promo-link {
+  color: #fff;
+}
+
+.wa-shell__view {
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
+}
+
+.wa-shell__placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--text-color-secondary);
+
+  i {
+    font-size: 3rem;
+    color: #008069;
+    opacity: 0.5;
+  }
+}
 </style>
