@@ -357,6 +357,7 @@ onUnmounted(() => {
 .wa-bubble :deep(.p-chip),
 .wa-bubble.p-chip {
   background: #ffffff;
+  color: #111b21;
   border-radius: 10px;
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
   align-items: flex-start;
@@ -365,6 +366,23 @@ onUnmounted(() => {
 .wa-bubble--me :deep(.p-chip),
 .wa-bubble--me.p-chip {
   background: #d9fdd3;
+  color: #111b21;
+}
+
+/* Force readable text on the light bubbles regardless of theme */
+.wa-bubble :deep(.p-chip-text),
+.wa-bubble :deep(p),
+.wa-bubble :deep(b),
+.wa-bubble :deep(span) {
+  color: #111b21;
+}
+
+.wa-bubble :deep(.p-text-secondary) {
+  color: #667781 !important;
+}
+
+.wa-bubble :deep(a) {
+  color: #027eb5;
 }
 
 .chip-70 {

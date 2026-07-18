@@ -601,5 +601,6 @@
   "chat.incoming.subtitle": "Panggilan masuk",
   "chat.incoming.audioCall": "Audio WhatsApp",
   "chat.incoming.accept": "Terima",
-  "chat.incoming.decline": "Tolak"
+  "chat.incoming.decline": "Tolak",
+  "chat.snap.recentUpdates": "Pembaruan terbaru"
 }

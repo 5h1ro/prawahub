@@ -601,5 +601,6 @@
   "chat.incoming.subtitle": "Incoming call",
   "chat.incoming.audioCall": "WhatsApp audio",
   "chat.incoming.accept": "Accept",
-  "chat.incoming.decline": "Decline"
+  "chat.incoming.decline": "Decline",
+  "chat.snap.recentUpdates": "Recent updates"
 }
