@@ -11,8 +11,9 @@ const emit = defineEmits(["close", "prev-story", "next-story"]);
 const store = useServerStore();
 
 const index = ref(0);
-const mediaUrl = ref(null);
-const mediaMime = ref(null);
+const thumbUrl = ref(null);
+const blobUrl = ref(null);
+const blobMime = ref(null);
 const loadingMedia = ref(false);
 const failed = ref(false);
 let timer = null;
@@ -28,12 +29,11 @@ const isMedia = computed(() => {
 });
 
 const isVideo = computed(() => {
-  const m = mediaMime.value || "";
-  if (m.startsWith("video")) return true;
-  if (m.startsWith("image")) return false;
   const c = current.value;
   const t = String(c?.type || "");
-  return t.includes("video") || t.includes("ptv");
+  if (t.includes("video") || t.includes("ptv")) return true;
+  const m = blobMime.value || "";
+  return m.startsWith("video");
 });
 
 function clearTimer() {
@@ -55,7 +55,8 @@ const progress = ref(0);
 function startTimer() {
   clearTimer();
   progress.value = 0;
-  const durationMs = mediaMime.value?.startsWith("video") ? 15000 : 5000;
+  // Videos advance on their own 'ended' event; use a long safety fallback
+  const durationMs = isVideo.value ? 30000 : 5000;
   const step = 100;
   timer = setInterval(() => {
     progress.value += (step / durationMs) * 100;
@@ -67,8 +68,9 @@ function startTimer() {
 
 async function loadCurrent() {
   revoke();
-  mediaUrl.value = null;
-  mediaMime.value = null;
+  thumbUrl.value = null;
+  blobUrl.value = null;
+  blobMime.value = null;
   failed.value = false;
   const c = current.value;
   if (!c) return;
@@ -76,39 +78,38 @@ async function loadCurrent() {
     startTimer();
     return;
   }
-  // instant thumbnail if available
+  // instant thumbnail (used as image or as video poster)
   if (c.thumbnail) {
-    mediaUrl.value = c.thumbnail;
-    mediaMime.value = "image/jpeg";
+    thumbUrl.value = c.thumbnail;
   }
+  startTimer();
   loadingMedia.value = true;
   try {
     const full = await store.getChatMessage(props.serverId, props.sessionName, c.id, "status@broadcast");
     const url = full?.media?.url;
     const mime = full?.media?.mimetype || "";
     if (!url) {
-      failed.value = !mediaUrl.value;
-      startTimer();
+      failed.value = !thumbUrl.value;
       return;
     }
     const key = store.getServer(props.serverId)?.connection?.key;
     const headers = key ? {"X-Api-Key": key} : {};
     const res = await fetch(url, {headers});
     if (!res.ok) {
-      failed.value = !mediaUrl.value;
-      startTimer();
+      failed.value = !thumbUrl.value;
       return;
     }
     const blob = await res.blob();
     revoke();
     objectUrl = URL.createObjectURL(blob);
-    mediaUrl.value = objectUrl;
-    mediaMime.value = mime || blob.type;
+    blobUrl.value = objectUrl;
+    blobMime.value = mime || blob.type;
+    // restart timing now that real media (esp. video) is ready
+    startTimer();
   } catch (e) {
-    failed.value = !mediaUrl.value;
+    failed.value = !thumbUrl.value;
   } finally {
     loadingMedia.value = false;
-    startTimer();
   }
 }
 
@@ -185,18 +186,12 @@ function fmtTime(ts) {
       <div class="story__nav story__nav--right" @click="next"></div>
 
       <template v-if="isMedia">
-        <div v-if="loadingMedia && !mediaUrl" class="story__loading">
-          <ProgressSpinner style="width:2.5rem;height:2.5rem"/>
-        </div>
-        <img
-            v-else-if="mediaUrl && !isVideo"
-            :src="mediaUrl"
-            class="story__media"
-            alt="status"
-        />
+        <!-- Video: poster shows immediately, plays once the blob is fetched -->
         <video
-            v-else-if="mediaUrl && isVideo"
-            :src="mediaUrl"
+            v-if="isVideo && (blobUrl || thumbUrl)"
+            :key="blobUrl || 'poster'"
+            :src="blobUrl || undefined"
+            :poster="thumbUrl || undefined"
             class="story__media"
             autoplay
             muted
@@ -204,9 +199,22 @@ function fmtTime(ts) {
             controls
             @ended="next"
         />
+        <img
+            v-else-if="!isVideo && (blobUrl || thumbUrl)"
+            :src="blobUrl || thumbUrl"
+            class="story__media"
+            alt="status"
+        />
+        <div v-else-if="loadingMedia" class="story__loading">
+          <ProgressSpinner style="width:2.5rem;height:2.5rem"/>
+        </div>
         <div v-else-if="failed" class="story__failed">
           <i class="pi pi-exclamation-triangle"></i>
           <span>Media unavailable</span>
+        </div>
+
+        <div v-if="isVideo && loadingMedia && !blobUrl" class="story__spinner-overlay">
+          <ProgressSpinner style="width:2rem;height:2rem"/>
         </div>
       </template>
       <div v-else class="story__text">
@@ -335,6 +343,13 @@ function fmtTime(ts) {
   padding: 2rem;
   max-width: 600px;
   word-break: break-word;
+}
+
+.story__spinner-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 6;
 }
 
 .story__loading,

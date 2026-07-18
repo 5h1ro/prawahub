@@ -115,10 +115,10 @@ function callContact(r) {
     </div>
 
     <div class="wa-calls__search">
-      <span class="p-input-icon-left w-full">
-        <i class="pi pi-search"></i>
+      <IconField iconPosition="left" class="w-full">
+        <InputIcon class="pi pi-search"/>
         <InputText v-model="search" class="w-full" :placeholder="t('chat.calls.searchContacts')"/>
-      </span>
+      </IconField>
     </div>
 
     <!-- Optional keypad -->

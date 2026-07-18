@@ -441,29 +441,32 @@ onUnmounted(() => {
 
 .wa-msg__arrow {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 3px;
+  right: 3px;
   z-index: 2;
-  width: 26px;
+  width: 22px;
   height: 22px;
   border: none;
-  border-radius: 0 10px 0 8px;
-  background: linear-gradient(to left, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4));
+  border-radius: 50%;
+  background: rgba(11, 20, 26, 0.06);
   color: #54656f;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.12s;
+  transform: scale(0.8);
+  transition: opacity 0.12s, transform 0.12s;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.75rem;
 }
 
-.wa-msg--me .wa-msg__arrow {
-  background: linear-gradient(to left, rgba(217, 253, 211, 0.98), rgba(217, 253, 211, 0.4));
+.wa-msg__arrow:hover {
+  background: rgba(11, 20, 26, 0.14);
 }
 
 .wa-msg:hover .wa-msg__arrow {
   opacity: 1;
+  transform: scale(1);
 }
 
 .wa-msg-actions {

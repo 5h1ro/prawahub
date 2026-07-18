@@ -78,14 +78,14 @@ const displayed = computed(() => {
   <div style="width: 100%; height: 100%; overflow: hidden; display: flex; flex-direction: column;">
     <!-- Search -->
     <div class="wa-list__search">
-      <span class="p-input-icon-left w-full">
-        <i class="pi pi-search"></i>
+      <IconField iconPosition="left" class="w-full">
+        <InputIcon class="pi pi-search"/>
         <InputText
             v-model="search"
             class="w-full"
             :placeholder="$t('chat.searchPlaceholder')"
         />
-      </span>
+      </IconField>
       <RefreshButton
           @click="emit('refreshChats')"
           :refreshing="pending"
