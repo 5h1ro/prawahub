@@ -147,6 +147,55 @@ function sameChat(a, b) {
   return !!ua && ua === ub
 }
 
+//
+// Incoming-message notification sound
+//
+const soundEnabled = ref(true)
+let audioCtx = null
+
+function loadSoundPref() {
+  try {
+    soundEnabled.value = localStorage.getItem('wa.sound') !== '0'
+  } catch (e) {
+    soundEnabled.value = true
+  }
+}
+
+function toggleSound() {
+  soundEnabled.value = !soundEnabled.value
+  try {
+    localStorage.setItem('wa.sound', soundEnabled.value ? '1' : '0')
+  } catch (e) {
+    // ignore
+  }
+  if (soundEnabled.value) playNotification()
+}
+
+function playNotification() {
+  if (!soundEnabled.value) return
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    audioCtx = audioCtx || new Ctx()
+    if (audioCtx.state === 'suspended') audioCtx.resume()
+    const now = audioCtx.currentTime
+    const osc = audioCtx.createOscillator()
+    const gain = audioCtx.createGain()
+    osc.connect(gain)
+    gain.connect(audioCtx.destination)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(880, now)
+    osc.frequency.setValueAtTime(1180, now + 0.09)
+    gain.gain.setValueAtTime(0.0001, now)
+    gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35)
+    osc.start(now)
+    osc.stop(now + 0.36)
+  } catch (e) {
+    // audio unavailable
+  }
+}
+
 async function handleEvent(event) {
   const name = event?.event
   if (name === 'call.received' || name === 'call.accepted' || name === 'call.rejected') {
@@ -155,6 +204,11 @@ async function handleEvent(event) {
   }
   // Keep the chat list fresh without flashing the big loading spinner
   refreshChats(true)
+
+  // Ding on a new incoming message (not our own, not an ack/edit noise)
+  if (name && name.startsWith('message') && event?.payload && !event.payload.fromMe) {
+    playNotification()
+  }
 
   const chatId = selectedChat.value?.id
   if (!chatId) {
@@ -234,6 +288,7 @@ function initializeDialog() {
   }
   mergeOverview.value = true
   activeView.value = 'chats'
+  loadSoundPref()
   stopClient()
   startClient()
   refreshChats()
@@ -685,6 +740,15 @@ function onCallEvent(name, payload) {
           </SessionChip>
           <WebSocketStatus :status="clientStatus"></WebSocketStatus>
           <div class="ml-auto flex align-items-center gap-2">
+            <Button
+                :icon="soundEnabled ? 'pi pi-volume-up' : 'pi pi-volume-off'"
+                text
+                rounded
+                size="small"
+                class="wa-shell__sound"
+                v-tooltip.bottom="soundEnabled ? t('chat.sound.on') : t('chat.sound.off')"
+                @click="toggleSound"
+            />
             <a href="#" class="wa-shell__promo-link" @click.prevent="showPromo = true">
               <b>{{ t('chat.aboutChatUI') }}</b>
             </a>
@@ -969,6 +1033,11 @@ function onCallEvent(name, payload) {
 .wa-shell__topbar :deep(a),
 .wa-shell__promo-link {
   color: #fff;
+}
+
+.wa-shell__sound :deep(.p-button-icon),
+.wa-shell__sound {
+  color: #fff !important;
 }
 
 .wa-shell__view {

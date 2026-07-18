@@ -617,5 +617,12 @@
   "chat.forward.title": "Forward to",
   "chat.newsletter.readOnly": "This is a newsletter channel (read-only)",
   "chat.actionFailed": "Action failed",
-  "chat.forwarded": "Message forwarded"
+  "chat.forwarded": "Message forwarded",
+  "chat.searchPlaceholder": "Search or start a new chat",
+  "chat.filter.all": "All",
+  "chat.filter.unread": "Unread",
+  "chat.filter.favorites": "Favorites",
+  "chat.filter.groups": "Groups",
+  "chat.sound.on": "Sound on",
+  "chat.sound.off": "Sound off"
 }

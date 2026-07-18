@@ -617,5 +617,12 @@
   "chat.forward.title": "Teruskan ke",
   "chat.newsletter.readOnly": "Ini saluran newsletter (hanya baca)",
   "chat.actionFailed": "Aksi gagal",
-  "chat.forwarded": "Pesan diteruskan"
+  "chat.forwarded": "Pesan diteruskan",
+  "chat.searchPlaceholder": "Cari atau mulai chat baru",
+  "chat.filter.all": "Semua",
+  "chat.filter.unread": "Belum dibaca",
+  "chat.filter.favorites": "Favorit",
+  "chat.filter.groups": "Grup",
+  "chat.sound.on": "Suara aktif",
+  "chat.sound.off": "Suara nonaktif"
 }
