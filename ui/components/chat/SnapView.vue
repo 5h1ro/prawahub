@@ -1,10 +1,13 @@
 <script setup>
-import {ref, watch} from "vue";
+import {ref, computed, watch} from "vue";
 import {useI18n} from "vue-i18n";
+import StoryViewer from "./StoryViewer.vue";
+import {resolveContact, isStatusBroadcast} from "../../utils/waContacts";
 
 const props = defineProps({
   serverId: {type: [String, Number], default: null},
   sessionName: {type: String, default: null},
+  contactIndex: {type: Object, default: null},
 })
 
 const {t} = useI18n();
@@ -81,21 +84,35 @@ async function postStatus() {
   }
 }
 
-// --- View (best-effort) ---
+// --- View ---
 const statuses = ref([]);
 const loadingView = ref(false);
 const viewUnavailable = ref(false);
-const pictures = ref({}); // authorId -> profilePictureURL
-const selectedAuthor = ref(null);
+const pictures = ref({});
+const activeStoryIdx = ref(-1);
+
+function extractThumb(m) {
+  const body = m._data?.body;
+  const type = m._data?.type;
+  if (body && (type === 'image' || type === 'video') && typeof body === 'string' && body.length > 100) {
+    return `data:image/jpeg;base64,${body}`;
+  }
+  const raw = m._data?.Message || m._data?.message;
+  const img = raw?.imageMessage;
+  const vid = raw?.videoMessage;
+  const thumb = (img?.JPEGThumbnail || img?.jpegThumbnail || vid?.JPEGThumbnail || vid?.jpegThumbnail);
+  return thumb ? `data:image/jpeg;base64,${thumb}` : null;
+}
 
 function normalizeMessage(m) {
-  const author = m.author || m.participant || m.from || m.sender || 'status@broadcast';
+  const author = m.author || m.participant || m.from || m.sender || '';
   return {
     id: m.id?._serialized || m.id || `${author}-${m.timestamp}`,
     author,
     body: m.body || m.caption || m._data?.caption || '',
     type: m.type || (m.hasMedia ? 'media' : 'text'),
     hasMedia: !!m.hasMedia,
+    thumbnail: extractThumb(m),
     timestamp: m.timestamp || m.messageTimestamp || 0,
     fromMe: !!m.fromMe,
   };
@@ -105,28 +122,27 @@ async function loadStatuses() {
   if (!props.serverId || !props.sessionName) return;
   loadingView.value = true;
   viewUnavailable.value = false;
-  selectedAuthor.value = null;
+  activeStoryIdx.value = -1;
   let ok = false;
   const collected = [];
-  // 1) Messages of the status@broadcast chat (works on engines that store status)
   try {
     const data = await store.getChatsMessages(
         props.serverId, props.sessionName, 'status@broadcast', 100, 0, false, false,
     );
     if (Array.isArray(data)) {
       ok = true;
-      data.forEach(m => collected.push(normalizeMessage(m)));
+      for (const m of data) {
+        const n = normalizeMessage(m);
+        // skip entries with no real author (the broadcast container itself)
+        if (!n.author || isStatusBroadcast(n.author)) continue;
+        collected.push(n);
+      }
     }
   } catch (e) {
-    // engine may not expose status messages this way
-  }
-  if (collected.length === 0) {
-    statuses.value = [];
-    viewUnavailable.value = !ok;
-    loadingView.value = false;
-    return;
+    // engine may not expose status messages
   }
   statuses.value = collected.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  viewUnavailable.value = !ok && collected.length === 0;
   loadingView.value = false;
   loadAuthorPictures();
 }
@@ -134,44 +150,64 @@ async function loadStatuses() {
 function loadAuthorPictures() {
   const authors = [...new Set(statuses.value.filter(s => !s.fromMe).map(s => s.author))];
   authors.forEach(async (id) => {
-    if (!id || id === 'status@broadcast' || pictures.value[id] !== undefined) return;
+    if (!id || pictures.value[id] !== undefined) return;
     pictures.value[id] = null;
     try {
       const data = await store.getProfilePicture(props.serverId, props.sessionName, id);
       pictures.value = {...pictures.value, [id]: data?.profilePictureURL || data || null};
     } catch (e) {
-      // ignore, keep placeholder
+      // keep placeholder
     }
   });
 }
 
-// Group statuses by author into story "rings"
+// Group by author into stories with resolved name/number
 const stories = computed(() => {
   const map = new Map();
   for (const s of statuses.value) {
     if (!map.has(s.author)) {
-      map.set(s.author, {author: s.author, fromMe: s.fromMe, items: [], latest: 0});
+      const r = resolveContact(props.contactIndex, s.author);
+      map.set(s.author, {
+        author: s.author,
+        name: s.fromMe ? t('chat.snap.myStatus') : r.name,
+        number: s.fromMe ? '' : r.number,
+        fromMe: s.fromMe,
+        items: [],
+        latest: 0,
+      });
     }
     const g = map.get(s.author);
     g.items.push(s);
     if (s.timestamp > g.latest) g.latest = s.timestamp;
   }
-  const list = [...map.values()].sort((a, b) => b.latest - a.latest);
-  // my status first
+  const list = [...map.values()];
+  list.forEach(g => g.items.sort((a, b) => a.timestamp - b.timestamp));
+  list.sort((a, b) => b.latest - a.latest);
   list.sort((a, b) => (b.fromMe ? 1 : 0) - (a.fromMe ? 1 : 0));
   return list;
 });
 
-const selectedStory = computed(() =>
-    stories.value.find(s => s.author === selectedAuthor.value) || null
-);
+const activeStory = computed(() => {
+  const g = stories.value[activeStoryIdx.value];
+  if (!g) return null;
+  return {...g, picture: pictures.value[g.author] || null};
+});
 
-function openStory(author) {
-  selectedAuthor.value = author;
+function openStory(idx) {
+  activeStoryIdx.value = idx;
 }
 
 function closeStory() {
-  selectedAuthor.value = null;
+  activeStoryIdx.value = -1;
+}
+
+function nextStory() {
+  if (activeStoryIdx.value < stories.value.length - 1) activeStoryIdx.value += 1;
+  else closeStory();
+}
+
+function prevStory() {
+  if (activeStoryIdx.value > 0) activeStoryIdx.value -= 1;
 }
 
 watch(() => tab.value, (v) => {
@@ -180,10 +216,6 @@ watch(() => tab.value, (v) => {
 watch(() => [props.serverId, props.sessionName], () => {
   if (tab.value === 'view') loadStatuses();
 });
-
-function displayAuthor(value) {
-  return (value || "").replace("@c.us", "").replace("@s.whatsapp.net", "").replace("@broadcast", "");
-}
 
 function fmtTime(ts) {
   if (!ts) return "";
@@ -217,11 +249,7 @@ function fmtTime(ts) {
     <div class="wa-snap__body">
       <!-- Compose -->
       <div v-if="tab === 'compose'" class="wa-snap__compose">
-        <div
-            v-if="!imagePreview"
-            class="wa-snap__canvas"
-            :style="{ background: bgColor }"
-        >
+        <div v-if="!imagePreview" class="wa-snap__canvas" :style="{ background: bgColor }">
           <textarea
               v-model="text"
               class="wa-snap__text"
@@ -247,21 +275,8 @@ function fmtTime(ts) {
 
         <div class="wa-snap__actions">
           <input ref="fileInput" type="file" accept="image/*,video/*" style="display:none" @change="onFileChange"/>
-          <Button
-              v-if="!imagePreview"
-              icon="pi pi-image"
-              :label="t('chat.snap.addPhoto')"
-              text
-              @click="pickImage"
-          />
-          <Button
-              v-else
-              icon="pi pi-times"
-              :label="t('chat.snap.removePhoto')"
-              text
-              severity="secondary"
-              @click="clearImage"
-          />
+          <Button v-if="!imagePreview" icon="pi pi-image" :label="t('chat.snap.addPhoto')" text @click="pickImage"/>
+          <Button v-else icon="pi pi-times" :label="t('chat.snap.removePhoto')" text severity="secondary" @click="clearImage"/>
           <Button
               icon="pi pi-send"
               :label="t('chat.snap.post')"
@@ -291,62 +306,37 @@ function fmtTime(ts) {
           {{ t('chat.snap.noStatuses') }}
         </div>
 
-        <template v-else>
-          <!-- Story rings (WhatsApp Updates style) -->
-          <div class="wa-snap__stories">
-            <button
-                v-for="g in stories"
-                :key="g.author"
-                class="wa-snap__story"
-                @click="openStory(g.author)"
-            >
-              <div class="wa-snap__ring" :class="{ 'wa-snap__ring--me': g.fromMe }">
-                <img v-if="pictures[g.author]" :src="pictures[g.author]" class="wa-snap__ring-img" alt=""/>
-                <i v-else class="pi pi-user"></i>
-                <span class="wa-snap__count">{{ g.items.length }}</span>
-              </div>
-              <div class="wa-snap__story-name">
-                {{ g.fromMe ? t('chat.snap.myStatus') : displayAuthor(g.author) }}
-              </div>
-              <div class="wa-snap__story-time">{{ fmtTime(g.latest) }}</div>
-            </button>
-          </div>
-        </template>
-
-        <!-- Selected story viewer -->
-        <Dialog
-            :visible="!!selectedStory"
-            modal
-            :showHeader="false"
-            :style="{ width: '380px' }"
-            @update:visible="v => { if (!v) closeStory() }"
-        >
-          <div v-if="selectedStory" class="wa-snap__viewer">
-            <div class="wa-snap__viewer-head">
-              <div class="wa-snap__ring wa-snap__ring--sm" :class="{ 'wa-snap__ring--me': selectedStory.fromMe }">
-                <img v-if="pictures[selectedStory.author]" :src="pictures[selectedStory.author]" class="wa-snap__ring-img" alt=""/>
-                <i v-else class="pi pi-user"></i>
-              </div>
-              <div class="wa-snap__viewer-name">
-                {{ selectedStory.fromMe ? t('chat.snap.myStatus') : displayAuthor(selectedStory.author) }}
-              </div>
-              <Button icon="pi pi-times" text rounded @click="closeStory"/>
+        <div v-else class="wa-snap__list">
+          <button
+              v-for="(g, idx) in stories"
+              :key="g.author"
+              class="wa-snap__row"
+              @click="openStory(idx)"
+          >
+            <div class="wa-snap__ring" :class="{ 'wa-snap__ring--me': g.fromMe }">
+              <img v-if="pictures[g.author]" :src="pictures[g.author]" class="wa-snap__ring-img" alt=""/>
+              <i v-else class="pi pi-user"></i>
+              <span class="wa-snap__count">{{ g.items.length }}</span>
             </div>
-            <div
-                v-for="s in selectedStory.items"
-                :key="s.id"
-                class="wa-snap__viewer-item"
-            >
-              <div class="wa-snap__viewer-body">
-                <i v-if="s.hasMedia || (s.type !== 'text' && s.type !== 'chat')" class="pi pi-image mr-2"></i>
-                <span>{{ s.body || t('chat.snap.mediaStatus') }}</span>
+            <div class="wa-snap__row-info">
+              <div class="wa-snap__row-name">{{ g.name }}</div>
+              <div class="wa-snap__row-sub">
+                <span v-if="g.number">{{ g.number }} · </span>{{ fmtTime(g.latest) }}
               </div>
-              <div class="wa-snap__viewer-time">{{ fmtTime(s.timestamp) }}</div>
             </div>
-          </div>
-        </Dialog>
+          </button>
+        </div>
       </div>
     </div>
+
+    <StoryViewer
+        :story="activeStory"
+        :serverId="serverId"
+        :sessionName="sessionName"
+        @close="closeStory"
+        @next-story="nextStory"
+        @prev-story="prevStory"
+    />
   </div>
 </template>
 
@@ -468,26 +458,54 @@ function fmtTime(ts) {
   color: var(--text-color-secondary);
 }
 
-.wa-snap__stories {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
-  gap: 0.75rem;
+.wa-snap__empty {
+  text-align: center;
+  color: var(--text-color-secondary);
+  padding: 2rem 0;
 }
 
-.wa-snap__story {
+.wa-snap__list {
   display: flex;
   flex-direction: column;
+}
+
+.wa-snap__row {
+  display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.85rem;
+  padding: 0.55rem 0.4rem;
   border: none;
   background: transparent;
   cursor: pointer;
-  padding: 0.4rem;
-  border-radius: 10px;
+  border-radius: 8px;
+  text-align: left;
+  width: 100%;
 }
 
-.wa-snap__story:hover {
+.wa-snap__row:hover {
   background: rgba(0, 168, 132, 0.08);
+}
+
+.wa-snap__ring {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dfe5e7;
+  border: 3px solid #00a884;
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.4rem;
+    color: #8696a0;
+  }
+}
+
+.wa-snap__ring--me {
+  border-color: #0b93f6;
 }
 
 .wa-snap__ring-img {
@@ -513,117 +531,19 @@ function fmtTime(ts) {
   border: 2px solid var(--surface-card);
 }
 
-.wa-snap__story-name {
-  font-size: 0.8rem;
-  max-width: 84px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-}
-
-.wa-snap__story-time {
-  font-size: 0.68rem;
-  color: var(--text-color-secondary);
-}
-
-.wa-snap__viewer-head {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--surface-border);
-  margin-bottom: 0.5rem;
-}
-
-.wa-snap__viewer-name {
-  flex: 1;
-  font-weight: 600;
-}
-
-.wa-snap__viewer-item {
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--surface-border);
-}
-
-.wa-snap__viewer-body {
-  display: flex;
-  align-items: center;
-}
-
-.wa-snap__viewer-time {
-  font-size: 0.72rem;
-  color: var(--text-color-secondary);
-  margin-top: 0.2rem;
-}
-
-.wa-snap__empty {
-  text-align: center;
-  color: var(--text-color-secondary);
-  padding: 2rem 0;
-}
-
-.wa-snap__item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.4rem;
-  border-bottom: 1px solid var(--surface-border);
-}
-
-.wa-snap__ring {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #dfe5e7;
-  border: 3px solid #00a884;
-  flex-shrink: 0;
-  overflow: visible;
-
-  i {
-    font-size: 1.5rem;
-    color: #8696a0;
-  }
-}
-
-.wa-snap__ring--sm {
-  width: 40px;
-  height: 40px;
-  border-width: 2px;
-
-  i {
-    font-size: 1.1rem;
-  }
-}
-
-.wa-snap__ring--me {
-  border-color: #0b93f6;
-}
-
-.wa-snap__item-info {
-  flex: 1;
+.wa-snap__row-info {
   min-width: 0;
 }
 
-.wa-snap__item-author {
+.wa-snap__row-name {
   font-weight: 500;
-}
-
-.wa-snap__item-body {
-  font-size: 0.85rem;
-  color: var(--text-color-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.wa-snap__item-time {
-  font-size: 0.75rem;
+.wa-snap__row-sub {
+  font-size: 0.8rem;
   color: var(--text-color-secondary);
-  flex-shrink: 0;
 }
 </style>

@@ -9,6 +9,7 @@ const items = [
   {key: 'chats', icon: 'pi pi-comments', label: 'Chats'},
   {key: 'snap', icon: 'pi pi-camera', label: 'Snap'},
   {key: 'calls', icon: 'pi pi-phone', label: 'Calls'},
+  {key: 'newsletter', icon: 'pi pi-megaphone', label: 'Newsletter'},
 ]
 </script>
 

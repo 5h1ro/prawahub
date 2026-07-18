@@ -16,6 +16,8 @@ import {ClientStatus, WebSocketClient} from "../../services/WebSocketService";
 import {ref} from "vue";
 import WebSocketStatus from "../events/WebSocketStatus.vue";
 import {useI18n} from "vue-i18n";
+import NewsletterView from "./NewsletterView.vue";
+import {buildContactIndex, isNewsletter, isStatusBroadcast} from "../../utils/waContacts";
 
 const {t} = useI18n();
 
@@ -29,6 +31,27 @@ const chats = ref([])
 const pending = ref(false)
 const chatsOffset = ref(0)
 const loadingMoreChats = ref(false)
+
+// Contacts (shared by Calls + Snap for name/number resolution)
+const contacts = ref([])
+const contactIndex = computed(() => buildContactIndex(contacts.value))
+
+async function fetchContacts() {
+  try {
+    const data = await store.getContacts(session.value.server.id, session.value.name)
+    contacts.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    contacts.value = []
+  }
+}
+
+// Real conversations: drop newsletters and the status broadcast pseudo-chat
+const chatItems = computed(() =>
+    chats.value.filter(c => !isNewsletter(c.id) && !isStatusBroadcast(c.id))
+)
+const newsletterItems = computed(() =>
+    chats.value.filter(c => isNewsletter(c.id))
+)
 
 async function refreshChats() {
   chatsOffset.value = 0
@@ -194,6 +217,7 @@ function initializeDialog() {
   stopClient()
   startClient()
   refreshChats()
+  fetchContacts()
 
   if (!session.value?.me?.id) {
     profilePicture.value = null
@@ -595,7 +619,7 @@ function onCallEvent(name, payload) {
         <Splitter v-if="activeView === 'chats'" class="wa-shell__view">
           <SplitterPanel :size=30 class="flex items-center justify-center">
             <ChatList
-                :chats="chats"
+                :chats="chatItems"
                 :pending="pending"
                 :merge="mergeOverview"
                 :loadMoreChats="loadMoreChats"
@@ -653,6 +677,7 @@ function onCallEvent(name, payload) {
             class="wa-shell__view"
             :serverId="session.server.id"
             :sessionName="session.name"
+            :contactIndex="contactIndex"
         />
 
         <!-- Calls -->
@@ -661,8 +686,19 @@ function onCallEvent(name, payload) {
             class="wa-shell__view"
             :serverId="session.server.id"
             :sessionName="session.name"
+            :contacts="contacts"
+            :contactIndex="contactIndex"
             :busy="callBusy"
             @call="onDialerCall"
+        />
+
+        <!-- Newsletter -->
+        <NewsletterView
+            v-else-if="activeView === 'newsletter'"
+            class="wa-shell__view"
+            :items="newsletterItems"
+            :pending="pending"
+            @refresh="refreshChats"
         />
 
         <!-- Profile -->

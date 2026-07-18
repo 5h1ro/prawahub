@@ -602,5 +602,8 @@
   "chat.incoming.audioCall": "WhatsApp audio",
   "chat.incoming.accept": "Accept",
   "chat.incoming.decline": "Decline",
-  "chat.snap.recentUpdates": "Recent updates"
+  "chat.snap.recentUpdates": "Recent updates",
+  "chat.newsletter.title": "Newsletter",
+  "chat.newsletter.empty": "No newsletters",
+  "chat.calls.keypad": "Dial pad"
 }
