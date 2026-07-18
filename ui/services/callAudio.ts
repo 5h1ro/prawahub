@@ -46,6 +46,16 @@ export interface CallAudio {
 export async function openCallAudio(
     exchangeSdp: (sdpOffer: string) => Promise<string>,
 ): Promise<CallAudio> {
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
+        const insecure = typeof window !== "undefined" && !window.isSecureContext;
+        throw new Error(
+            insecure
+                ? "Microphone blocked: the dashboard is served over insecure HTTP. " +
+                  "Open it via HTTPS or http://localhost:3000 to use audio calls."
+                : "Microphone API (navigator.mediaDevices) is not available in this browser.",
+        );
+    }
+
     const micStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
 
     const pc = new RTCPeerConnection({iceServers: []});
