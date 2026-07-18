@@ -49,9 +49,10 @@ const counts = computed(() => {
   }
 })
 
+// Note: "Unread" is intentionally omitted — the GOWS engine does not expose an
+// unread count, so the tab could never populate.
 const filters = computed(() => [
   {key: 'all', label: t('chat.filter.all'), count: counts.value.all},
-  {key: 'unread', label: t('chat.filter.unread'), count: counts.value.unread},
   {key: 'favorites', label: t('chat.filter.favorites'), count: counts.value.favorites},
   {key: 'groups', label: t('chat.filter.groups'), count: counts.value.groups},
 ])
