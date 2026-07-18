@@ -101,6 +101,14 @@ function fileToBase64(file) {
   })
 }
 
+// Enter sends (Shift+Enter makes a new line via the textarea default).
+function onEnterSend(event) {
+  if (event?.isComposing) return // don't send mid IME composition
+  event?.preventDefault()
+  if (sendDisabled.value) return
+  send()
+}
+
 async function send() {
   if (hasStagedBlocks.value) {
     await sendStagedRich()
@@ -190,7 +198,7 @@ async function sendAttachments() {
             rows="2"
             :disabled="captionDisabled"
             :placeholder="captionDisabled ? t('chat.send.placeholder.noAudioCaption') : (hasAttachments ? t('chat.send.placeholder.caption') : '')"
-            @keydown.enter.ctrl="send"
+            @keydown.enter.exact="onEnterSend"
             style="width: 100%; padding-right: 5rem"
         />
         <Button
