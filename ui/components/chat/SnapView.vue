@@ -1,8 +1,9 @@
 <script setup>
-import {ref, computed, watch} from "vue";
+import {ref, computed, watch, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import StoryViewer from "./StoryViewer.vue";
 import {resolveContact, isStatusBroadcast} from "../../utils/waContacts";
+import {resolveMediaUrl} from "../../utils/media";
 
 const props = defineProps({
   serverId: {type: [String, Number], default: null},
@@ -145,7 +146,54 @@ async function loadStatuses() {
   viewUnavailable.value = !ok && collected.length === 0;
   loadingView.value = false;
   loadAuthorPictures();
+  prefetchMedia();
 }
+
+// Pre-download all status media (esp. videos) so opening a story is instant
+const mediaCache = ref({}); // messageId -> { url, mime }
+const prefetching = ref(false);
+let prefetchToken = 0;
+
+async function prefetchMedia() {
+  const token = ++prefetchToken;
+  prefetching.value = true;
+  const server = store.getServer(props.serverId);
+  const key = server?.connection?.key;
+  const connUrl = server?.connection?.url;
+  const headers = key ? {"X-Api-Key": key} : {};
+  try {
+    for (const s of statuses.value) {
+      if (token !== prefetchToken) return; // superseded by a newer load
+      if (!s.hasMedia && s.type === "text") continue;
+      if (mediaCache.value[s.id]) continue;
+      try {
+        const full = await store.getChatMessage(props.serverId, props.sessionName, s.id, "status@broadcast");
+        const rawUrl = full?.media?.url;
+        if (!rawUrl) continue;
+        const url = resolveMediaUrl(rawUrl, connUrl);
+        const res = await fetch(url, {headers});
+        if (!res.ok) continue;
+        const blob = await res.blob();
+        const objUrl = URL.createObjectURL(blob);
+        mediaCache.value = {...mediaCache.value, [s.id]: {url: objUrl, mime: full?.media?.mimetype || blob.type}};
+      } catch (e) {
+        // skip this item
+      }
+    }
+  } finally {
+    if (token === prefetchToken) prefetching.value = false;
+  }
+}
+
+function clearMediaCache() {
+  for (const k in mediaCache.value) {
+    const entry = mediaCache.value[k];
+    if (entry?.url) URL.revokeObjectURL(entry.url);
+  }
+  mediaCache.value = {};
+}
+
+onUnmounted(clearMediaCache);
 
 function loadAuthorPictures() {
   const authors = [...new Set(statuses.value.filter(s => !s.fromMe).map(s => s.author))];
@@ -293,7 +341,12 @@ function fmtTime(ts) {
       <div v-else class="wa-snap__view">
         <div class="wa-snap__view-toolbar">
           <span class="wa-snap__view-title">{{ t('chat.snap.recentUpdates') }}</span>
-          <RefreshButton :refreshing="loadingView" @click="loadStatuses"/>
+          <div class="flex align-items-center gap-2">
+            <span v-if="prefetching" class="wa-snap__prefetch">
+              <i class="pi pi-spin pi-spinner"></i> {{ t('chat.snap.downloading') }}
+            </span>
+            <RefreshButton :refreshing="loadingView" @click="loadStatuses"/>
+          </div>
         </div>
 
         <div v-if="loadingView" class="wa-snap__empty">
@@ -333,6 +386,7 @@ function fmtTime(ts) {
         :story="activeStory"
         :serverId="serverId"
         :sessionName="sessionName"
+        :cache="mediaCache"
         @close="closeStory"
         @next-story="nextStory"
         @prev-story="prevStory"
@@ -456,6 +510,14 @@ function fmtTime(ts) {
 .wa-snap__view-title {
   font-weight: 600;
   color: var(--text-color-secondary);
+}
+
+.wa-snap__prefetch {
+  font-size: 0.75rem;
+  color: #00a884;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .wa-snap__empty {

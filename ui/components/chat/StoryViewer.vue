@@ -6,6 +6,7 @@ const props = defineProps({
   story: {type: Object, default: null}, // { author, name, number, fromMe, items: [] }
   serverId: {type: [String, Number], default: null},
   sessionName: {type: String, default: null},
+  cache: {type: Object, default: null}, // messageId -> { url, mime } (prefetched)
 })
 const emit = defineEmits(["close", "prev-story", "next-story"]);
 
@@ -85,6 +86,15 @@ async function loadCurrent() {
   // instant thumbnail (used as image or as video poster)
   if (c.thumbnail) {
     thumbUrl.value = c.thumbnail;
+  }
+  // Prefetched by SnapView? Use it directly, no download needed.
+  const cached = props.cache && props.cache[c.id];
+  if (cached && cached.url) {
+    blobUrl.value = cached.url;
+    blobMime.value = cached.mime || "";
+    declaredMime.value = cached.mime || "";
+    startTimer();
+    return;
   }
   startTimer();
   loadingMedia.value = true;

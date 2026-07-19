@@ -624,5 +624,6 @@
   "chat.filter.favorites": "Favorites",
   "chat.filter.groups": "Groups",
   "chat.sound.on": "Sound on",
-  "chat.sound.off": "Sound off"
+  "chat.sound.off": "Sound off",
+  "chat.snap.downloading": "Downloading…"
 }

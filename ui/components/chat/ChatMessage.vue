@@ -235,7 +235,7 @@ onUnmounted(() => {
 
 <template>
   <div :class="messageAlignClass">
-    <div class="wa-msg" :class="{ 'wa-msg--me': message.fromMe }">
+    <div class="wa-msg" :class="{ 'wa-msg--me': message.fromMe, 'wa-msg--wide': showDetails }">
       <button
           v-if="!isCenterMessage"
           class="wa-msg__arrow"
@@ -245,7 +245,7 @@ onUnmounted(() => {
         <i class="pi pi-chevron-down"></i>
       </button>
       <Chip
-        :class="[showDetails ? 'chip-100' : 'chip-70', message.fromMe ? 'wa-bubble wa-bubble--me' : 'wa-bubble']"
+        :class="message.fromMe ? 'wa-bubble wa-bubble--me' : 'wa-bubble'"
         class="py-1 px-3">
       <div>
         <!-- From -->
@@ -253,9 +253,8 @@ onUnmounted(() => {
           <div class="p-text-secondary my-1" style="font-size: 0.9rem">{{ message.participant }}</div>
         </div>
 
-        <!-- Body + ACK -->
-        <div class="flex">
-          <div class="flex-1">
+        <!-- Body -->
+        <div class="wa-body">
             <!-- Center system message body -->
             <template v-if="isCenterMessage">
               <span class="p-text-secondary" style="font-size: 0.85rem">{{ t(centerMessageKey) }}</span>
@@ -369,31 +368,15 @@ onUnmounted(() => {
             <template v-else-if="message.body">
               <p v-html="message.body.replace(/\n/g, '<br>')"></p>
             </template>
-          </div>
-          <!-- ack at the bottom of div-->
-          <div class="flex flex-column justify-content-end" style="height: 100%" v-if="message.fromMe">
-            <MessageAck :ack="message.ack" class="mt-1 ml-2"/>
-          </div>
         </div>
 
-        <!-- Details Button + Datetime -->
-        <div class="flex align-items-center justify-content-end my-1">
-          <div
-              class="p-text-secondary"
-              style="font-size: 0.7rem"
-          >
-            {{ date }}
-          </div>
-          <div class="ml-2">
-            <a
-                href="#"
-                @click.prevent="view">
-              <i
-                  class="pi"
-                  :class="showDetails? 'pi-code' : 'pi-code'"
-              > </i>
-            </a>
-          </div>
+        <!-- Meta row: time + ack + details -->
+        <div class="wa-meta">
+          <span class="wa-meta__time">{{ date }}</span>
+          <MessageAck v-if="message.fromMe" :ack="message.ack" class="wa-meta__ack"/>
+          <a href="#" class="wa-meta__code" @click.prevent="view">
+            <i class="pi pi-code"></i>
+          </a>
         </div>
 
         <!-- Details -->
@@ -444,6 +427,11 @@ onUnmounted(() => {
 
 .wa-msg--me {
   margin-left: auto;
+}
+
+.wa-msg--wide {
+  max-width: 100%;
+  width: 100%;
 }
 
 .wa-msg__arrow {
@@ -539,11 +527,47 @@ onUnmounted(() => {
 
 .wa-bubble :deep(.p-chip),
 .wa-bubble.p-chip {
+  display: block;
+  width: auto;
+  min-width: 3.5rem;
   background: #ffffff;
   color: #111b21;
   border-radius: 10px;
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
-  align-items: flex-start;
+}
+
+.wa-body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.wa-body :deep(p) {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.wa-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-top: 2px;
+}
+
+.wa-meta__time {
+  font-size: 0.68rem;
+  color: #667781;
+}
+
+.wa-meta__ack {
+  display: inline-flex;
+}
+
+.wa-meta__code {
+  color: #8696a0;
+  font-size: 0.7rem;
+  line-height: 1;
+  opacity: 0.6;
 }
 
 .wa-bubble--me :deep(.p-chip),

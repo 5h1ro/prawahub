@@ -624,5 +624,6 @@
   "chat.filter.favorites": "Favorit",
   "chat.filter.groups": "Grup",
   "chat.sound.on": "Suara aktif",
-  "chat.sound.off": "Suara nonaktif"
+  "chat.sound.off": "Suara nonaktif",
+  "chat.snap.downloading": "Mengunduh…"
 }
