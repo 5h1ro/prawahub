@@ -39,24 +39,40 @@ export interface CallAudio {
     close: () => void;
 }
 
+export interface CallAudioOptions {
+    // When set, this audio (e.g. an mp3 file's bytes) is streamed to the caller
+    // instead of the microphone. The AudioContext runs at 16 kHz, so decoding
+    // resamples the file to the call's rate automatically.
+    audio?: ArrayBuffer;
+    // Called when the supplied `audio` finishes playing (not fired for mic).
+    onEnded?: () => void;
+}
+
 /**
  * Open the browser audio path for a call.
  * @param exchangeSdp Sends the SDP offer to the server and returns the answer.
+ * @param options When `audio` is set, play that instead of the microphone.
  */
 export async function openCallAudio(
     exchangeSdp: (sdpOffer: string) => Promise<string>,
+    options: CallAudioOptions = {},
 ): Promise<CallAudio> {
-    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
-        const insecure = typeof window !== "undefined" && !window.isSecureContext;
-        throw new Error(
-            insecure
-                ? "Microphone blocked: the dashboard is served over insecure HTTP. " +
-                  "Open it via HTTPS or http://localhost:3000 to use audio calls."
-                : "Microphone API (navigator.mediaDevices) is not available in this browser.",
-        );
-    }
+    const useFile = !!options.audio;
 
-    const micStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+    // Microphone is only needed when we're not streaming a file.
+    let micStream: MediaStream | null = null;
+    if (!useFile) {
+        if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
+            const insecure = typeof window !== "undefined" && !window.isSecureContext;
+            throw new Error(
+                insecure
+                    ? "Microphone blocked: the dashboard is served over insecure HTTP. " +
+                      "Open it via HTTPS or http://localhost:3000 to use audio calls."
+                    : "Microphone API (navigator.mediaDevices) is not available in this browser.",
+            );
+        }
+        micStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+    }
 
     const pc = new RTCPeerConnection({iceServers: []});
     const dc = pc.createDataChannel(PCM_CHANNEL_LABEL, {ordered: true});
@@ -67,16 +83,28 @@ export async function openCallAudio(
     await ctx.audioWorklet.addModule(PLAYBACK_WORKLET_URL);
     await ctx.resume();
 
-    // Uplink: mic -> capture worklet -> data channel
-    const micSource = ctx.createMediaStreamSource(micStream);
+    // Uplink: source -> capture worklet -> data channel
     const captureNode = new AudioWorkletNode(ctx, "capture-processor");
     captureNode.port.onmessage = (e: MessageEvent<Float32Array>) => {
         if (dc.readyState === "open") {
             dc.send(float32ToInt16LE(e.data));
         }
     };
-    micSource.connect(captureNode);
     captureNode.connect(ctx.destination);
+
+    let fileSource: AudioBufferSourceNode | null = null;
+    if (useFile) {
+        // decodeAudioData mutates/detaches the buffer, so decode a copy.
+        const buffer = await ctx.decodeAudioData(options.audio!.slice(0));
+        fileSource = ctx.createBufferSource();
+        fileSource.buffer = buffer;
+        fileSource.connect(captureNode);
+        if (options.onEnded) fileSource.onended = () => options.onEnded!();
+        fileSource.start();
+    } else {
+        const micSource = ctx.createMediaStreamSource(micStream!);
+        micSource.connect(captureNode);
+    }
 
     // Downlink: data channel -> playback worklet -> speaker (via MediaStream)
     const playbackNode = new AudioWorkletNode(ctx, "playback-processor");
@@ -105,8 +133,11 @@ export async function openCallAudio(
     return {
         remoteStream: streamDest.stream,
         close: () => {
+            safeClose(() => {
+                if (fileSource) fileSource.stop();
+            });
             safeClose(() => ctx.close());
-            safeClose(() => micStream.getTracks().forEach((t) => t.stop()));
+            safeClose(() => micStream?.getTracks().forEach((t) => t.stop()));
             safeClose(() => pc.close());
         },
     };

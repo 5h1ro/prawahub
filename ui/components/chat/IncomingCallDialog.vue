@@ -5,8 +5,9 @@ const visible = defineModel("visible");
 const props = defineProps({
   from: {type: String, default: ""},
   busy: Boolean,
+  greetingName: {type: String, default: ""},
 });
-const emit = defineEmits(["accept", "reject"]);
+const emit = defineEmits(["accept", "reject", "accept-audio"]);
 const {t} = useI18n();
 
 function displayFrom(value) {
@@ -63,6 +64,21 @@ function displayFrom(value) {
           />
           <span>{{ t('chat.incoming.accept') }}</span>
         </div>
+        <div class="wa-incoming__action">
+          <Button
+              icon="pi pi-volume-up"
+              severity="info"
+              rounded
+              class="wa-incoming__btn wa-incoming__btn--audio"
+              :loading="busy"
+              v-tooltip.bottom="greetingName || undefined"
+              @click="emit('accept-audio')"
+          />
+          <span>{{ t('chat.incoming.acceptAudio') }}</span>
+        </div>
+      </div>
+      <div v-if="greetingName" class="wa-incoming__greeting">
+        <i class="pi pi-file-o"></i> {{ greetingName }}
       </div>
     </div>
   </Dialog>
@@ -151,6 +167,15 @@ function displayFrom(value) {
 .wa-incoming__btn {
   width: 60px !important;
   height: 60px !important;
+}
+
+.wa-incoming__greeting {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: #8696a0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wa-incoming__btn--accept {

@@ -510,7 +510,7 @@ const incoming = ref({visible: false, from: '', id: ''})
 const audioEl = ref(null)
 const callAudio = ref(null)
 
-async function setupAudio(callId) {
+async function setupAudio(callId, options = {}) {
   if (!callId) {
     return
   }
@@ -518,7 +518,7 @@ async function setupAudio(callId) {
     callAudio.value = await openCallAudio(async (sdpOffer) => {
       const res = await store.webrtcCall(session.value.server.id, session.value.name, callId, sdpOffer)
       return res.sdpAnswer
-    })
+    }, options)
     await nextTick()
     if (audioEl.value) {
       audioEl.value.srcObject = callAudio.value.remoteStream
@@ -660,6 +660,56 @@ async function acceptIncoming() {
       detail: e?.message || String(e),
       life: 5000,
     })
+  } finally {
+    callBusy.value = false
+  }
+}
+
+// "Answer with audio": accept the call, then stream an mp3 to the caller over
+// the same WebRTC bridge (no microphone). The mp3 plays once, then we hang up.
+const greetingInput = ref(null)
+const greeting = ref(null) // { name, buffer } remembered for reuse this session
+
+function acceptWithAudio() {
+  if (greeting.value?.buffer) {
+    answerWithGreeting(greeting.value.buffer)
+    return
+  }
+  greetingInput.value?.click()
+}
+
+async function onGreetingFileChange(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file) return
+  try {
+    const buffer = await file.arrayBuffer()
+    greeting.value = {name: file.name, buffer}
+    await answerWithGreeting(buffer)
+  } catch (e) {
+    toast.add({severity: 'error', summary: t('chat.callFailedTitle'), detail: e?.message || String(e), life: 5000})
+  }
+}
+
+async function answerWithGreeting(buffer) {
+  callBusy.value = true
+  const acceptedId = incoming.value.id
+  const peer = incoming.value.from
+  try {
+    await store.acceptCall(session.value.server.id, session.value.name, acceptedId)
+    activeCallId.value = acceptedId
+    activePeer.value = peer
+    callState.value = 'active'
+    startCallTimer()
+    dialerVisible.value = true
+    incoming.value = {visible: false, from: '', id: ''}
+    // decodeAudioData detaches the buffer, so hand over a copy and keep ours.
+    await setupAudio(acceptedId, {
+      audio: buffer.slice(0),
+      onEnded: () => hangup(),
+    })
+  } catch (e) {
+    toast.add({severity: 'error', summary: t('chat.callFailedTitle'), detail: e?.message || String(e), life: 5000})
   } finally {
     callBusy.value = false
   }
@@ -891,8 +941,17 @@ function onCallEvent(name, payload) {
         v-model:visible="incoming.visible"
         :from="incoming.from"
         :busy="callBusy"
+        :greetingName="greeting?.name || ''"
         @accept="acceptIncoming"
         @reject="rejectIncoming"
+        @accept-audio="acceptWithAudio"
+    />
+    <input
+        ref="greetingInput"
+        type="file"
+        accept="audio/mpeg,audio/mp3,audio/*"
+        style="display:none"
+        @change="onGreetingFileChange"
     />
     <audio ref="audioEl" autoplay playsinline style="display:none"></audio>
 
