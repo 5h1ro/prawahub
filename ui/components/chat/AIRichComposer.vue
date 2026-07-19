@@ -5,6 +5,7 @@ const {t} = useI18n()
 
 const props = defineProps({
   visible: Boolean,
+  initialBlocks: {type: Array, default: () => []}, // blocks to edit when reopened
 })
 const emit = defineEmits(['update:visible', 'submit'])
 
@@ -103,6 +104,14 @@ function blockSummary(block) {
       return `Text: ${(block.text || '').slice(0, 50)}`
   }
 }
+
+// Load existing blocks when the dialog opens (Edit flow).
+watch(() => props.visible, (v) => {
+  if (v) {
+    blocks.value = JSON.parse(JSON.stringify(props.initialBlocks || []))
+    resetEditor()
+  }
+})
 
 function close() {
   emit('update:visible', false)

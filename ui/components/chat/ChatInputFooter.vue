@@ -1,6 +1,7 @@
 <script setup>
 import ChatMediaAttachment from "./ChatMediaAttachment.vue"
 import AIRichComposer from "./AIRichComposer.vue"
+import RichMessage from "./RichMessage.vue"
 import {useI18n} from "vue-i18n"
 
 const {t} = useI18n()
@@ -29,6 +30,31 @@ function onComposerSubmit(blocks) {
 
 function clearStagedBlocks() {
   stagedBlocks.value = []
+}
+
+// Convert a composer block into the WAHA rich-submessage shape so the
+// preview renders exactly like the recipient will see it (via RichMessage).
+function blockToSubmessage(block) {
+  switch (block.type) {
+    case 'code':
+      return {
+        messageType: 5,
+        codeMetadata: {
+          codeLanguage: block.language || '',
+          codeBlocks: [{codeContent: block.text || ''}],
+        },
+      }
+    case 'table': {
+      const rows = []
+      if ((block.headers || []).length) rows.push({isHeading: true, items: block.headers})
+      for (const r of (block.rows || [])) rows.push({isHeading: false, items: r})
+      return {messageType: 4, tableMetadata: {title: block.title || '', rows}}
+    }
+    case 'latex':
+      return {messageType: 8, latexMetadata: {text: block.text || ''}}
+    default:
+      return {messageType: 2, messageText: block.text || ''}
+  }
 }
 
 const hasAttachments = computed(() => attachments.value.length > 0)
@@ -181,13 +207,27 @@ async function sendAttachments() {
       />
     </div>
 
-    <!-- Staged rich blocks indicator -->
-    <div v-if="hasStagedBlocks" class="flex align-items-center gap-2 mb-2">
-      <Chip removable @remove="clearStagedBlocks">
-        <font-awesome-icon icon="wand-magic-sparkles" class="mr-2"/>
-        <span>Rich message · {{ stagedBlocks.length }} block(s) staged</span>
-      </Chip>
-      <Button label="Edit" text size="small" icon="pi pi-pencil" @click="composerVisible = true"/>
+    <!-- Staged rich message preview -->
+    <div v-if="hasStagedBlocks" class="wa-rich-preview mb-2">
+      <div class="flex align-items-center gap-2 mb-2">
+        <font-awesome-icon icon="wand-magic-sparkles" class="text-primary"/>
+        <span class="text-sm font-medium">{{ t('chat.rich.preview') }}</span>
+        <span class="text-xs text-color-secondary">
+          {{ t('chat.rich.blockCount', { count: stagedBlocks.length }) }}
+        </span>
+        <div class="flex-1"></div>
+        <Button label="Edit" text size="small" icon="pi pi-pencil" @click="composerVisible = true"/>
+        <Button icon="pi pi-times" text rounded size="small" severity="secondary" @click="clearStagedBlocks"/>
+      </div>
+      <div class="wa-rich-preview__body">
+        <template v-for="(b, i) in stagedBlocks" :key="i">
+          <div v-if="b.type === 'image'" class="wa-rich-preview__img">
+            <img :src="b.imageUrl" alt=""/>
+            <small v-if="b.imageText" class="block mt-1">{{ b.imageText }}</small>
+          </div>
+          <RichMessage v-else :submessages="[blockToSubmessage(b)]"/>
+        </template>
+      </div>
     </div>
 
     <div class="flex align-items-center" style="width: 100%; gap: 0.5rem">
@@ -240,9 +280,30 @@ async function sendAttachments() {
       </div>
     </div>
 
-    <AIRichComposer v-model:visible="composerVisible" @submit="onComposerSubmit"/>
+    <AIRichComposer v-model:visible="composerVisible" :initial-blocks="stagedBlocks" @submit="onComposerSubmit"/>
   </div>
 </template>
 
 <style scoped lang="scss">
+.wa-rich-preview {
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface-50);
+}
+
+.wa-rich-preview__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 40vh;
+  overflow: auto;
+}
+
+.wa-rich-preview__img img {
+  max-width: 180px;
+  max-height: 180px;
+  border-radius: 8px;
+  object-fit: cover;
+}
 </style>

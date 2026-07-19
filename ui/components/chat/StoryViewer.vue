@@ -18,8 +18,20 @@ const blobUrl = ref(null);
 const blobMime = ref(null);
 const loadingMedia = ref(false);
 const failed = ref(false);
+const muted = ref(true); // autoplay policy needs muted start; user unmutes
+const videoRef = ref(null);
 let timer = null;
 let objectUrl = null;
+
+function applyMuted(e) {
+  const el = e?.target || videoRef.value;
+  if (el) el.muted = muted.value;
+}
+
+function toggleMute() {
+  muted.value = !muted.value;
+  if (videoRef.value) videoRef.value.muted = muted.value;
+}
 
 const items = computed(() => props.story?.items || []);
 const current = computed(() => items.value[index.value] || null);
@@ -194,6 +206,11 @@ function fmtTime(ts) {
           <span v-if="story.number">{{ story.number }} · </span>{{ fmtTime(current?.timestamp) }}
         </div>
       </div>
+      <Button
+          v-if="isVideo"
+          :icon="muted ? 'pi pi-volume-off' : 'pi pi-volume-up'"
+          text rounded class="story__close" @click="toggleMute"
+      />
       <Button icon="pi pi-times" text rounded class="story__close" @click="close"/>
     </div>
 
@@ -206,6 +223,7 @@ function fmtTime(ts) {
         <!-- Video: poster shows immediately, plays once the blob is fetched -->
         <video
             v-if="isVideo && (blobUrl || thumbUrl)"
+            ref="videoRef"
             :key="blobUrl || 'poster'"
             :src="blobUrl || undefined"
             :poster="thumbUrl || undefined"
@@ -214,6 +232,7 @@ function fmtTime(ts) {
             muted
             playsinline
             controls
+            @loadeddata="applyMuted"
             @ended="next"
         />
         <img
@@ -238,8 +257,12 @@ function fmtTime(ts) {
         {{ current?.body }}
       </div>
 
-      <!-- caption -->
-      <div v-if="isMedia && current?.body" class="story__caption">{{ current.body }}</div>
+      <!-- caption (pointer-events none so native video controls stay clickable) -->
+      <div
+          v-if="isMedia && current?.body"
+          class="story__caption"
+          :class="{ 'story__caption--video': isVideo }"
+      >{{ current.body }}</div>
     </div>
   </div>
 </template>
@@ -392,5 +415,12 @@ function fmtTime(ts) {
   color: #fff;
   text-align: center;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  pointer-events: none; // let native video controls beneath stay clickable
+}
+
+// lift caption above the native video control bar so both are visible
+.story__caption--video {
+  bottom: 2.75rem;
+  padding-bottom: 0.5rem;
 }
 </style>

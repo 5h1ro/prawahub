@@ -627,5 +627,7 @@
   "chat.sound.off": "Sound off",
   "chat.snap.downloading": "Downloading…",
   "chat.rich.viewCode": "View code",
+  "chat.rich.preview": "Rich message preview",
+  "chat.rich.blockCount": "{count} block(s)",
   "chat.reply.you": "You"
 }

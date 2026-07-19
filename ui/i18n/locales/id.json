@@ -627,5 +627,7 @@
   "chat.sound.off": "Suara nonaktif",
   "chat.snap.downloading": "Mengunduh…",
   "chat.rich.viewCode": "Lihat kode",
+  "chat.rich.preview": "Pratinjau pesan rich",
+  "chat.rich.blockCount": "{count} blok",
   "chat.reply.you": "Anda"
 }
