@@ -1,5 +1,6 @@
 <script setup>
 import {ref, computed, watch, onUnmounted} from "vue";
+import {resolveMediaUrl} from "../../utils/media";
 
 const props = defineProps({
   story: {type: Object, default: null}, // { author, name, number, fromMe, items: [] }
@@ -28,11 +29,13 @@ const isMedia = computed(() => {
   return c.hasMedia || (c.type && c.type !== "text" && c.type !== "chat");
 });
 
+const declaredMime = ref(null);
+
 const isVideo = computed(() => {
   const c = current.value;
   const t = String(c?.type || "");
   if (t.includes("video") || t.includes("ptv")) return true;
-  const m = blobMime.value || "";
+  const m = blobMime.value || declaredMime.value || "";
   return m.startsWith("video");
 });
 
@@ -71,6 +74,7 @@ async function loadCurrent() {
   thumbUrl.value = null;
   blobUrl.value = null;
   blobMime.value = null;
+  declaredMime.value = null;
   failed.value = false;
   const c = current.value;
   if (!c) return;
@@ -86,13 +90,16 @@ async function loadCurrent() {
   loadingMedia.value = true;
   try {
     const full = await store.getChatMessage(props.serverId, props.sessionName, c.id, "status@broadcast");
-    const url = full?.media?.url;
+    const rawUrl = full?.media?.url;
     const mime = full?.media?.mimetype || "";
-    if (!url) {
+    if (!rawUrl) {
       failed.value = !thumbUrl.value;
       return;
     }
-    const key = store.getServer(props.serverId)?.connection?.key;
+    declaredMime.value = mime; // lets isVideo switch to the <video> element early
+    const server = store.getServer(props.serverId);
+    const url = resolveMediaUrl(rawUrl, server?.connection?.url);
+    const key = server?.connection?.key;
     const headers = key ? {"X-Api-Key": key} : {};
     const res = await fetch(url, {headers});
     if (!res.ok) {

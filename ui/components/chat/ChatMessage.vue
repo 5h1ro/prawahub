@@ -5,6 +5,7 @@ import {useI18nDate} from '../../composables/useI18nDate'
 import JsonDataViewer from "../common/JsonDataViewer.vue";
 import InlineMessage from "primevue/inlinemessage";
 import {useI18n} from "vue-i18n";
+import {resolveMediaUrl} from "../../utils/media";
 
 const {t} = useI18n();
 
@@ -174,10 +175,10 @@ async function downloadMedia() {
     // Merge full message data back so the JSON viewer shows media fields
     Object.assign(props.message, fullMessage)
 
-    const url = fullMessage?.media?.url
+    const rawUrl = fullMessage?.media?.url
     const mime = fullMessage?.media?.mimetype
     const filename = fullMessage?.media?.filename
-    if (!url) {
+    if (!rawUrl) {
       mediaFailed.value = true
       return
     }
@@ -185,6 +186,7 @@ async function downloadMedia() {
     if (filename) mediaFilename.value = filename
 
     const connection = store.getServer(props.serverId)?.connection
+    const url = resolveMediaUrl(rawUrl, connection?.url)
     const headers = {}
     if (connection?.key) {
       headers['X-Api-Key'] = connection.key
@@ -435,8 +437,13 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .wa-msg {
   position: relative;
-  display: inline-block;
-  max-width: 100%;
+  display: block;
+  width: fit-content;
+  max-width: 85%;
+}
+
+.wa-msg--me {
+  margin-left: auto;
 }
 
 .wa-msg__arrow {
