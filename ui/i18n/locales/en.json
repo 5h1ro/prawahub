@@ -625,5 +625,7 @@
   "chat.filter.groups": "Groups",
   "chat.sound.on": "Sound on",
   "chat.sound.off": "Sound off",
-  "chat.snap.downloading": "Downloading…"
+  "chat.snap.downloading": "Downloading…",
+  "chat.rich.viewCode": "View code",
+  "chat.reply.you": "You"
 }

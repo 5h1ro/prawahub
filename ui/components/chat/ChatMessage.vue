@@ -6,6 +6,8 @@ import JsonDataViewer from "../common/JsonDataViewer.vue";
 import InlineMessage from "primevue/inlinemessage";
 import {useI18n} from "vue-i18n";
 import {resolveMediaUrl} from "../../utils/media";
+import {resolveContact} from "../../utils/waContacts";
+import RichMessage from "./RichMessage.vue";
 
 const {t} = useI18n();
 
@@ -13,8 +15,31 @@ const props = defineProps({
   message: Object,
   serverId: String,
   sessionName: String,
+  contactIndex: {type: Object, default: null},
 })
 const emit = defineEmits(['reply', 'react', 'forward', 'delete'])
+
+// Rich (AI-rich) message blocks
+const richSubmessages = computed(() =>
+    props.message?._data?.Message?.richResponseMessage?.submessages || null
+)
+const isRich = computed(() => Array.isArray(richSubmessages.value) && richSubmessages.value.length > 0)
+
+// Reply / quoted message
+const replyTo = computed(() => props.message?.replyTo || null)
+const replyAuthor = computed(() => {
+  const r = replyTo.value
+  if (!r) return ''
+  if (r.fromMe) return t('chat.reply.you')
+  const resolved = resolveContact(props.contactIndex, r.participant || r.id)
+  return resolved.name || ''
+})
+const replyPreview = computed(() => {
+  const r = replyTo.value
+  if (!r) return ''
+  if (r.hasMedia && !r.body) return t('chat.snap.mediaStatus')
+  return (r.body || '').slice(0, 120)
+})
 
 const toast = useToast()
 const actionPanel = ref(null)
@@ -48,8 +73,24 @@ function doDelete() {
   hideActions()
 }
 
+function richToText() {
+  const subs = richSubmessages.value || []
+  return subs.map((s) => {
+    if (s.messageType === 5) {
+      return (s.codeMetadata?.codeBlocks || []).map((c) => c.codeContent).join('\n')
+    }
+    if (s.messageType === 4) {
+      return (s.tableMetadata?.rows || []).map((r) => (r.items || []).join('\t')).join('\n')
+    }
+    if (s.messageType === 8) {
+      return s.latexMetadata?.text || ''
+    }
+    return s.messageText || ''
+  }).filter(Boolean).join('\n\n')
+}
+
 async function doCopy() {
-  const text = props.message?.body || ''
+  const text = isRich.value ? richToText() : (props.message?.body || '')
   try {
     await navigator.clipboard.writeText(text)
     toast.add({severity: 'success', summary: t('chat.actions.copied'), life: 2000})
@@ -253,10 +294,23 @@ onUnmounted(() => {
           <div class="p-text-secondary my-1" style="font-size: 0.9rem">{{ message.participant }}</div>
         </div>
 
+        <!-- Quoted reply preview -->
+        <div v-if="replyTo" class="wa-quote">
+          <div class="wa-quote__bar"></div>
+          <div class="wa-quote__content">
+            <div v-if="replyAuthor" class="wa-quote__author">{{ replyAuthor }}</div>
+            <div class="wa-quote__text">
+              <i v-if="replyTo.hasMedia" class="pi pi-image mr-1"></i>{{ replyPreview }}
+            </div>
+          </div>
+        </div>
+
         <!-- Body -->
         <div class="wa-body">
+            <!-- AI-rich message (code / table / latex / text blocks) -->
+            <RichMessage v-if="isRich" :submessages="richSubmessages"/>
             <!-- Center system message body -->
-            <template v-if="isCenterMessage">
+            <template v-else-if="isCenterMessage">
               <span class="p-text-secondary" style="font-size: 0.85rem">{{ t(centerMessageKey) }}</span>
             </template>
             <!-- Not Supported Message -->
@@ -400,7 +454,7 @@ onUnmounted(() => {
           <button class="wa-msg-act" @click="doReply">
             <i class="pi pi-reply"></i> {{ t('chat.actions.reply') }}
           </button>
-          <button v-if="message.body" class="wa-msg-act" @click="doCopy">
+          <button v-if="message.body || isRich" class="wa-msg-act" @click="doCopy">
             <i class="pi pi-copy"></i> {{ t('chat.actions.copy') }}
           </button>
           <button class="wa-msg-act" @click="doForward">
@@ -534,6 +588,48 @@ onUnmounted(() => {
   color: #111b21;
   border-radius: 10px;
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+}
+
+.wa-quote {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(11, 20, 26, 0.06);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.35rem;
+  overflow: hidden;
+}
+
+.wa-bubble--me .wa-quote {
+  background: rgba(11, 20, 26, 0.08);
+}
+
+.wa-quote__bar {
+  width: 3px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  background: #06cf9c;
+}
+
+.wa-quote__content {
+  min-width: 0;
+}
+
+.wa-quote__author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #06cf9c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-quote__text {
+  font-size: 0.82rem;
+  color: #667781;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wa-body {

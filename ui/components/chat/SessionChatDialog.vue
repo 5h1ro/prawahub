@@ -798,6 +798,7 @@ function onCallEvent(name, payload) {
                     :hasEarlierMessages="hasEarlierMessages"
                     :serverId="session.server.id"
                     :sessionName="session.name"
+                    :contactIndex="contactIndex"
                     @reply="onReplyMessage"
                     @react="onReactMessage"
                     @forward="openForward"

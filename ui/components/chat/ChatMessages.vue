@@ -8,6 +8,7 @@ const props = defineProps({
   hasEarlierMessages: Boolean,
   serverId: String,
   sessionName: String,
+  contactIndex: {type: Object, default: null},
 })
 const emit = defineEmits(['reply', 'react', 'forward', 'delete'])
 const scroll = ref(null)
@@ -61,6 +62,7 @@ async function handleLoadEarlier() {
               :message="message"
               :serverId="serverId"
               :sessionName="sessionName"
+              :contactIndex="contactIndex"
               @reply="emit('reply', $event)"
               @react="emit('react', $event)"
               @forward="emit('forward', $event)"

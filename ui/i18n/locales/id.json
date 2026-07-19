@@ -625,5 +625,7 @@
   "chat.filter.groups": "Grup",
   "chat.sound.on": "Suara aktif",
   "chat.sound.off": "Suara nonaktif",
-  "chat.snap.downloading": "Mengunduh…"
+  "chat.snap.downloading": "Mengunduh…",
+  "chat.rich.viewCode": "Lihat kode",
+  "chat.reply.you": "Anda"
 }
