@@ -1,14 +1,27 @@
 <script setup>
 import {useI18n} from "vue-i18n";
 
+import {ref} from "vue";
+
 const visible = defineModel("visible");
 const props = defineProps({
   from: {type: String, default: ""},
   busy: Boolean,
-  greetingName: {type: String, default: ""},
+  greetings: {type: Array, default: () => []}, // GreetingMeta[]
 });
-const emit = defineEmits(["accept", "reject", "accept-audio"]);
+const emit = defineEmits(["accept", "reject", "answer-audio", "add-greeting", "remove-greeting"]);
 const {t} = useI18n();
+
+const audioPanel = ref(null);
+
+function toggleAudioPanel(event) {
+  audioPanel.value?.toggle(event);
+}
+
+function chooseGreeting(id) {
+  audioPanel.value?.hide();
+  emit("answer-audio", id);
+}
 
 function displayFrom(value) {
   return (value || "").replace("@c.us", "").replace("@s.whatsapp.net", "");
@@ -71,16 +84,46 @@ function displayFrom(value) {
               rounded
               class="wa-incoming__btn wa-incoming__btn--audio"
               :loading="busy"
-              v-tooltip.bottom="greetingName || undefined"
-              @click="emit('accept-audio')"
+              @click="toggleAudioPanel"
           />
           <span>{{ t('chat.incoming.acceptAudio') }}</span>
         </div>
       </div>
-      <div v-if="greetingName" class="wa-incoming__greeting">
-        <i class="pi pi-file-o"></i> {{ greetingName }}
-      </div>
     </div>
+
+    <!-- Clip picker: choose which mp3 answers this call (swappable per call) -->
+    <OverlayPanel ref="audioPanel">
+      <div class="wa-greetings">
+        <div class="wa-greetings__title">{{ t('chat.incoming.pickAudio') }}</div>
+        <div v-if="!greetings.length" class="wa-greetings__empty">
+          {{ t('chat.incoming.noAudio') }}
+        </div>
+        <ul v-else class="wa-greetings__list">
+          <li v-for="g in greetings" :key="g.id" class="wa-greetings__item">
+            <button class="wa-greetings__play" :disabled="busy" @click="chooseGreeting(g.id)">
+              <i class="pi pi-play"></i>
+              <span class="wa-greetings__name">{{ g.name }}</span>
+            </button>
+            <Button
+                icon="pi pi-trash"
+                text
+                rounded
+                size="small"
+                severity="danger"
+                @click="emit('remove-greeting', g.id)"
+            />
+          </li>
+        </ul>
+        <Button
+            class="wa-greetings__add"
+            icon="pi pi-plus"
+            :label="t('chat.incoming.addAudio')"
+            text
+            size="small"
+            @click="emit('add-greeting')"
+        />
+      </div>
+    </OverlayPanel>
   </Dialog>
 </template>
 
@@ -169,13 +212,65 @@ function displayFrom(value) {
   height: 60px !important;
 }
 
-.wa-incoming__greeting {
-  margin-top: 1rem;
-  font-size: 0.75rem;
-  color: #8696a0;
+.wa-greetings {
+  min-width: 220px;
+  max-width: 300px;
+}
+
+.wa-greetings__title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.wa-greetings__empty {
+  font-size: 0.8rem;
+  color: var(--text-color-secondary);
+  padding: 0.25rem 0 0.5rem;
+}
+
+.wa-greetings__list {
+  list-style: none;
+  margin: 0 0 0.25rem;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.wa-greetings__item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.wa-greetings__play {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+}
+
+.wa-greetings__play:hover:not(:disabled) {
+  background: rgba(0, 168, 132, 0.12);
+}
+
+.wa-greetings__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.wa-greetings__add {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .wa-incoming__btn--accept {

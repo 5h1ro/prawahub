@@ -12,6 +12,7 @@ import SnapView from "./SnapView.vue";
 import CallsView from "./CallsView.vue";
 import ProfileView from "./ProfileView.vue";
 import {openCallAudio} from "../../services/callAudio";
+import {listGreetings, addGreeting, removeGreeting, getGreetingBuffer} from "../../services/callGreetings";
 import {ClientStatus, WebSocketClient} from "../../services/WebSocketService";
 import {ref} from "vue";
 import WebSocketStatus from "../events/WebSocketStatus.vue";
@@ -293,6 +294,7 @@ function initializeDialog() {
   startClient()
   refreshChats()
   fetchContacts()
+  reloadGreetings()
 
   if (!session.value?.me?.id) {
     profilePicture.value = null
@@ -665,16 +667,23 @@ async function acceptIncoming() {
   }
 }
 
-// "Answer with audio": accept the call, then stream an mp3 to the caller over
-// the same WebRTC bridge (no microphone). The mp3 plays once, then we hang up.
+// "Answer with audio": accept the call, then stream a chosen mp3 to the caller
+// over the same WebRTC bridge (no microphone). The clip plays once, then we
+// hang up. Clips live in a persistent library (IndexedDB) so they can be
+// swapped per call.
 const greetingInput = ref(null)
-const greeting = ref(null) // { name, buffer } remembered for reuse this session
+const greetings = ref([]) // GreetingMeta[]
 
-function acceptWithAudio() {
-  if (greeting.value?.buffer) {
-    answerWithGreeting(greeting.value.buffer)
-    return
+async function reloadGreetings() {
+  try {
+    greetings.value = await listGreetings()
+  } catch (e) {
+    greetings.value = []
   }
+}
+
+// The "+" in the picker opens the file dialog.
+function pickGreetingFile() {
   greetingInput.value?.click()
 }
 
@@ -683,19 +692,29 @@ async function onGreetingFileChange(event) {
   event.target.value = ''
   if (!file) return
   try {
-    const buffer = await file.arrayBuffer()
-    greeting.value = {name: file.name, buffer}
-    await answerWithGreeting(buffer)
+    await addGreeting(file)
+    await reloadGreetings()
   } catch (e) {
     toast.add({severity: 'error', summary: t('chat.callFailedTitle'), detail: e?.message || String(e), life: 5000})
   }
 }
 
-async function answerWithGreeting(buffer) {
+async function onRemoveGreeting(id) {
+  try {
+    await removeGreeting(id)
+    await reloadGreetings()
+  } catch (e) {
+    // ignore
+  }
+}
+
+// Answer the ringing call with the selected library clip.
+async function onAnswerWithGreeting(id) {
   callBusy.value = true
   const acceptedId = incoming.value.id
   const peer = incoming.value.from
   try {
+    const buffer = await getGreetingBuffer(id)
     await store.acceptCall(session.value.server.id, session.value.name, acceptedId)
     activeCallId.value = acceptedId
     activePeer.value = peer
@@ -703,9 +722,8 @@ async function answerWithGreeting(buffer) {
     startCallTimer()
     dialerVisible.value = true
     incoming.value = {visible: false, from: '', id: ''}
-    // decodeAudioData detaches the buffer, so hand over a copy and keep ours.
     await setupAudio(acceptedId, {
-      audio: buffer.slice(0),
+      audio: buffer, // fresh copy from IndexedDB each answer
       onEnded: () => hangup(),
     })
   } catch (e) {
@@ -941,10 +959,12 @@ function onCallEvent(name, payload) {
         v-model:visible="incoming.visible"
         :from="incoming.from"
         :busy="callBusy"
-        :greetingName="greeting?.name || ''"
+        :greetings="greetings"
         @accept="acceptIncoming"
         @reject="rejectIncoming"
-        @accept-audio="acceptWithAudio"
+        @answer-audio="onAnswerWithGreeting"
+        @add-greeting="pickGreetingFile"
+        @remove-greeting="onRemoveGreeting"
     />
     <input
         ref="greetingInput"
