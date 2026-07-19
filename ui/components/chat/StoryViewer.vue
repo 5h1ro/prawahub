@@ -33,6 +33,67 @@ function toggleMute() {
   if (videoRef.value) videoRef.value.muted = muted.value;
 }
 
+const downloading = ref(false);
+
+function extFromMime(mime) {
+  const m = String(mime || "");
+  if (m.includes("mp4")) return "mp4";
+  if (m.includes("webm")) return "webm";
+  if (m.includes("png")) return "png";
+  if (m.includes("gif")) return "gif";
+  if (m.includes("webp")) return "webp";
+  if (m.startsWith("video")) return "mp4";
+  return "jpg";
+}
+
+function triggerDownload(url, filename) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+// Manual download of the current snap (image/video) to disk.
+async function downloadCurrent() {
+  const c = current.value;
+  if (!c) return;
+  downloading.value = true;
+  try {
+    const name = (props.story?.name || "snap").replace(/[^\w-]+/g, "_");
+    const base = `${name}_${c.timestamp || Date.now()}`;
+    // Prefer an already-fetched blob (prefetched or currently playing).
+    let url = blobUrl.value;
+    let mime = blobMime.value;
+    if (!url) {
+      const full = await store.getChatMessage(props.serverId, props.sessionName, c.id, "status@broadcast");
+      const rawUrl = full?.media?.url;
+      mime = full?.media?.mimetype || "";
+      if (!rawUrl) {
+        // text status -> save the body as .txt
+        triggerDownload(
+            URL.createObjectURL(new Blob([c.body || ""], {type: "text/plain"})),
+            `${base}.txt`,
+        );
+        return;
+      }
+      const server = store.getServer(props.serverId);
+      const abs = resolveMediaUrl(rawUrl, server?.connection?.url);
+      const key = server?.connection?.key;
+      const res = await fetch(abs, {headers: key ? {"X-Api-Key": key} : {}});
+      const blob = await res.blob();
+      url = URL.createObjectURL(blob);
+      mime = mime || blob.type;
+    }
+    triggerDownload(url, `${base}.${extFromMime(mime)}`);
+  } catch (e) {
+    // ignore; user can retry
+  } finally {
+    downloading.value = false;
+  }
+}
+
 const items = computed(() => props.story?.items || []);
 const current = computed(() => items.value[index.value] || null);
 
@@ -210,6 +271,14 @@ function fmtTime(ts) {
           v-if="isVideo"
           :icon="muted ? 'pi pi-volume-off' : 'pi pi-volume-up'"
           text rounded class="story__close" @click="toggleMute"
+      />
+      <Button
+          v-if="isMedia"
+          :icon="downloading ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+          text rounded class="story__close"
+          :disabled="downloading"
+          v-tooltip.bottom="'Download'"
+          @click="downloadCurrent"
       />
       <Button icon="pi pi-times" text rounded class="story__close" @click="close"/>
     </div>
