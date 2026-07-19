@@ -451,22 +451,6 @@ async function onDeleteMessage(message) {
   }
 }
 
-// Some engines (e.g. GOWS) do not implement the /send/ai-rich endpoints (501).
-// Convert rich content to WhatsApp-formatted plain text and fall back to sendText.
-function isNotImplemented(e) {
-  const code = e?.response?.status || e?.status
-  const msg = String(e?.message || e || '')
-  return code === 501 || /not implemented/i.test(msg)
-}
-
-function blockToWaText(block) {
-  if (!block) return ''
-  if (block.type === 'code') {
-    return '```' + (block.text || '') + '```'
-  }
-  return block.text || ''
-}
-
 async function sendAiRich(type, text) {
   if (!selectedChat.value) {
     return
@@ -478,15 +462,8 @@ async function sendAiRich(type, text) {
       await store.sendAIRichMarkdown(session.value.server.id, session.value.name, selectedChat.value.id, text)
     }
     await sleep(1000)
-    fetchMessages(true)
+    fetchMessages()
   } catch (e) {
-    if (isNotImplemented(e)) {
-      const waText = type === 'code' ? '```' + text + '```' : text
-      await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, waText)
-      await sleep(800)
-      fetchMessages(true)
-      return
-    }
     toast.add({
       severity: 'error',
       summary: t('chat.sendFailedTitle'),
@@ -504,15 +481,8 @@ async function sendAiRichBlocks(blocks) {
   try {
     await store.sendAIRichMessage(session.value.server.id, session.value.name, selectedChat.value.id, blocks)
     await sleep(1000)
-    fetchMessages(true)
+    fetchMessages()
   } catch (e) {
-    if (isNotImplemented(e)) {
-      const waText = blocks.map(blockToWaText).filter(Boolean).join('\n\n')
-      await store.sendText(session.value.server.id, session.value.name, selectedChat.value.id, waText)
-      await sleep(800)
-      fetchMessages(true)
-      return
-    }
     toast.add({
       severity: 'error',
       summary: t('chat.sendFailedTitle'),
